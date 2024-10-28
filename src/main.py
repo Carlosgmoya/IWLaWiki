@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 
-from bson.json_util import dumps
-import json
+from typing import Any
 
 api = FastAPI()
 
@@ -38,6 +37,13 @@ async def hola(nombre : str):
 
     return {"Bienvenido a: " + nombre}
 
+# FUNCION AUXILIAR PARA CONVERTIR OBJETOS DE MONGODB
+def document_to_dict(document: Any) -> dict:
+    if document:
+        # Convert ObjectId to string for JSON compatibility
+        document["_id"] = str(document["_id"])
+    return document
+
 
 # GET WIKI
 
@@ -46,7 +52,7 @@ async def getWiki(n : str):
     result = BD_wiki.find_one({ "nombre" : n })
     result_json = None
     if result:
-        result_json = dumps(result)
+        result_json = document_to_dict(result)
     else:
         print("No se encontro ninguna entidad")
 
