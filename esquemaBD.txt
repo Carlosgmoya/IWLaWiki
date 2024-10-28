@@ -14,4 +14,12 @@ Entidad Artículo:
     -ultimoModificado ->Bool
     -contenido -> String ¡Se debe gestionar una subestructura!
 
-Entidad Comentario (A desarrollar)
+Entidad Comentario 
+    -id 
+    -fecha -> Date
+    -usuario -> String ¡Se pretende cambiar por una integer que aopunte a una etiqueta de la id de usuario!
+    -contenido -> String
+
+Entidad Usuario 
+    -id 
+    -nombreUsuario -> String 
