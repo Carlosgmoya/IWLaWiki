@@ -1,7 +1,5 @@
 # IWLaWiki
 
-Python Entorno Virtual:
-    1. cd .venv
-    2. Scripts\activate
-
-    Para descargar dependencias: pip install -r src\requirements.txt
+Python Entorno Virtual. Descargar nuevas dependencias de requirements.txt:
+    1. .venv\Scripts\activate
+    2. pip install -r src\requirements.txt
