@@ -1,0 +1,25 @@
+Estructura de la base de datos(Sejeta a cambios):
+
+Entidad Wiki:
+    -id 
+    -nombre -> String
+    -fecha -> date
+    -descripcion -> String
+
+Entidad Artículo:
+    -id
+    -titulo -> String
+    -Wiki -> String ¡Se pretende cambiar por una integer que aopunte a una etiqueta de la id de wiki!
+    -fecha -> Date
+    -ultimoModificado ->Bool
+    -contenido -> String ¡Se debe gestionar una subestructura!
+
+Entidad Comentario 
+    -id 
+    -fecha -> Date
+    -usuario -> String ¡Se pretende cambiar por una integer que aopunte a una etiqueta de la id de usuario!
+    -contenido -> String
+
+Entidad Usuario 
+    -id 
+    -nombreUsuario -> String 
