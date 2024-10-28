@@ -1,10 +1,13 @@
 from fastapi import FastAPI
 
+from bson.json_util import dumps
+import json
+
 api = FastAPI()
 
 # ejecutar con    python -m uvicorn main:api --reload --port 8000
 
-# conexion a base de datos
+# conexion al servidor MongoDB
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -21,9 +24,32 @@ try:
 except Exception as e:
     print(e)
 
+# Base de Datos
 
+database = client["laWiki"]
+
+BD_wiki = database["wiki"]
+BD_articulo = database["articulo"]
+
+# EJEMPLO
 
 @api.get("/laWiki/{nombre}")                    # endpoint: laWiki/{nombre}    (Parámetro de Path)
 async def hola(nombre : str):
 
     return {"Bienvenido a: " + nombre}
+
+
+# GET WIKI
+
+@api.get("/{n}")
+async def getWiki(n : str):
+    result = BD_wiki.find_one({ "nombre" : n })
+    result_json = None
+    if result:
+        result_json = dumps(result)
+    else:
+        print("No se encontro ninguna entidad")
+
+    return result_json
+
+# GET ARTICULO
