@@ -14,5 +14,27 @@
     <div class="container">
         <p>{{ wiki.descripcion }}</p>
     </div>
+    <form action="/searchArt" method="get">
+        <input type="text" name="term" placeholder="Buscar en {{wiki.nombre}}" required>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <h2>Entradas</h2>
+
+    {% if not articulos %}
+        <p>No hay entradas</p>
+    {% else %}
+        <ul>
+            {% for item in articulos %}
+                <li>
+                    <h3>
+                        <a href="/wiki/{{ wiki.nombre }}/{{ item.titulo }}">
+                            {{ item.titulo }}
+                        </a>
+                    </h3>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 </body>
 </html>

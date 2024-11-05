@@ -12,7 +12,12 @@
         <h1>Bienvenidos a laWiki</h1>
     </div>
 
-    <h2>Todas las wikis</h2>
+    <form action="/search" method="get">
+        <input type="text" name="term" placeholder="Buscar en laWiki" required>
+        <button type="submit">Buscar</button>
+    </form>
+
+    <h2>Wikis</h2>
 
     {% if not wikis %}
         <p>No hay wikis</p>
@@ -21,7 +26,7 @@
             {% for item in wikis %}
                 <li>
                     <h3>
-                        <a href="/{{ item.nombre }}">
+                        <a href="/wiki/{{ item.nombre }}">
                             {{ item.nombre }}
                         </a>
                     </h3>

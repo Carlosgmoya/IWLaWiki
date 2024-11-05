@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -60,23 +60,83 @@ async def getIndex(request : Request):
         "index.html",
         {"request": request,
          "wikis": wikis_json}
-        )
+    )
 
 # GET WIKI
-
-@api.get("/{n}", response_class=HTMLResponse)
+@api.get("/wiki/{n}", response_class=HTMLResponse)
 async def getWiki(request: Request, n : str):
     wiki_doc = BD_wiki.find_one({ "nombre" : n })
-
     if wiki_doc is None:
-        raise HTTPException(status_code=404, detail="Item not found")
-    
+        raise HTTPException(status_code=404, detail="Wiki no encontrado")
     wiki_json = json.loads(json_util.dumps(wiki_doc))
+
+    articulos_doc = BD_articulo.find({"wiki": n})
+    articulos_json = json.loads(json_util.dumps(articulos_doc))
 
     return templates.TemplateResponse(
         "wiki.html",
         {"request": request,
-         "wiki": wiki_json}
+         "wiki": wiki_json,
+         "articulos": articulos_json}
     )
 
+# CREAR WIKI
+
+
+
+# BORRAR WIKI
+
+
+
+# EDITAR WIKI
+
+
+
+# BUSCAR WIKIS
+
+@api.get("/search")
+async def buscarWikis(request: Request, term: str = Query(None, min_length=1)):
+    wikis_doc = BD_wiki.find({"nombre": {"$regex": term, "$options": "i"}})
+    wikis_json = [json.loads(json_util.dumps(doc)) for doc in wikis_doc]
+    
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request,
+         "wikis": wikis_json}
+    )
+    
 # GET ARTICULO
+
+@api.get("/wiki/{n}/{t}", response_class=HTMLResponse)
+async def getWiki(request: Request, n : str, t : str):
+    articulo_doc = BD_articulo.find_one({ "titulo" : t })
+
+    if articulo_doc is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    articulo_json = json.loads(json_util.dumps(articulo_doc))
+
+    return templates.TemplateResponse(
+        "articulo.html",
+        {"request": request,
+         "articulo": articulo_json}
+    )
+
+
+# CREAR ARTICULO
+
+
+
+# BORRAR ARTICULO
+
+
+
+# EDITAR ARTICULO
+
+
+
+# BUSCAR ARTICULOS
+
+@api.get("/searchArt")
+async def buscarArticulos(request: Request, term: str = Query(None, min_length=1)):
+    return "Por implementar"
