@@ -1,10 +1,20 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 from typing import Any
+from bson import json_util
+from bson.objectid import ObjectId
+from typing import List
+import json
 
 api = FastAPI()
+api.mount("/static", StaticFiles(directory="static"), name="static")
 
-# ejecutar con    python -m uvicorn main:api --reload --port 8000
+templates = Jinja2Templates(directory="templates")
+
+# ejecutar con  cd src -> python -m uvicorn main:api --reload --port 8000
 
 # conexion al servidor MongoDB
 
@@ -37,25 +47,36 @@ async def hola(nombre : str):
 
     return {"Bienvenido a: " + nombre}
 
-# FUNCION AUXILIAR PARA CONVERTIR OBJETOS DE MONGODB
-def document_to_dict(document: Any) -> dict:
-    if document:
-        # Convert ObjectId to string for JSON compatibility
-        document["_id"] = str(document["_id"])
-    return document
 
+# PAGINA PRINCIPAL
+
+@api.get("/", response_class=HTMLResponse)
+async def getIndex(request : Request):
+    wikis_doc = BD_wiki.find().sort({"nombre":1})
+    wikis_json = [json.loads(json_util.dumps(doc)) for doc in wikis_doc]    # collection.find() retrieves documents in BSON format from MongoDB.
+                                                                            # json_util.dumps(doc) converts BSON documents, including ObjectId fields, to JSON strings.
+                                                                            # json.loads(...) transforms each document back into a Python dictionary, so it’s compatible with FastAPI's JSON response model.
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request,
+         "wikis": wikis_json}
+        )
 
 # GET WIKI
 
-@api.get("/{n}")
-async def getWiki(n : str):
-    result = BD_wiki.find_one({ "nombre" : n })
-    result_json = None
-    if result:
-        result_json = document_to_dict(result)
-    else:
-        print("No se encontro ninguna entidad")
+@api.get("/{n}", response_class=HTMLResponse)
+async def getWiki(request: Request, n : str):
+    wiki_doc = BD_wiki.find_one({ "nombre" : n })
 
-    return result_json
+    if wiki_doc is None:
+        raise HTTPException(status_code=404, detail="Item not found")
+    
+    wiki_json = json.loads(json_util.dumps(wiki_doc))
+
+    return templates.TemplateResponse(
+        "wiki.html",
+        {"request": request,
+         "wiki": wiki_json}
+    )
 
 # GET ARTICULO
