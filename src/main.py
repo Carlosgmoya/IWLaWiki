@@ -8,6 +8,7 @@ from bson import json_util
 from bson.objectid import ObjectId
 from typing import List
 import json
+from datetime import datetime
 
 api = FastAPI()
 api.mount("/static", StaticFiles(directory="static"), name="static")
@@ -81,7 +82,23 @@ async def getWiki(request: Request, n : str):
     )
 
 # CREAR WIKI
-
+@api.post("/wikis")
+async def createWiki(request: Request):
+    # TODO: sustituir esto por un modelo de pydantic
+    data = await request.json()
+    nombre = data.get("nombre")
+    descripcion = data.get("descripcion")
+    fecha = datetime.utcnow()
+    nuevaWiki = {
+        "nombre": nombre,
+        "fecha": fecha,
+        "descripcion": descripcion
+    }
+    
+    result = database["wiki"].insert_one(nuevaWiki)
+    # devolvemos la nueva wiki al cliente, incluyendo la ID
+    nuevaWiki["_id"] = str(result.inserted_id)
+    return nuevaWiki
 
 
 # BORRAR WIKI
