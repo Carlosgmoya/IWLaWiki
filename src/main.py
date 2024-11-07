@@ -1,3 +1,5 @@
+from services import wiki as wikiAPI, articulo as articuloAPI
+
 from fastapi import FastAPI, Request, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -17,37 +19,11 @@ templates = Jinja2Templates(directory="templates")
 
 # ejecutar con  cd src -> python -m uvicorn main:api --reload --port 8000
 
-# conexion al servidor MongoDB
-
-from pymongo.mongo_client import MongoClient
-from pymongo.server_api import ServerApi
-
-uri = "mongodb+srv://admin:admin@cluster0.mw2bq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-
-# Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
-
-# Send a ping to confirm a successful connection
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except Exception as e:
-    print(e)
-
-# Base de Datos
-
-database = client["laWiki"]
-
-BD_wiki = database["wiki"]
-BD_articulo = database["articulo"]
-
 # PAGINA PRINCIPAL
 @api.get("/", response_class=HTMLResponse)
 async def getIndex(request : Request):
-    wikis_doc = BD_wiki.find().sort({"nombre":1})
-    wikis_json = [json.loads(json_util.dumps(doc)) for doc in wikis_doc]    # collection.find() retrieves documents in BSON format from MongoDB.
-                                                                            # json_util.dumps(doc) converts BSON documents, including ObjectId fields, to JSON strings.
-                                                                            # json.loads(...) transforms each document back into a Python dictionary, so it’s compatible with FastAPI's JSON response model.
+    wikis_json = await wikiAPI.getAllWikis()
+
     return templates.TemplateResponse(
         "index.html",
         {"request": request,
@@ -57,14 +33,21 @@ async def getIndex(request : Request):
 # GET WIKI
 @api.get("/wiki/{n}", response_class=HTMLResponse)
 async def getWiki(request: Request, n : str):
-    wiki_doc = BD_wiki.find_one({ "nombre" : n })
-    if wiki_doc is None:
+    wiki_json = await wikiAPI.getWiki(n)
+
+    if wiki_json is None:
         raise HTTPException(status_code=404, detail="Wiki no encontrado")
-    wiki_json = json.loads(json_util.dumps(wiki_doc))
 
-    articulos_doc = BD_articulo.find({"wiki": n})
-    articulos_json = json.loads(json_util.dumps(articulos_doc))
+    wiki_dict = wiki_json["_id"]
+    wiki_id = wiki_dict["$oid"]
 
+    try:
+        obj_id = ObjectId(wiki_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID inválido")
+    
+    articulos_json = await articuloAPI.getAllArticulos(obj_id)
+    
     return templates.TemplateResponse(
         "wiki.html",
         {"request": request,
@@ -79,16 +62,9 @@ async def createWiki(request: Request):
     data = await request.json()
     nombre = data.get("nombre")
     descripcion = data.get("descripcion")
-    fecha = datetime.utcnow()
-    nuevaWiki = {
-        "nombre": nombre,
-        "fecha": fecha,
-        "descripcion": descripcion
-    }
     
-    result = BD_wiki.insert_one(nuevaWiki)
-    # devolvemos la nueva wiki al cliente, incluyendo la ID
-    nuevaWiki["_id"] = str(result.inserted_id)
+    nuevaWiki = await wikiAPI.createWiki(nombre, descripcion)
+
     return nuevaWiki
 
 
@@ -100,7 +76,7 @@ async def eliminarWiki(wiki_id: str):
     except Exception as e:
         raise HTTPException(status_code=400, detail="Formato de ID inválido")
     
-    result = BD_wiki.delete_one({"_id": obj_id})
+    result = await wikiAPI.eliminarWiki(obj_id)
 
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Wiki no encontrada")
@@ -121,11 +97,7 @@ async def actualizarWiki(request: Request, wiki_id: str):
     nombre = data.get("nombre")
     descripcion = data.get("descripcion")
     
-    result = BD_wiki.update_one({"_id": obj_id},
-                                {"$set":
-                                 {"nombre": nombre,
-                                 "descripcion": descripcion}
-                                })
+    result = await wikiAPI.actualizarWiki(obj_id, nombre, descripcion)
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Wiki no encontrada")
@@ -140,8 +112,7 @@ async def actualizarWiki(request: Request, wiki_id: str):
 
 @api.get("/search")
 async def buscarWikis(request: Request, term: str = Query(None, min_length=1)):
-    wikis_doc = BD_wiki.find({"nombre": {"$regex": term, "$options": "i"}})
-    wikis_json = [json.loads(json_util.dumps(doc)) for doc in wikis_doc]
+    wikis_json = await wikiAPI.buscarWikis(term)
     
     return templates.TemplateResponse(
         "index.html",
@@ -152,13 +123,11 @@ async def buscarWikis(request: Request, term: str = Query(None, min_length=1)):
 # GET ARTICULO
 
 @api.get("/wiki/{n}/{t}", response_class=HTMLResponse)
-async def getWiki(request: Request, n : str, t : str):
-    articulo_doc = BD_articulo.find_one({ "titulo" : t })
+async def getArticulo(request: Request, n : str, t : str):
+    articulo_json = await articuloAPI.getArticulo(t)
 
-    if articulo_doc is None:
+    if articulo_json is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    
-    articulo_json = json.loads(json_util.dumps(articulo_doc))
 
     return templates.TemplateResponse(
         "articulo.html",
