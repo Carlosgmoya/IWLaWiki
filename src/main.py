@@ -41,16 +41,7 @@ database = client["laWiki"]
 BD_wiki = database["wiki"]
 BD_articulo = database["articulo"]
 
-# EJEMPLO
-
-@api.get("/laWiki/{nombre}")                    # endpoint: laWiki/{nombre}    (Parámetro de Path)
-async def hola(nombre : str):
-
-    return {"Bienvenido a: " + nombre}
-
-
 # PAGINA PRINCIPAL
-
 @api.get("/", response_class=HTMLResponse)
 async def getIndex(request : Request):
     wikis_doc = BD_wiki.find().sort({"nombre":1})
@@ -95,18 +86,54 @@ async def createWiki(request: Request):
         "descripcion": descripcion
     }
     
-    result = database["wiki"].insert_one(nuevaWiki)
+    result = BD_wiki.insert_one(nuevaWiki)
     # devolvemos la nueva wiki al cliente, incluyendo la ID
     nuevaWiki["_id"] = str(result.inserted_id)
     return nuevaWiki
 
 
 # BORRAR WIKI
+@api.delete("/delete/{wiki_id}")
+async def eliminarWiki(wiki_id: str):
+    try:
+        obj_id = ObjectId(wiki_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID inválido")
+    
+    result = BD_wiki.delete_one({"_id": obj_id})
 
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Wiki no encontrada")
+
+    return "Wiki eliminada con éxito"
 
 
 # EDITAR WIKI
-
+@api.put("/edit/{wiki_id}")
+async def actualizarWiki(request: Request, wiki_id: str):
+    try:
+        obj_id = ObjectId(wiki_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid ObjectId format")
+    
+    # TODO: sustituir esto por un modelo de pydantic
+    data = await request.json()
+    nombre = data.get("nombre")
+    descripcion = data.get("descripcion")
+    
+    result = BD_wiki.update_one({"_id": obj_id},
+                                {"$set":
+                                 {"nombre": nombre,
+                                 "descripcion": descripcion}
+                                })
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Wiki no encontrada")
+    
+    if result.modified_count == 0:
+        return "No se realizaron cambios"
+    
+    return "Wiki actualizada con éxito"
 
 
 # BUSCAR WIKIS
