@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from typing import Any
+from typing import Any, Union
 from bson import json_util
 from bson.objectid import ObjectId
 from typing import List
@@ -150,6 +150,21 @@ async def getArticulo(request: Request, n : str, t : str):
 
 # BUSCAR ARTICULOS
 
-@api.get("/searchArt")
-async def buscarArticulos(request: Request, term: str = Query(None, min_length=1)):
-    return "Por implementar"
+@api.get("/wiki/{n}/buscar/bien", response_class=HTMLResponse)
+async def filtrar_articulos_por_contenido(request: Request, n: str, term: Union[str, None] = Query(None)):
+    wiki_json = await wikiAPI.getWiki(n)
+    if wiki_json is None:
+        raise HTTPException(status_code=404, detail="Wiki no encontrado")
+    wiki_dict = wiki_json["_id"]
+    wiki_id = wiki_dict["$oid"]
+    id = ObjectId(wiki_id)
+    articulos_json = await articuloAPI.buscarArticulos(term, id)
+    if not articulos_json:
+        raise HTTPException(status_code=404, detail="No se encontraron artículos que coincidan con el contenido")
+
+    return templates.TemplateResponse(
+        "wiki.html",
+        {"request": request,
+         "wiki": wiki_json,
+         "articulos": articulos_json}
+    )

@@ -14,7 +14,7 @@
     <div class="container">
         <p>{{ wiki.descripcion }}</p>
     </div>
-    <form action="/searchArt" method="get">
+    <form action="/wiki/{{wiki.nombre}}/buscar/bien" method="get">
         <input type="text" name="term" placeholder="Buscar en {{wiki.nombre}}" required>
         <button type="submit">Buscar</button>
     </form>

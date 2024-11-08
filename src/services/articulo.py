@@ -40,3 +40,10 @@ async def getAllArticulos(wiki_id: ObjectId):
     articulos_json = json.loads(json_util.dumps(articulos_doc))
 
     return articulos_json
+
+async def buscarArticulos(term: str, n: ObjectId):
+    articulos_doc = BD_articulo.find({"contenido": {"$regex": term, "$options": "i"},
+                                      "wiki": n})
+    articulos_json = [json.loads(json_util.dumps(doc)) for doc in articulos_doc]
+    
+    return articulos_json
