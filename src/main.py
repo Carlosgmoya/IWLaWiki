@@ -23,7 +23,7 @@ templates = Jinja2Templates(directory="templates")
 # PAGINA PRINCIPAL
 @api.get("/", response_class=HTMLResponse)
 async def getIndex(request : Request):
-    wikis_json = await wikiAPI.getAllWikis()
+    wikis_json = await wikiAPI.getTodasWikis()
 
     return templates.TemplateResponse(
         "index.html",
@@ -47,7 +47,7 @@ async def getWiki(request: Request, n : str):
     except Exception as e:
         raise HTTPException(status_code=400, detail="Formato de ID inválido")
     
-    articulos_json = await articuloAPI.getAllArticulos(obj_id)
+    articulos_json = await articuloAPI.getTodosArticulos(obj_id)
     
     return templates.TemplateResponse(
         "wiki.html",
@@ -64,7 +64,7 @@ async def createWiki(request: Request):
     nombre = data.get("nombre")
     descripcion = data.get("descripcion")
     
-    nuevaWiki = await wikiAPI.createWiki(nombre, descripcion)
+    nuevaWiki = await wikiAPI.crearWiki(nombre, descripcion)
 
     return nuevaWiki
 
@@ -148,13 +148,13 @@ async def crearArticulo(request: Request, n: str):
     wiki_object_id = ObjectId(wiki_id)
     contenido = data.get("contenido")
 
-    wiki = await wikiAPI.getWikiById(wiki_object_id)
+    wiki = await wikiAPI.getWikiPorId(wiki_object_id)
     if wiki is None:
-        raise HTTPException(status_code=404, detail="No existe una wiki con la id introducida.")
+        raise HTTPException(status_code=404, detail="No existe una wiki con la ID introducida.")
     elif wiki.get("nombre") != n:
         raise HTTPException(status_code=400, detail=f"La wiki solicitada no tiene el nombre {n}.")
     else:
-        nuevoArticulo = await articuloAPI.createArticulo(titulo, wiki_object_id, contenido)
+        nuevoArticulo = await articuloAPI.crearArticulo(titulo, wiki_object_id, contenido)
 
     return nuevoArticulo
 

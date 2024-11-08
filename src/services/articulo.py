@@ -36,7 +36,7 @@ async def getArticulo(t: str):
     return articulo_json
 
 
-async def getTodosLosArticulos(wiki_id: ObjectId):
+async def getTodosArticulos(wiki_id: ObjectId):
     articulos_doc = BD_articulo.find({"wiki": wiki_id})
     articulos_json = json.loads(json_util.dumps(articulos_doc))
 

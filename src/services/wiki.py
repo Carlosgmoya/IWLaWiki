@@ -43,7 +43,7 @@ async def getWikiPorId(id: ObjectId):
     return wiki_json
 
 
-async def getTodasLasWikis():
+async def getTodasWikis():
     wikis_doc = BD_wiki.find().sort({"nombre":1})
     wikis_json = [json.loads(json_util.dumps(doc)) for doc in wikis_doc]    # collection.find() retrieves documents in BSON format from MongoDB.
                                                                             # json_util.dumps(doc) converts BSON documents, including ObjectId fields, to JSON strings.
