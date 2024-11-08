@@ -24,4 +24,4 @@ Entidad comentario
 
 Entidad usuario 
     -id 
-    -nombreUsuario -> String 
+    -nombre -> String
