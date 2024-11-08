@@ -29,11 +29,13 @@ database = client["laWiki"]
 
 BD_articulo = database["articulo"]
 
+
 async def getArticulo(t: str):
     articulo_doc = BD_articulo.find_one({ "titulo" : t })    
     articulo_json = json.loads(json_util.dumps(articulo_doc))
 
     return articulo_json
+
 
 async def getAllArticulos(wiki_id: ObjectId):
     articulos_doc = BD_articulo.find({"wiki": wiki_id})
@@ -47,3 +49,25 @@ async def buscarArticulos(term: str, n: ObjectId):
     articulos_json = [json.loads(json_util.dumps(doc)) for doc in articulos_doc]
     
     return articulos_json
+
+
+async def createArticulo(t: str, wiki_id: ObjectId, c: str):
+    fecha = datetime.utcnow()
+    nuevoArticulo = {
+        "titulo": t,
+        "wiki": wiki_id,
+        "fecha": fecha,
+        "ultimoModificado": True,
+        "contenido": c
+    }
+    result = BD_articulo.insert_one(nuevoArticulo)
+    nuevoArticulo["_id"] = str(result.inserted_id)
+    nuevoArticulo["wiki"] = str(wiki_id)
+    
+    return nuevoArticulo
+
+
+async def eliminarArticulo(id: ObjectId):
+    result = BD_articulo.delete_one({"_id": id})
+
+    return result

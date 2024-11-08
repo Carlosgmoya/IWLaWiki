@@ -138,6 +138,24 @@ async def getArticulo(request: Request, n : str, t : str):
 
 # CREAR ARTICULO
 
+@api.post("/wiki/{n}")
+async def createArticulo(request: Request, n: str):
+    # TODO: sustituir esto por un modelo de pydantic
+    data = await request.json()
+    titulo = data.get("titulo")
+    wiki_id = data.get("wiki")
+    wiki_object_id = ObjectId(wiki_id)
+    contenido = data.get("contenido")
+
+    wiki = await wikiAPI.getWikiById(wiki_object_id)
+    if wiki is None:
+        raise HTTPException(status_code=404, detail="No existe una wiki con la id introducida.")
+    elif wiki.get("nombre") != n:
+        raise HTTPException(status_code=400, detail=f"La wiki solicitada no tiene el nombre {n}.")
+    else:
+        nuevoArticulo = await articuloAPI.createArticulo(titulo, wiki_object_id, contenido)
+
+    return nuevoArticulo
 
 
 # BORRAR ARTICULO
