@@ -26,7 +26,6 @@ except Exception as e:
 # Base de Datos
 
 database = client["laWiki"]
-
 BD_wiki = database["wiki"]
 
 
@@ -37,14 +36,14 @@ async def getWiki(n : str):
     return wiki_json
 
 
-async def getWikiById(id: ObjectId):
+async def getWikiPorId(id: ObjectId):
     wiki_doc = BD_wiki.find_one({ "_id": id })
     wiki_json = json.loads(json_util.dumps(wiki_doc))
 
     return wiki_json
 
 
-async def getAllWikis():
+async def getTodasLasWikis():
     wikis_doc = BD_wiki.find().sort({"nombre":1})
     wikis_json = [json.loads(json_util.dumps(doc)) for doc in wikis_doc]    # collection.find() retrieves documents in BSON format from MongoDB.
                                                                             # json_util.dumps(doc) converts BSON documents, including ObjectId fields, to JSON strings.
@@ -52,7 +51,7 @@ async def getAllWikis():
     return wikis_json
 
 
-async def createWiki(nombre: str, descripcion: str):
+async def crearWiki(nombre: str, descripcion: str):
     fecha = datetime.utcnow()
     nuevaWiki = {
         "nombre": nombre,
@@ -80,7 +79,6 @@ async def actualizarWiki(wiki_id: ObjectId, nombre: str, descripcion: str):
                                  "descripcion": descripcion}
                                 })
     return result
-
 
 
 async def buscarWikis(term: str):
