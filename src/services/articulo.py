@@ -26,7 +26,6 @@ except Exception as e:
 # Base de Datos
 
 database = client["laWiki"]
-
 BD_articulo = database["articulo"]
 
 
@@ -37,11 +36,12 @@ async def getArticulo(t: str):
     return articulo_json
 
 
-async def getAllArticulos(wiki_id: ObjectId):
+async def getTodosLosArticulos(wiki_id: ObjectId):
     articulos_doc = BD_articulo.find({"wiki": wiki_id})
     articulos_json = json.loads(json_util.dumps(articulos_doc))
 
     return articulos_json
+
 
 async def buscarArticulos(term: str, n: ObjectId):
     articulos_doc = BD_articulo.find({"contenido": {"$regex": term, "$options": "i"},
@@ -51,7 +51,7 @@ async def buscarArticulos(term: str, n: ObjectId):
     return articulos_json
 
 
-async def createArticulo(t: str, wiki_id: ObjectId, c: str):
+async def crearArticulo(t: str, wiki_id: ObjectId, c: str):
     fecha = datetime.utcnow()
     nuevoArticulo = {
         "titulo": t,

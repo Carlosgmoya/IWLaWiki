@@ -19,6 +19,7 @@ templates = Jinja2Templates(directory="templates")
 
 # ejecutar con  cd src -> python -m uvicorn main:api --reload --port 8000
 
+
 # PAGINA PRINCIPAL
 @api.get("/", response_class=HTMLResponse)
 async def getIndex(request : Request):
@@ -139,7 +140,7 @@ async def getArticulo(request: Request, n : str, t : str):
 # CREAR ARTICULO
 
 @api.post("/wiki/{n}")
-async def createArticulo(request: Request, n: str):
+async def crearArticulo(request: Request, n: str):
     # TODO: sustituir esto por un modelo de pydantic
     data = await request.json()
     titulo = data.get("titulo")
@@ -169,7 +170,7 @@ async def createArticulo(request: Request, n: str):
 # BUSCAR ARTICULOS
 
 @api.get("/wiki/{n}/buscar/bien", response_class=HTMLResponse)
-async def filtrar_articulos_por_contenido(request: Request, n: str, term: Union[str, None] = Query(None)):
+async def filtrarArticulosPorContenido(request: Request, n: str, term: Union[str, None] = Query(None)):
     wiki_json = await wikiAPI.getWiki(n)
     if wiki_json is None:
         raise HTTPException(status_code=404, detail="Wiki no encontrado")
