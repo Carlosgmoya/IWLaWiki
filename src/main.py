@@ -58,7 +58,7 @@ async def getWiki(request: Request, n : str):
 
 # CREAR WIKI
 @api.post("/wikis")
-async def createWiki(request: Request):
+async def crearWiki(request: Request):
     # TODO: sustituir esto por un modelo de pydantic
     data = await request.json()
     nombre = data.get("nombre")
@@ -159,8 +159,43 @@ async def crearArticulo(request: Request, n: str):
     return nuevoArticulo
 
 
-# BORRAR ARTICULO
+# BORRAR UNA VERSIÓN DEL ARTÍCULO
 
+@api.delete("/delete/{wiki_id}/{articulo_id}")
+async def eliminarTodasVersionesArticulo(wiki_id: str, articulo_id: str):
+    try:
+        obj_id = ObjectId(wiki_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID de wiki inválido")
+    
+    try:
+        obj_id = ObjectId(articulo_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID de artículo inválido")
+    
+    result = await articuloAPI.eliminarVersionArticulo(obj_id)
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail=f"Versión del artículo no encontrada")
+
+    return f"Versión del artículo eliminada con éxito"
+
+
+# BORRAR TODAS LAS VERSIONES DEL ARTICULO
+
+@api.delete("/delete/{wiki_id}/{titulo}/all")
+async def eliminarTodasVersionesArticulo(wiki_id: str, titulo: str):
+    try:
+        obj_id = ObjectId(wiki_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID de wiki inválido")
+    
+    result = await articuloAPI.eliminarTodasVersionesArticulo(titulo)
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail=f"Artículo {titulo} no encontrado")
+
+    return f"Artículo {titulo} eliminado con éxito"
 
 
 # EDITAR ARTICULO
