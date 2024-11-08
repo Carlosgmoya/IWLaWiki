@@ -19,10 +19,11 @@ templates = Jinja2Templates(directory="templates")
 
 # ejecutar con  cd src -> python -m uvicorn main:api --reload --port 8000
 
+
 # PAGINA PRINCIPAL
 @api.get("/", response_class=HTMLResponse)
 async def getIndex(request : Request):
-    wikis_json = await wikiAPI.getAllWikis()
+    wikis_json = await wikiAPI.getTodasWikis()
 
     return templates.TemplateResponse(
         "index.html",
@@ -46,7 +47,7 @@ async def getWiki(request: Request, n : str):
     except Exception as e:
         raise HTTPException(status_code=400, detail="Formato de ID inválido")
     
-    articulos_json = await articuloAPI.getAllArticulos(obj_id)
+    articulos_json = await articuloAPI.getTodosArticulos(obj_id)
     
     return templates.TemplateResponse(
         "wiki.html",
@@ -57,13 +58,13 @@ async def getWiki(request: Request, n : str):
 
 # CREAR WIKI
 @api.post("/wikis")
-async def createWiki(request: Request):
+async def crearWiki(request: Request):
     # TODO: sustituir esto por un modelo de pydantic
     data = await request.json()
     nombre = data.get("nombre")
     descripcion = data.get("descripcion")
     
-    nuevaWiki = await wikiAPI.createWiki(nombre, descripcion)
+    nuevaWiki = await wikiAPI.crearWiki(nombre, descripcion)
 
     return nuevaWiki
 
@@ -138,10 +139,63 @@ async def getArticulo(request: Request, n : str, t : str):
 
 # CREAR ARTICULO
 
+@api.post("/wiki/{n}")
+async def crearArticulo(request: Request, n: str):
+    # TODO: sustituir esto por un modelo de pydantic
+    data = await request.json()
+    titulo = data.get("titulo")
+    wiki_id = data.get("wiki")
+    wiki_object_id = ObjectId(wiki_id)
+    contenido = data.get("contenido")
+
+    wiki = await wikiAPI.getWikiPorId(wiki_object_id)
+    if wiki is None:
+        raise HTTPException(status_code=404, detail="No existe una wiki con la ID introducida.")
+    elif wiki.get("nombre") != n:
+        raise HTTPException(status_code=400, detail=f"La wiki solicitada no tiene el nombre {n}.")
+    else:
+        nuevoArticulo = await articuloAPI.crearArticulo(titulo, wiki_object_id, contenido)
+
+    return nuevoArticulo
 
 
-# BORRAR ARTICULO
+# BORRAR UNA VERSIÓN DEL ARTÍCULO
 
+@api.delete("/delete/{wiki_id}/{articulo_id}")
+async def eliminarTodasVersionesArticulo(wiki_id: str, articulo_id: str):
+    try:
+        obj_id = ObjectId(wiki_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID de wiki inválido")
+    
+    try:
+        obj_id = ObjectId(articulo_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID de artículo inválido")
+    
+    result = await articuloAPI.eliminarVersionArticulo(obj_id)
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail=f"Versión del artículo no encontrada")
+
+    return f"Versión del artículo eliminada con éxito"
+
+
+# BORRAR TODAS LAS VERSIONES DEL ARTICULO
+
+@api.delete("/delete/{wiki_id}/{titulo}/all")
+async def eliminarTodasVersionesArticulo(wiki_id: str, titulo: str):
+    try:
+        obj_id = ObjectId(wiki_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID de wiki inválido")
+    
+    result = await articuloAPI.eliminarTodasVersionesArticulo(titulo)
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail=f"Artículo {titulo} no encontrado")
+
+    return f"Artículo {titulo} eliminado con éxito"
 
 
 # EDITAR ARTICULO
@@ -151,7 +205,7 @@ async def getArticulo(request: Request, n : str, t : str):
 # BUSCAR ARTICULOS
 
 @api.get("/wiki/{n}/buscar/bien", response_class=HTMLResponse)
-async def filtrar_articulos_por_contenido(request: Request, n: str, term: Union[str, None] = Query(None)):
+async def filtrarArticulosPorContenido(request: Request, n: str, term: Union[str, None] = Query(None)):
     wiki_json = await wikiAPI.getWiki(n)
     if wiki_json is None:
         raise HTTPException(status_code=404, detail="Wiki no encontrado")
