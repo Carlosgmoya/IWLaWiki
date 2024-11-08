@@ -50,6 +50,10 @@ async def buscarArticulos(term: str, n: ObjectId):
     
     return articulos_json
 
+async def buscarVersionPorFecha(titulo: str, fecha: datetime):
+    articulo_doc = BD_articulo.find_one({"titulo" : titulo, "fecha" : fecha})
+    articulo_json = json.loads(json_util.dumps(articulo_doc))
+    return articulo_json
 
 async def crearArticulo(t: str, wiki_id: ObjectId, c: str):
     fecha = datetime.utcnow()
@@ -66,8 +70,12 @@ async def crearArticulo(t: str, wiki_id: ObjectId, c: str):
     
     return nuevoArticulo
 
-
-async def eliminarArticulo(id: ObjectId):
-    result = BD_articulo.delete_one({"_id": id})
-
+async def eliminarVersionArticulo(articulo_id: ObjectId):
+    result = BD_articulo.delete_one({"_id": articulo_id})
     return result
+
+async def eliminarTodasVersionesArticulo(titulo: str):
+    result = BD_articulo.delete_many({"titulo": titulo})
+    return result
+
+#Modificar un articulo seria crear uno nuevo
