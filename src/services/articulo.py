@@ -27,6 +27,7 @@ except Exception as e:
 
 database = client["laWiki"]
 BD_articulo = database["articulo"]
+BD_usuario = database["usuario"]
 
 
 async def getArticulo(t: str):
@@ -79,3 +80,16 @@ async def eliminarTodasVersionesArticulo(titulo: str):
     return result
 
 #Modificar un articulo seria crear uno nuevo
+
+async def buscarUsuarioOrdenado(usuario: str, wiki: ObjectId):
+    usu= BD_usuario.find_one({"nombre": usuario})
+    usu_json = json.loads(json_util.dumps(usu))
+    usu_dict = usu_json["_id"]
+    usu_id = usu_dict["$oid"]
+    usuId = ObjectId(usu_id)
+
+    articulos_doc = BD_articulo.find({"creador": usuId,
+                                      "wiki": wiki}).sort("fecha", -1)
+    articulos_json = [json.loads(json_util.dumps(doc)) for doc in articulos_doc]
+    
+    return articulos_json

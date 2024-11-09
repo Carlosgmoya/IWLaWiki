@@ -222,3 +222,18 @@ async def filtrarArticulosPorContenido(request: Request, n: str, term: Union[str
          "wiki": wiki_json,
          "articulos": articulos_json}
     )
+
+@api.get("/wiki/{n}/ordenado/bien", response_class=HTMLResponse)
+async def buscarPorUsuarioOrdeando(request: Request, n: str, term: Union[str, None] = Query(None)):
+    wiki_json = await wikiAPI.getWiki(n)
+    wiki_dict = wiki_json["_id"]
+    wiki_id = wiki_dict["$oid"]
+    id = ObjectId(wiki_id)
+
+    articulos_json = await articuloAPI.buscarUsuarioOrdenado(term, id)
+    return templates.TemplateResponse(
+        "wiki.html",
+        {"request": request,
+         "wiki": wiki_json,
+         "articulos": articulos_json}
+    )
