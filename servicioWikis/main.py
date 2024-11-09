@@ -11,7 +11,9 @@ from datetime import datetime
 
 api = FastAPI()
 
-# ejecutar con  cd servicioWikis -> python -m uvicorn main:api --reload --port 8001
+# Desde el directorio de este archivo: 2 maneras de ejecutar la app:
+#   -ejecutar de manera local -> python -m uvicorn main:api --reload --port 8001
+#   -ejecutar el contenedor Docker -> docker run -p 8001:8001 fu17alex/modulowiki:v1.0
 
 # PAGINA PRINCIPAL: DEVUELVE TODAS LAS WIKIS O DEVUELVE LAS WIKIS QUE CUMPLEN UNOS CRITERIOS
 @api.get("/wikis")
