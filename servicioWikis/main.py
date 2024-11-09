@@ -16,10 +16,7 @@ api = FastAPI()
 # PAGINA PRINCIPAL: DEVUELVE TODAS LAS WIKIS O DEVUELVE LAS WIKIS QUE CUMPLEN UNOS CRITERIOS
 @api.get("/wikis")
 async def getWikis(term: str = Query(None, min_length=1)):  #SOLO ES UN ESQUEMA, FALTA POR IMPLEMENTAR
-    if term is None
-        return await wikiAPI.getWikis()
-    
-    return await wikiAPI.buscarWikis(term)
+    return await wikiAPI.getTodasWikis() if term is None else await wikiAPI.getWikisPorNombre(term)
 
 
 # PAGINA WIKI
@@ -40,7 +37,9 @@ async def crearWiki(request: Request):
     nombre = data.get("nombre")
     descripcion = data.get("descripcion")
 
-    return await wikiAPI.createWiki(nombre, descripcion)
+    wikiJSON = await wikiAPI.getWiki(nombre)
+
+    return await wikiAPI.crearWiki(nombre, descripcion) if wikiJSON is None else "Ya existe una wiki con ese nombre"
 
 
 # ACTUALIZAR WIKI
@@ -70,4 +69,14 @@ async def actualizarWiki(request: Request, wikiID: str):
 # ELIMINAR WIKI
 @api.delete("/wikis/{wikiID}")
 async def eliminarWiki(wikiID: str):
-    return None
+    try:
+        obj_id = ObjectId(wikiID)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID inválido")
+    
+    result = await wikiAPI.eliminarWiki(obj_id)
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Wiki no encontrada")
+
+    return "Wiki eliminada con éxito"
