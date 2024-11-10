@@ -29,11 +29,12 @@ async def getArticulos(request: Request, nombre: str):
 
     #if term contiene el campo terminoDeBusqueda -> articuloAPI.getArticulosPorTituloYContenido(objID, terminoDeBusqueda)
     #if term contiene el campo usuario -> articuloAPI.getArticulosPorUsuarioOrdenado(objID, usuario)
-    articulosJSON = None
+    try:
+        filters = await request.json()
+    except Exception as e:
+        filters = {}
     
-    filters = await request.json()
-
-    if filters is None:
+    if not filters:
         articulosJSON = await articuloAPI.getTodosArticulos(objID)
     elif "terminoDeBusqueda" in filters:
         articulosJSON = await articuloAPI.getArticulosPorTituloYContenido(objID, filters["terminoDeBusqueda"])
@@ -61,8 +62,15 @@ async def getArticulo(nombre : str, titulo : str):
 @api.post(path + "/wikis/{nombre}/articulos")
 async def crearArticulo(request: Request, nombre: str):
     wikiJSON = await solicitarWiki(nombre)
+    
+    try:
+        data = await request.json()
+    except Exception as e:
+        data = {}
 
-    data = await request.json()
+    if not data:
+        raise HTTPException(status_code=400, detail="Parametros de request vacío")
+    
     titulo = data.get("titulo")
     wiki = getWikiObjID(wikiJSON)
     contenido = data.get("contenido")
@@ -84,8 +92,14 @@ async def crearArticulo(request: Request, nombre: str):
 async def actualizarArticulo(request: Request, nombre: str, titulo: str):
     wikiJSON = await solicitarWiki(nombre)
 
-    data = await request.json()
-    tituloNuevo = data.get("titulo")
+    try:
+        data = await request.json()
+    except Exception as e:
+        data = {}
+
+    if not data:
+        raise HTTPException(status_code=400, detail="Parametros de request vacío")
+    
     wiki = getWikiObjID(wikiJSON)
     contenido = data.get("contenido")
     creador = data.get("creador")
@@ -96,13 +110,13 @@ async def actualizarArticulo(request: Request, nombre: str, titulo: str):
     elif isinstance(creador, str):
         creador = ObjectId(creador)
 
-    result = await articuloAPI.actualizarArticulo(titulo, tituloNuevo, wiki, contenido, creador)
+    result = await articuloAPI.actualizarArticulo(titulo, wiki, contenido, creador)
 
     return result
 
-# BORRAR UNA VERSIÓN DEL ARTÍCULO
+# BORRAR UNA TODAS LAS VERSIONES DEL ARTÍCULO O SOLO UNA VERSION SI SE PASA ID
 @api.delete(path + "/wikis/{nombre}/articulos/{titulo}")
-async def eliminarVersionArticulo(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
+async def eliminarArticulo(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
     result = None
 
     if id is None:
@@ -116,16 +130,6 @@ async def eliminarVersionArticulo(nombre: str, titulo: str, id: str = Query(None
         raise HTTPException(status_code=404, detail=f"Versión del artículo no encontrada")
 
     return "Artículo eliminado con éxito"
-
-
-"""@api.get("/wikis/{nombre}/ordenado/bien")
-async def buscarPorUsuarioOrdeando(request: Request, nombre: str, term: Union[str, None] = Query(None)):
-    wikiJSON = solicitarWiki(nombre)
-    wikiID = getWikiObjID(wikiJSON)
-
-    articulosJSON = await articuloAPI.buscarUsuarioOrdenado(wikiID, term)
-    return articulosJSON
-"""
 
 
 ########## Metodos Complementarios ############

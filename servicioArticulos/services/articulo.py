@@ -72,10 +72,10 @@ async def crearArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: Ob
     return nuevoArticulo
 
 
-async def actualizarArticulo(titulo: str, tituloNuevo: str, wiki: ObjectId, contenido: str, creador: ObjectId):
+async def actualizarArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: ObjectId):
     fecha = datetime.utcnow()
     nuevaVersion = {
-        "titulo": tituloNuevo,
+        "titulo": titulo,
         "wiki": wiki,
         "fecha": fecha,
         "ultimoModificado": True,
