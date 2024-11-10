@@ -1,0 +1,4 @@
+Definicion de los campos JSON para filtrar las busquedas y consultas de articulos:
+
+    -terminoDeBusqueda (str): Devuelve los articulos cuyo titulo y/o contenido coincide con el terminoDeBusqueda
+    -usuario (str): Devuelve los articulos creados por usuario

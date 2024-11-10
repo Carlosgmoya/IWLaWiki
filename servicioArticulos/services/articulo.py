@@ -54,11 +54,11 @@ async def buscarVersionPorFecha(titulo: str, fecha: datetime):
     return articulo_json
 
 
-async def crearArticulo(titulo: str, wikiID: ObjectId, contenido: str, creador: ObjectId):
+async def crearArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: ObjectId):
     fecha = datetime.utcnow()
     nuevoArticulo = {
         "titulo": titulo,
-        "wiki": wikiID,
+        "wiki": wiki,
         "fecha": fecha,
         "ultimoModificado": True,
         "contenido": contenido,
@@ -66,10 +66,36 @@ async def crearArticulo(titulo: str, wikiID: ObjectId, contenido: str, creador: 
     }
     result = articuloBD.insert_one(nuevoArticulo)
     nuevoArticulo["_id"] = str(result.inserted_id)
-    nuevoArticulo["wiki"] = str(wikiID)
+    nuevoArticulo["wiki"] = str(wiki)
     nuevoArticulo["creador"] = str(creador)
     
     return nuevoArticulo
+
+
+async def actualizarArticulo(titulo: str, tituloNuevo: str, wiki: ObjectId, contenido: str, creador: ObjectId):
+    fecha = datetime.utcnow()
+    nuevaVersion = {
+        "titulo": tituloNuevo,
+        "wiki": wiki,
+        "fecha": fecha,
+        "ultimoModificado": True,
+        "contenido": contenido,
+        "creador": creador
+    }
+
+    #Actualiza el estado UltimoModificado de la version anterior a false
+    articuloBD.update_many(
+        {"titulo": titulo, "wiki": wiki},
+        {"$set": {"ultimoModificado": False}}
+    )
+
+    result = articuloBD.insert_one(nuevaVersion)
+    nuevaVersion["_id"] = str(result.inserted_id)
+    nuevaVersion["wiki"] = str(wiki)
+    nuevaVersion["creador"] = str(creador)
+
+    return nuevaVersion
+
 
 async def eliminarVersionArticulo(articulo_id: ObjectId):
     result = articuloBD.delete_one({"_id": articulo_id})
@@ -81,7 +107,7 @@ async def eliminarTodasVersionesArticulo(titulo: str):
 
 #Modificar un articulo seria crear uno nuevo
 
-async def buscarUsuarioOrdenado(wiki: ObjectId, usuario: str):
+async def getArticulosPorUsuarioOrdenadoPorFecha(wiki: ObjectId, usuario: str):
     usu= usuarioBD.find_one({"nombre": usuario})
     usu_json = json.loads(json_util.dumps(usu))
     usu_dict = usu_json["_id"]
