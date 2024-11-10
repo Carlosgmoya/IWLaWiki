@@ -2,3 +2,4 @@ uvicorn
 fastApi
 pydantic
 pymongo[srv]
+httpx

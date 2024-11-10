@@ -3,3 +3,4 @@ fastApi
 pydantic
 pymongo[srv]
 jinja2
+httpx
