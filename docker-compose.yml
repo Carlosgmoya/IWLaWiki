@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  servicioWikis:
+    image: fu17alex/modulowiki:v1.0  # Replace with the actual image name for app1
+    container_name: lawiki-modulo-wiki
+    networks:
+      - fastapi-network
+    ports:
+      - "8001:8001"  # Exposing port 8000 in the container to 8001 on the host
+
+  servicioArticulos:
+    image: fu17alex/moduloarticulo:v1.0  # Replace with the actual image name for app2
+    container_name: lawiki-modulo-articulo
+    networks:
+      - fastapi-network
+    ports:
+      - "8002:8002"  # Exposing port 8000 in the container to 8002 on the host
+
+networks:
+  fastapi-network:
+    driver: bridge

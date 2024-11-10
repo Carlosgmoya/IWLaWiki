@@ -135,7 +135,7 @@ async def eliminarArticulo(nombre: str, titulo: str, id: str = Query(None, min_l
 ########## Metodos Complementarios ############
 
 async def solicitarWiki(nombreWiki: str):
-    url = f"http://localhost:8001/api/v1/wikis/{nombreWiki}"
+    url = f"http://lawiki-modulo-wiki:8001/api/v1/wikis/{nombreWiki}"
 
     # Realizar la solicitud HTTP asíncrona
     async with httpx.AsyncClient() as client:

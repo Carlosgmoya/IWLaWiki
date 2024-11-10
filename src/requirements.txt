@@ -1,5 +1,0 @@
-uvicorn
-fastApi
-pydantic
-pymongo[srv]
-jinja2
