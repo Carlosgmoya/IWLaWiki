@@ -17,3 +17,4 @@ except Exception as e:
 
 database = client["laWiki"]
 BD_articulo = database["articulo"]
+BD_usuario = database["usuario"]

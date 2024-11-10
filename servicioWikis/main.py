@@ -16,13 +16,17 @@ api = FastAPI()
 #   -ejecutar el contenedor Docker -> docker run -p 8001:8001 fu17alex/modulowiki:v1.0
 
 # PAGINA PRINCIPAL: DEVUELVE TODAS LAS WIKIS O DEVUELVE LAS WIKIS QUE CUMPLEN UNOS CRITERIOS
-@api.get("/wikis")
+
+# prefijo para todas las URLs
+path = "/api/v1"
+
+@api.get(path + "/wikis")
 async def getWikis(term: str = Query(None, min_length=1)):  #SOLO ES UN ESQUEMA, FALTA POR IMPLEMENTAR
     return await wikiAPI.getTodasWikis() if term is None else await wikiAPI.getWikisPorNombre(term)
 
 
 # PAGINA WIKI
-@api.get("/wikis/{nombre}")
+@api.get(path + "/wikis/{nombre}")
 async def getWiki(nombre: str):
     wiki_json = await wikiAPI.getWiki(nombre)
 
@@ -33,7 +37,7 @@ async def getWiki(nombre: str):
     
     
 # CREAR WIKI
-@api.post("/wikis")
+@api.post(path + "/wikis")
 async def crearWiki(request: Request):
     data = await request.json()
     nombre = data.get("nombre")
@@ -45,7 +49,7 @@ async def crearWiki(request: Request):
 
 
 # ACTUALIZAR WIKI
-@api.put("/wikis/{wikiID}")
+@api.put(path + "/wikis/{wikiID}")
 async def actualizarWiki(request: Request, wikiID: str):
     try:
         ObjID = ObjectId(wikiID)
@@ -69,7 +73,7 @@ async def actualizarWiki(request: Request, wikiID: str):
 
 
 # ELIMINAR WIKI
-@api.delete("/wikis/{wikiID}")
+@api.delete(path + "/wikis/{wikiID}")
 async def eliminarWiki(wikiID: str):
     try:
         obj_id = ObjectId(wikiID)
