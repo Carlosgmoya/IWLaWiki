@@ -5,68 +5,91 @@ from typing import List
 import json
 from datetime import datetime
 
-from bd import BD_articulo, BD_usuario
+from bd import articuloBD, usuarioBD
 
-async def getArticulo(t: str):
-    articulo_doc = BD_articulo.find_one({ "titulo" : t })    
+async def getArticulo(wikiID: ObjectId, t: str):
+    articulo_doc = articuloBD.find_one({ "titulo" : t,
+                                         "wiki": wikiID })    
     articulo_json = json.loads(json_util.dumps(articulo_doc))
 
     return articulo_json
 
 
-async def getTodosArticulos(wiki_id: ObjectId):
-    articulos_doc = BD_articulo.find({"wiki": wiki_id})
-    articulos_json = json.loads(json_util.dumps(articulos_doc))
+async def getTodosArticulos(wikiID: ObjectId):
+    articulosDoc = articuloBD.find({"wiki": wikiID})
+    articulosJSON = json.loads(json_util.dumps(articulosDoc))
 
-    return articulos_json
+    return articulosJSON
 
 
-async def buscarArticulos(term: str, n: ObjectId):
-    articulos_doc = BD_articulo.find({"contenido": {"$regex": term, "$options": "i"},
-                                      "wiki": n})
-    articulos_json = [json.loads(json_util.dumps(doc)) for doc in articulos_doc]
+async def getArticulosPorTitulo(wikiID: ObjectId, term: str):
+    articulosDoc = articuloBD.find({"titulo": {"$regex": term, "$options": "i"},
+                                      "wiki": wikiID})
+    articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
     
-    return articulos_json
+    return articulosJSON
+
+
+async def getArticulosPorTituloYContenido(wikiID: ObjectId, term: str):
+    terms = term.split()
+
+    regex_patterns = [{"titulo": {"$regex": t, "$options": "i"}} for t in terms] + \
+                 [{"contenido": {"$regex": t, "$options": "i"}} for t in terms]
+    
+    articulosDoc = articuloBD.find({
+        "$and": [
+            {"$or": regex_patterns},
+            {"wiki": wikiID}
+        ]
+    })
+
+    articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
+
+    return articulosJSON
+
 
 async def buscarVersionPorFecha(titulo: str, fecha: datetime):
-    articulo_doc = BD_articulo.find_one({"titulo" : titulo, "fecha" : fecha})
+    articulo_doc = articuloBD.find_one({"titulo" : titulo, "fecha" : fecha})
     articulo_json = json.loads(json_util.dumps(articulo_doc))
     return articulo_json
 
-async def crearArticulo(t: str, wiki_id: ObjectId, c: str):
+
+async def crearArticulo(titulo: str, wikiID: ObjectId, contenido: str, creador: ObjectId):
     fecha = datetime.utcnow()
     nuevoArticulo = {
-        "titulo": t,
-        "wiki": wiki_id,
+        "titulo": titulo,
+        "wiki": wikiID,
         "fecha": fecha,
         "ultimoModificado": True,
-        "contenido": c
+        "contenido": contenido,
+        "creador": creador
     }
-    result = BD_articulo.insert_one(nuevoArticulo)
+    result = articuloBD.insert_one(nuevoArticulo)
     nuevoArticulo["_id"] = str(result.inserted_id)
-    nuevoArticulo["wiki"] = str(wiki_id)
+    nuevoArticulo["wiki"] = str(wikiID)
+    nuevoArticulo["creador"] = str(creador)
     
     return nuevoArticulo
 
 async def eliminarVersionArticulo(articulo_id: ObjectId):
-    result = BD_articulo.delete_one({"_id": articulo_id})
+    result = articuloBD.delete_one({"_id": articulo_id})
     return result
 
 async def eliminarTodasVersionesArticulo(titulo: str):
-    result = BD_articulo.delete_many({"titulo": titulo})
+    result = articuloBD.delete_many({"titulo": titulo})
     return result
 
 #Modificar un articulo seria crear uno nuevo
 
-async def buscarUsuarioOrdenado(usuario: str, wiki: ObjectId):
-    usu= BD_usuario.find_one({"nombre": usuario})
+async def buscarUsuarioOrdenado(wiki: ObjectId, usuario: str):
+    usu= usuarioBD.find_one({"nombre": usuario})
     usu_json = json.loads(json_util.dumps(usu))
     usu_dict = usu_json["_id"]
     usu_id = usu_dict["$oid"]
     usuId = ObjectId(usu_id)
 
-    articulos_doc = BD_articulo.find({"creador": usuId,
+    articulosDoc = articuloBD.find({"creador": usuId,
                                       "wiki": wiki}).sort("fecha", -1)
-    articulos_json = [json.loads(json_util.dumps(doc)) for doc in articulos_doc]
+    articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
     
-    return articulos_json
+    return articulosJSON

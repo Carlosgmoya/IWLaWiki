@@ -11,15 +11,15 @@ from datetime import datetime
 
 api = FastAPI()
 
+# prefijo para todas las URLs
+path = "/api/v1"
+
 # Desde el directorio de este archivo: 2 maneras de ejecutar la app:
 #   -ejecutar de manera local -> python -m uvicorn main:api --reload --port 8001
 #   -ejecutar el contenedor Docker -> docker run -p 8001:8001 fu17alex/modulowiki:v1.0
 
+
 # PAGINA PRINCIPAL: DEVUELVE TODAS LAS WIKIS O DEVUELVE LAS WIKIS QUE CUMPLEN UNOS CRITERIOS
-
-# prefijo para todas las URLs
-path = "/api/v1"
-
 @api.get(path + "/wikis")
 async def getWikis(term: str = Query(None, min_length=1)):  #SOLO ES UN ESQUEMA, FALTA POR IMPLEMENTAR
     return await wikiAPI.getTodasWikis() if term is None else await wikiAPI.getWikisPorNombre(term)
@@ -28,12 +28,12 @@ async def getWikis(term: str = Query(None, min_length=1)):  #SOLO ES UN ESQUEMA,
 # PAGINA WIKI
 @api.get(path + "/wikis/{nombre}")
 async def getWiki(nombre: str):
-    wiki_json = await wikiAPI.getWiki(nombre)
+    wikiJSON = await wikiAPI.getWiki(nombre)
 
-    if wiki_json is None:
+    if wikiJSON is None:
         raise HTTPException(status_code=404, detail="Wiki no encontrado")
     
-    return wiki_json
+    return wikiJSON
     
     
 # CREAR WIKI

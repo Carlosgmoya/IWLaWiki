@@ -1,4 +1,4 @@
-from services import wiki as wikiAPI, articulo as articuloAPI
+from services import articulo as articuloAPI
 
 from fastapi import FastAPI, Request, HTTPException, Query
 from fastapi.responses import HTMLResponse
@@ -13,96 +13,77 @@ import json
 from datetime import datetime
 import httpx
 
-#   -ejecutar de manera local -> python -m uvicorn main:api --reload --port 8002
-
-# prefijo para todas las URLs
-
-
 api = FastAPI()
 
-# GET ARTICULO
+# prefijo para todas las URLs
+path = "/api/v1"
 
-@api.get("/wikis/{n}/articulos/{t}")
-async def getArticulo(n : str, t : str):
-    articulo_json = await articuloAPI.getArticulo(t)
+#   -ejecutar de manera local -> python -m uvicorn main:api --reload --port 8002
 
-    if articulo_json is None:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return articulo_json
 
 # GET ARTICULOS DE UNA WIKI
-
-@api.get("/wikis/{n}/articulos")
-async def getArticulos(n: str):
-
-    wiki_json = await solicitarWiki(n)
-    wiki_dict = wiki_json["_id"]
-    wiki_id = wiki_dict["$oid"]
-
-    try:
-        obj_id = ObjectId(wiki_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Formato de ID inválido")
+@api.get(path + "/wikis/{nombre}/articulos")
+async def getArticulos(nombre: str, term: str = Query(None, min_length=1)):
+    wikiJSON = await solicitarWiki(nombre)
+    objID = getWikiObjID(wikiJSON)
     
-    articulos_json = await articuloAPI.getTodosArticulos(obj_id)
+    return await articuloAPI.getTodosArticulos(objID) if term is None else await articuloAPI.getArticulosPorTituloYContenido(objID, term)
 
-    return articulos_json
+
+# GET ARTICULO
+@api.get(path + "/wikis/{nombre}/articulos/{titulo}")
+async def getArticulo(nombre : str, titulo : str):
+    wikiJSON = await solicitarWiki(nombre)
+    objID = getWikiObjID(wikiJSON)
+    
+    articulo_json = await articuloAPI.getArticulo(objID, titulo)
+
+    if articulo_json is None:
+        raise HTTPException(status_code=404, detail="Artículo no encontrado")
+    
+    return articulo_json
+
 
 # CREAR ARTICULO
-
-@api.post("/wikis/{n}/articulos/{t}")
-async def crearArticulo(request: Request, n: str, t: str):
+@api.post(path + "/wikis/{nombre}/articulos")
+async def crearArticulo(request: Request, nombre: str):
+    wikiJSON = await solicitarWiki(nombre)
 
     data = await request.json()
-    titulo = t
-    wiki_id = data.get("wiki")
-    wiki_object_id = ObjectId(wiki_id)
+    titulo = data.get("titulo")
+    wiki = getWikiObjID(wikiJSON)
     contenido = data.get("contenido")
     creador = data.get("creador")
+    if isinstance(creador, dict) and "$oid" in creador:
+        creador = ObjectId(creador["$oid"])  # Convert the string inside "$oid" to ObjectId
 
-    wiki_json = await solicitarWiki(n)
+    # If 'creador' is already an ObjectId string or directly an ObjectId
+    elif isinstance(creador, str):
+        creador = ObjectId(creador)
 
-    wiki_dict = wiki_json["_id"]
-    wiki_id = wiki_dict["$oid"]
-
-    try:
-        obj_id = ObjectId(wiki_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Formato de ID inválido")
-    
-    if obj_id != wiki_object_id:
-        raise HTTPException(status_code=400, detail="Los IDs no coinciden")
+    articuloJSON = await articuloAPI.getArticulo(wiki, titulo)
    
-    nuevoArticulo = await articuloAPI.crearArticulo(titulo, wiki_object_id, contenido,creador)
-
-    return nuevoArticulo
+    return await articuloAPI.crearArticulo(titulo, wiki, contenido, creador) if articuloJSON is None else "Ya existe articulo con ese nombre"
 
 
 # BORRAR UNA VERSIÓN DEL ARTÍCULO
-
-@api.delete("wikis/{wiki_id}/{articulo_id}")
-async def eliminarTodasVersionesArticulo(wiki_id: str, articulo_id: str):
+@api.delete(path + "/wikis/{nombre}/articulos/{articuloID}")
+async def eliminarVersionArticulo(nombre: str, articuloID: str):
     try:
-        obj_id = ObjectId(wiki_id)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Formato de ID de wiki inválido")
-    
-    try:
-        obj_id = ObjectId(articulo_id)
+        objID = ObjectId(articuloID)
     except Exception as e:
         raise HTTPException(status_code=400, detail="Formato de ID de artículo inválido")
     
-    result = await articuloAPI.eliminarVersionArticulo(obj_id)
+    result = await articuloAPI.eliminarVersionArticulo(objID)
 
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail=f"Versión del artículo no encontrada")
 
-    return f"Versión del artículo eliminada con éxito"
+    return "Versión del artículo eliminada con éxito"
 
 
 # BORRAR TODAS LAS VERSIONES DE UN ARTICULO
-
-@api.delete("/wikis/{n}/articulos/{t}")
+"""@api.delete("/wikis/{n}/articulos/{t}")
 async def eliminarTodasLasVersionesDeUnArticulo(n: str, t: str):
     result = await articuloAPI.eliminarTodasVersionesArticulo(t)
 
@@ -110,40 +91,22 @@ async def eliminarTodasLasVersionesDeUnArticulo(n: str, t: str):
         raise HTTPException(status_code=404, detail=f"Artículo {t} no encontrado")
 
     return f"Artículo {t} eliminado con éxito"
+"""
 
+"""@api.get("/wikis/{nombre}/ordenado/bien")
+async def buscarPorUsuarioOrdeando(request: Request, nombre: str, term: Union[str, None] = Query(None)):
+    wikiJSON = solicitarWiki(nombre)
+    wikiID = getWikiObjID(wikiJSON)
 
-# BUSCAR ARTICULOS
-
-@api.get("/wikis/{n}/buscar/bien")
-async def filtrarArticulosPorContenido(request: Request, n: str, term: Union[str, None] = Query(None)):
-    wiki_json = await wikiAPI.getWiki(n)
-    if wiki_json is None:
-        raise HTTPException(status_code=404, detail="Wiki no encontrado")
-    wiki_dict = wiki_json["_id"]
-    wiki_id = wiki_dict["$oid"]
-    id = ObjectId(wiki_id)
-    articulos_json = await articuloAPI.buscarArticulos(term, id)
-    if not articulos_json:
-        raise HTTPException(status_code=404, detail="No se encontraron artículos que coincidan con el contenido")
-
-    return articulos_json
-
-@api.get("/wikis/{n}/ordenado/bien", response_class=HTMLResponse)
-async def buscarPorUsuarioOrdeando(request: Request, n: str, term: Union[str, None] = Query(None)):
-    wiki_json = await wikiAPI.getWiki(n)
-    wiki_dict = wiki_json["_id"]
-    wiki_id = wiki_dict["$oid"]
-    id = ObjectId(wiki_id)
-
-    articulos_json = await articuloAPI.buscarUsuarioOrdenado(term, id)
-    return articulos_json
-
+    articulosJSON = await articuloAPI.buscarUsuarioOrdenado(wikiID, term)
+    return articulosJSON
+"""
 
 
 ########## Metodos Complementarios ############
 
 async def solicitarWiki(nombreWiki: str):
-    url = f"http://localhost:8001/wikis/{nombreWiki}"
+    url = f"http://localhost:8001/api/v1/wikis/{nombreWiki}"
 
     # Realizar la solicitud HTTP asíncrona
     async with httpx.AsyncClient() as client:
@@ -154,10 +117,21 @@ async def solicitarWiki(nombreWiki: str):
         raise HTTPException(status_code=response.status_code, detail="Error al obtener el artículo")
 
     # Procesar la respuesta
-    wiki_json = response.json()
+    wikiJSON = response.json()
 
-    if wiki_json is None:
+    if wikiJSON is None:
         raise HTTPException(status_code=404, detail="Wiki no encontrado")
 
-    return wiki_json
+    return wikiJSON
+
+def getWikiObjID(wikiJSON: json):
+    wikiDict = wikiJSON["_id"]
+    wikiID = wikiDict["$oid"]
+
+    try:
+        objID = ObjectId(wikiID)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Formato de ID de wiki inválido")
+    
+    return objID
 
