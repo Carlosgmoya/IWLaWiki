@@ -1,2 +1,6 @@
+.gitignore
 .venv/
 __pycache__/
+InstruccionesDocker.txt
+OpenAPI-articulo.json
+OpenAPI-wiki.json
