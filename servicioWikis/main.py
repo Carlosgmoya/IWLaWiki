@@ -8,8 +8,19 @@ from bson.objectid import ObjectId
 from typing import List
 import json
 from datetime import datetime
+from fastapi.middleware.cors import CORSMiddleware
 
-api = FastAPI()
+
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Cambia al puerto de tu frontend en React
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # prefijo para todas las URLs
 path = "/api/v1"
@@ -20,13 +31,13 @@ path = "/api/v1"
 
 
 # PAGINA PRINCIPAL: DEVUELVE TODAS LAS WIKIS O DEVUELVE LAS WIKIS QUE CUMPLEN UNOS CRITERIOS
-@api.get(path + "/wikis")
+@app.get(path + "/wikis")
 async def getWikis(term: str = Query(None, min_length=1)):  #SOLO ES UN ESQUEMA, FALTA POR IMPLEMENTAR
     return await wikiAPI.getTodasWikis() if term is None else await wikiAPI.getWikisPorNombre(term)
 
 
 # PAGINA WIKI
-@api.get(path + "/wikis/{nombre}")
+@app.get(path + "/wikis/{nombre}")
 async def getWiki(nombre: str):
     wikiJSON = await wikiAPI.getWiki(nombre)
 
@@ -37,7 +48,7 @@ async def getWiki(nombre: str):
     
     
 # CREAR WIKI
-@api.post(path + "/wikis")
+@app.post(path + "/wikis")
 async def crearWiki(request: Request):
     data = await request.json()
     nombre = data.get("nombre")
@@ -49,7 +60,7 @@ async def crearWiki(request: Request):
 
 
 # ACTUALIZAR WIKI
-@api.put(path + "/wikis/{wikiID}")
+@app.put(path + "/wikis/{wikiID}")
 async def actualizarWiki(request: Request, wikiID: str):
     try:
         ObjID = ObjectId(wikiID)
@@ -73,7 +84,7 @@ async def actualizarWiki(request: Request, wikiID: str):
 
 
 # ELIMINAR WIKI
-@api.delete(path + "/wikis/{wikiID}")
+@app.delete(path + "/wikis/{wikiID}")
 async def eliminarWiki(wikiID: str):
     try:
         obj_id = ObjectId(wikiID)

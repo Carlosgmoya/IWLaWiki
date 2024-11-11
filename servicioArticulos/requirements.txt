@@ -3,3 +3,4 @@ fastApi
 pydantic
 pymongo[srv]
 httpx
+fastapi-cors
