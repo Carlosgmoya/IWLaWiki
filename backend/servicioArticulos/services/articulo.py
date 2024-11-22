@@ -119,3 +119,5 @@ async def getArticulosPorUsuarioOrdenadoPorFecha(wiki: ObjectId, usuario: str):
     articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
     
     return articulosJSON
+
+

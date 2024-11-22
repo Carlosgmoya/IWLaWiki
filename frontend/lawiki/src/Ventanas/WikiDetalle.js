@@ -12,7 +12,7 @@ function WikiDetalle() {
       .then((response) => response.json())
       .then((data) => setWiki(data))
       .catch((error) => console.error("Error al obtener los detalles de la wiki:", error));
-
+ 
 
     fetch(`http://127.0.0.1:8002/api/v1/wikis/${nombre}/articulos`)
     .then((response) => response.json())

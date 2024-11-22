@@ -1,0 +1,27 @@
+body {
+    background-color: #9e54c9; /* Reemplaza #f0f0f0 con el color que prefieras */
+}
+
+.Titulo{
+    width: 100%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    background-color: aliceblue;
+    margin-bottom: 5%;
+}
+
+input{
+    width: 60%;
+    height: 40px;
+    border-radius: 10px; /* Ajusta el valor para más o menos redondez */
+
+    border: 1px solid #ccc;
+}
+
+form{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
