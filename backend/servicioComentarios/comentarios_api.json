@@ -1,0 +1,135 @@
+{
+    "info": {
+      "name": "Comentarios API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Obtener todos los comentarios",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:8003/api/v1/comentarios",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8003",
+            "path": ["api", "v1", "comentarios"]
+          }
+        }
+      },
+      {
+        "name": "Obtener comentarios por artículo",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:8003/api/v1/comentarios/articulo/{{articulo_id}}",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8003",
+            "path": ["api", "v1", "comentarios", "articulo", "{{articulo_id}}"],
+            "variable": [
+              {
+                "key": "articulo_id",
+                "value": "651fcdfdf45c1f9bfed57033"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Obtener comentarios por usuario",
+        "request": {
+          "method": "GET",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:8003/api/v1/comentarios/usuario/{{usuario_id}}",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8003",
+            "path": ["api", "v1", "comentarios", "usuario", "{{usuario_id}}"],
+            "variable": [
+              {
+                "key": "usuario_id",
+                "value": "651fcdfdf45c1f9bfed57032"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Crear un nuevo comentario",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"fecha\": \"2024-11-22T00:00:00Z\",\n  \"usuario_id\": \"651fcdfdf45c1f9bfed57032\",\n  \"articulo_id\": \"651fcdfdf45c1f9bfed57033\",\n  \"contenido\": \"Este es un comentario de prueba.\"\n}"
+          },
+          "url": {
+            "raw": "http://localhost:8003/api/v1/comentarios",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8003",
+            "path": ["api", "v1", "comentarios"]
+          }
+        }
+      },
+      {
+        "name": "Actualizar un comentario",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"fecha\": \"2024-11-22T00:00:00Z\",\n  \"usuario_id\": \"651fcdfdf45c1f9bfed57032\",\n  \"articulo_id\": \"651fcdfdf45c1f9bfed57033\",\n  \"contenido\": \"Este comentario ha sido actualizado.\"\n}"
+          },
+          "url": {
+            "raw": "http://localhost:8003/api/v1/comentarios/{{comentario_id}}",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8003",
+            "path": ["api", "v1", "comentarios", "{{comentario_id}}"],
+            "variable": [
+              {
+                "key": "comentario_id",
+                "value": "651fcdfdf45c1f9bfed57034"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Eliminar un comentario",
+        "request": {
+          "method": "DELETE",
+          "header": [],
+          "url": {
+            "raw": "http://localhost:8003/api/v1/comentarios/{{comentario_id}}",
+            "protocol": "http",
+            "host": ["localhost"],
+            "port": "8003",
+            "path": ["api", "v1", "comentarios", "{{comentario_id}}"],
+            "variable": [
+              {
+                "key": "comentario_id",
+                "value": "651fcdfdf45c1f9bfed57034"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+  
