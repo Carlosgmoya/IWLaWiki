@@ -108,6 +108,7 @@ async def eliminarTodasVersionesArticulo(titulo: str):
 #Modificar un articulo seria crear uno nuevo
 
 async def getArticulosPorUsuarioOrdenadoPorFecha(wiki: ObjectId, usuario: str):
+    # ELIMINAR EL ACCESO A usuarioBD cuando se implemente el microservicio usuario
     usu= usuarioBD.find_one({"nombre": usuario})
     usu_json = json.loads(json_util.dumps(usu))
     usu_dict = usu_json["_id"]

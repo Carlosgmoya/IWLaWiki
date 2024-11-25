@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, Query
 from contextlib import asynccontextmanager
 import httpx
+import json
 
 # python -m uvicorn main:app --reload --port 8000
 
@@ -25,6 +26,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
+###----------------------------------CRUD WIKIS-------------------------------------###
+
+
 # PAGINA PRINCIPAL: DEVUELVE TODAS LAS WIKIS O DEVUELVE LAS WIKIS QUE CUMPLEN UNOS CRITERIOS
 @app.get("/wikis")
 async def getWikis(term: str = Query(None, min_length=1)):
@@ -34,13 +39,13 @@ async def getWikis(term: str = Query(None, min_length=1)):
         else:
             respuesta = await clienteWiki.get("/wikis", params={"term": term})
         respuesta.raise_for_status()
-        wikisJSON = respuesta.json()
-        return wikisJSON
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloWiki")
 
+
+    return respuesta.json()
 
 # PAGINA WIKI
 @app.get("/wikis/{nombre}")
@@ -48,12 +53,12 @@ async def getWiki(nombre: str):
     try:
         respuesta = await clienteWiki.get(f"/wikis/{nombre}")
         respuesta.raise_for_status()
-        return respuesta.json()
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloWiki")
     
+    return respuesta.json()
 
 # CREAR WIKI
 @app.post( "/wikis")
@@ -62,12 +67,12 @@ async def crearWiki(request: Request):
         data = await request.json()
         respuesta = await clienteWiki.post("/wikis", json=data)
         respuesta.raise_for_status()
-        return respuesta.json()
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloWiki")
 
+    return respuesta.json()
 
 # ACTUALIZAR WIKI
 @app.put("/wikis/{wikiID}")
@@ -88,9 +93,128 @@ async def actualizarWiki(request: Request, wikiID: str):
 async def eliminarWiki(wikiID: str):
     try:
         respuesta = await clienteWiki.delete(f"/wikis/{wikiID}")
-        respuesta.raise_for_status()
-        return respuesta.json()
+        respuesta.raise_for_status()        
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloWiki")
+
+    return respuesta.json()
+
+
+########## Metodos Complementarios ############
+
+def getWikiID(wikiJSON: json):
+    wikiDict = wikiJSON["_id"]
+    wikiID = wikiDict["$oid"]
+
+    return wikiID
+
+
+###--------------------------------CRUD ARTICULOS-----------------------------------###
+
+
+# GET ARTICULOS DE UNA WIKI
+@app.get("/wikis/{nombre}/articulos")
+async def getArticulos(nombre: str, terminoDeBusqueda: str | None = None, usuario: str | None = None):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getWikiID(wikiJSON)
+
+    try:
+        query_params = {}
+        query_params["wiki"] = wikiID
+        if terminoDeBusqueda:
+            query_params["terminoDeBusqueda"] = terminoDeBusqueda
+        elif usuario:
+            query_params["usuario"] = usuario
+
+        respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+
+# GET ARTICULO
+@app.get("/wikis/{nombre}/articulos/{titulo}")
+async def getArticulo(nombre : str, titulo : str):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getWikiID(wikiJSON)
+    
+    try:
+        query_params = {}
+        query_params["wiki"] = wikiID
+
+        respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos/{titulo}", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+
+# CREAR ARTICULO
+@app.post("/wikis/{nombre}/articulos")
+async def crearArticulo(request: Request, nombre: str):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getWikiID(wikiJSON)
+    
+    try:
+        data = await request.json()
+
+        query_params = {}
+        query_params["wiki"] = wikiID
+
+        respuesta = await clienteArticulo.post(f"/wikis/{nombre}/articulos", params=query_params, json=data)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+
+# ACTUALIZAR UN ARTÍCULO
+@app.put("/wikis/{nombre}/articulos/{titulo}")
+async def actualizarArticulo(request: Request, nombre: str, titulo: str):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getWikiID(wikiJSON)
+
+    try:
+        data = await request.json()
+
+        query_params = {}
+        query_params["wiki"] = wikiID
+
+        respuesta = await clienteArticulo.put(f"/wikis/{nombre}/articulos/{titulo}", params=query_params, json=data)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+
+    return respuesta.json()
+
+
+# BORRAR UNA TODAS LAS VERSIONES DEL ARTÍCULO O SOLO UNA VERSION SI SE PASA ID
+@app.delete("/wikis/{nombre}/articulos/{titulo}")
+async def eliminarArticulo(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
+    try:
+        query_params = {}
+        if id is not None:
+            query_params["id"] = id
+
+        respuesta = await clienteArticulo.delete(f"/wikis/{nombre}/articulos/{titulo}", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+
+    return respuesta.json()
