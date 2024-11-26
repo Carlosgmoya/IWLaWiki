@@ -1,55 +1,116 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import './PantallaInicio.css';
+import ResultadosBusqueda from '../Componentes/ResultadosBusqueda';
+import InicioDestacados from '../Componentes/InicioDestacados';
+import EditorWiki from "../Componentes/EditorWiki";
+
 function PantallaInicio() {
+  const [listaWikis, setListaWikis] = useState([]);
+  const [listaBusqueda, setListaBusqueda] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(""); // Término con debounce.
+  const [mostrarEditor, setMostrarEditor] = useState(false);
 
-    const [listaWikis, setlistaWikis] = useState("");
+  // Petición fetch inicial
+  useEffect(() => {
+    fetchWikisDestacadas();
+  }, []);
 
-    // Peticion fetch
-    useEffect(() => {
-        fetch("http://127.0.0.1:8001/api/v1/wikis")
-          .then((response) => response.json())
-          .then((data) => {
-            if (Array.isArray(data)) {
-              setlistaWikis(data); // Almacena la lista completa de wikis
-            } else {
-              console.error("Error: La respuesta no es una lista.");
-            }
-          })
-          .catch((error) => console.error("Error al obtener la lista de wikis:", error));
-      }, []);
-    
+  useEffect(() => {
+    // Configura un debounce: espera 300ms antes de actualizar el término de búsqueda.
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
 
-    return (<>
-        <div className="Titulo">
-          <h1>La Wiki:</h1>
-        </div>
+    return () => {
+      clearTimeout(handler); // Limpia el temporizador si el usuario sigue escribiendo.
+    };
+  }, [searchTerm]);
 
-        <form>
-          <input type="text"/>
-        </form>
+  useEffect(() => {
+    if (debouncedSearchTerm.trim()) {
+      fetchBusqueda(debouncedSearchTerm);
+    } else {
+      setListaBusqueda([]); // Limpia los resultados si no hay término de búsqueda.
+    }
+  }, [debouncedSearchTerm]);
 
-        <div>
-          <h2>Articulos Recientes</h2>
-          <div>
-            Futura lista de articulos recientes
+  const fetchWikisDestacadas = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/wikis");
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setListaWikis(data); // Carga las wikis destacadas.
+      } else {
+        console.error("Error: La respuesta no es una lista.");
+      }
+    } catch (error) {
+      console.error("Error al obtener las wikis destacadas:", error);
+    }
+  };
+
+  const fetchBusqueda = async (term) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/wikis?term=${term}`);
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setListaBusqueda(data); // Actualiza los resultados de búsqueda.
+      } else {
+        console.error("Error: La respuesta no es una lista.");
+      }
+    } catch (error) {
+      console.error("Error al buscar wikis:", error);
+    }
+  };
+
+  const handleAbrirEditor = () => {
+    setMostrarEditor(true); // Muestra el editor
+  };
+
+  const handleCerrarEditor = () => {
+    // Restablece el formulario
+    setMostrarEditor(false);
+  };
+
+  return (
+    <>
+
+      <div className="Titulo">
+        <h1>La Wiki:</h1>
+      </div>
+
+      {!mostrarEditor ? (
+        <>
+          <div className="input">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar wikis..."
+            />
           </div>
-        </div>
 
-        <div>
-          <h2>Wikis Destacadas</h2>
-          {listaWikis.length > 0 ? (
-            <ul>
-                {listaWikis.map((listaWikis, index) => (
-                    <li><a href={`http://localhost:3000/wikis/${listaWikis.nombre}`}>{listaWikis.nombre}</a></li>
-                ))}
-            </ul>
+          {searchTerm !== "" ? (
+            <ResultadosBusqueda listaBusqueda={listaBusqueda} nombrewiki={null} />
           ) : (
-            <p>No hay wikis disponibles</p>
+            <InicioDestacados listaWikis={listaWikis} />
           )}
-        </div>
-        
-       
-    </>);
+
+          <form>
+            <button onClick={handleAbrirEditor}>Crear Wiki</button>
+          </form>
+        </>
+      ) : (
+        <EditorWiki wiki={null}
+        onCancelar={handleCerrarEditor}
+        onWikiUpdated={null}/>
+      )}
+
+
+
+
+    </>
+  );
 }
+
 export default PantallaInicio;

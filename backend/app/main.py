@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request, HTTPException, Query
 from contextlib import asynccontextmanager
 import httpx
 import json
+from fastapi.middleware.cors import CORSMiddleware
 
 # python -m uvicorn main:app --reload --port 8000
 
@@ -25,6 +26,14 @@ async def lifespan(app: FastAPI):
     await clienteArticulo.aclose()
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # URL del frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 ###----------------------------------CRUD WIKIS-------------------------------------###

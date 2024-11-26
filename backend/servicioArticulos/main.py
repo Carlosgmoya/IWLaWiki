@@ -12,7 +12,7 @@ import re
 api = FastAPI()
 
 # prefijo para todas las URLs
-path = "/api/v1"
+path = "/api/v1" 
 
 api = FastAPI()
 
