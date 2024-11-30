@@ -13,13 +13,14 @@ Entidad articulo:
     -creador -> usuario.id
     -wiki -> wiki.id
     -fecha -> Date
-    -ultimoModificado ->Bool
+    -ultimoModificado -> Bool
     -contenido -> String ¡Se debe gestionar una subestructura!
 
 Entidad comentario 
     -id 
     -fecha -> Date
-    -usuario -> String ¡Se pretende cambiar por una integer que aopunte a una etiqueta de la id de usuario!
+    -usuario -> usuario.id
+    -articulo -> articulo.id
     -contenido -> String
 
 Entidad usuario 
