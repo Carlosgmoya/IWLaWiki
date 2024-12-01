@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+
+import ComentariosArticulo from '../Componentes/ComentariosArticulo';
 import VerArticulo from "../Componentes/VerArticulo";
 import EditarArticulo from "../Componentes/EditarArticulo";
 
 function ArticuloDetalle() {
-    const { nombre } = useParams();
-    const { titulo } = useParams();
-    const [articulo, setArticulo] = useState(null);
-    const [mostrarEditor, setMostrarEditor] = useState(false);
+  const { nombre } = useParams();
+  const { titulo } = useParams();
+  const [articulo, setArticulo] = useState(null);
+  const [mostrarComentarios, setMostrarComentarios] = useState(false);
+  const [mostrarEditor, setMostrarEditor] = useState(false);
 
     useEffect(() => {
         fetch(`http://127.0.0.1:8000/wikis/${nombre}/articulos/${titulo}`)
@@ -17,7 +20,6 @@ function ArticuloDetalle() {
                 setArticulo(data); // Almacena la lista completa de articulos         
             })
             .catch((error) => console.error("Error al obtener el articulos:", error));
-
     }, [nombre, titulo]);
 
     const handleAbrirEditor = () => {
@@ -39,6 +41,10 @@ function ArticuloDetalle() {
                         <div>
                             <button onClick={handleAbrirEditor}>Editar Articulo</button>
                         </div>
+                        <button onClick={() => setMostrarComentarios(!mostrarComentarios)}>Comentarios</button>
+                        {mostrarComentarios ?
+                          <ComentariosArticulo/> : null
+                        }
                     </>
                 ) : (
                     <>
@@ -52,9 +58,6 @@ function ArticuloDetalle() {
                         </div>
                     </>
                 )}
-
-
-
             </>
         ) : (
             <p>Cargando...</p>
