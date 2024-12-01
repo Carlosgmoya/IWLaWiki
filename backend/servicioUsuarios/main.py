@@ -1,8 +1,5 @@
 #ejecutar de manera local -> python -m uvicorn main:api --reload --port 8004
 from fastapi import FastAPI, Request, HTTPException, Query
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from typing import Any, Union
 from bson import json_util
@@ -13,8 +10,8 @@ from datetime import datetime
 import httpx
 from fastapi.middleware.cors import CORSMiddleware
 
-from models import Usuario
-from bd import usuarioBD
+from models import Usuario, Valoracion
+from bd import usuarioBD, valoracionBD
 
 # prefijo para todas las URLs
 path = "/api/v1"
@@ -28,6 +25,8 @@ api.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+######## USUARIOS ########
 
 @api.get(path + "/usuarios", response_model=List[Usuario])
 async def getUsuarios():
@@ -58,4 +57,44 @@ async def crearUsuario(usuario: Usuario):
     resultado = usuarioBD.insert_one(usuario_dict)
     usuario_dict["_id"] = resultado.inserted_id
     return Usuario(**usuario_dict)
+
+######## VALORACIONES ########
+
+@api.get(path + "/valoraciones", response_model=List[Valoracion])
+async def getValoraciones():
+    """Devuelve todas las valoraciones"""
+    valoraciones = list(valoracionBD.find())
+    return [Valoracion(**valoracion) for valoracion in valoraciones]
+
+@api.post(path + "/valoraciones", response_model=Valoracion)
+async def crearValoracion(valoracion: Valoracion):
+    """Crea una nueva valoracion"""
+    valoracion_dict = valoracion.dict(by_alias=True)
+    resultado = valoracionBD.insert_one(valoracion_dict)
+    valoracion_dict["_id"] = resultado.inserted_id
+    return Usuario(**valoracion_dict)
+
+@api.get(path + "/valoraciones/de/{usuario_email}", response_model=List[Valoracion])
+async def getValoracionesDeUsuario(usuario_email: str):
+    """Devuelve todas las valoraciones hechas por un usuario"""
+    valoraciones = list(valoracionBD.find({"de_usuario": usuario_email}))
+    return [Valoracion(**valoracion) for valoracion in valoraciones]
+
+@api.get(path + "/valoraciones/a/{usuario_email}", response_model=List[Valoracion])
+async def getValoracionesDeUsuario(usuario_email: str):
+    """Devuelve todas las valoraciones dirigidas a un usuario"""
+    valoraciones = list(valoracionBD.find({"a_usuario": usuario_email}))
+    return [Valoracion(**valoracion) for valoracion in valoraciones]
+
+@api.get(path + "/valoracion/{usuario_email}")
+async def getValoracionDeUsuario(usuario_email: str):
+    """Devuelve la media de las valoraciones de un usuario, o 0 si no tiene"""
+    valoraciones = list(valoracionBD.find({"a_usuario": usuario_email}))
+    if len(valoraciones) == 0:
+        return {"valor": 0}
+    suma = 0
+    for valoracion in valoraciones:
+        suma += valoracion["valor"]
+    media = suma / len(valoraciones)
+    return {"valor": media}
 

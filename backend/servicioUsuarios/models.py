@@ -29,3 +29,11 @@ class Usuario(BaseModel):
         json_encoders = {ObjectId: str}
         populate_by_name = True
 
+# Modelo Valoracion
+class Valoracion(BaseModel):
+    id: Optional[PyObjectId] = Field(default_factory=ObjectId, alias="_id")
+    de_usuario: str
+    a_usuario: str
+    class Config:
+        json_encoders = {ObjectId: str}
+        populate_by_name = True
