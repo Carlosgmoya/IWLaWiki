@@ -8,6 +8,9 @@ from typing import List
 import json
 from fastapi.middleware.cors import CORSMiddleware
 import re
+from markdown import markdown
+
+
 
 api = FastAPI()
 
@@ -61,7 +64,8 @@ async def getArticulo(nombre : str, titulo : str, wiki: str = Query(...)):
     if articulo_json is None:
         raise HTTPException(status_code=404, detail="Artículo no encontrado")
      # Formatear el contenido de cada artículo
-    articulo_json["contenido"] = formatearContenido(articulo_json["contenido"])
+    articulo_json["contenido_html"] = convertir_a_html( articulo_json["contenido"])
+    #articulo_json["contenido"] = formatearContenido(articulo_json["contenido"])
     
     return articulo_json
 
@@ -152,16 +156,20 @@ def getWikiObjID(wikiJSON: json):
     
     return objID
 
-def formatearContenido(contenido):
-    patron_titulo = r"==\s*(.+?)\s*=="
-    partes = re.split(patron_titulo, contenido)
+
+def convertir_a_html(contenido_md: str) -> str:
+    return markdown(contenido_md)
+
+# def formatearContenido(contenido):
+#     patron_titulo = r"==\s*(.+?)\s*=="
+#     partes = re.split(patron_titulo, contenido)
     
-    contenido_formateado = []
-    for i in range(1, len(partes), 2):
-        subtitulo = partes[i].strip()
-        cuerpo = partes[i + 1].strip()
-        contenido_formateado.append({
-            "subtitulo": subtitulo,
-            "cuerpo": cuerpo
-        })
-    return contenido_formateado
+#     contenido_formateado = []
+#     for i in range(1, len(partes), 2):
+#         subtitulo = partes[i].strip()
+#         cuerpo = partes[i + 1].strip()
+#         contenido_formateado.append({
+#             "subtitulo": subtitulo,
+#             "cuerpo": cuerpo
+#         })
+#     return contenido_formateado

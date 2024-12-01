@@ -9,7 +9,8 @@ from bd import articuloBD, usuarioBD
 
 async def getArticulo(wikiID: ObjectId, t: str):
     articulo_doc = articuloBD.find_one({ "titulo" : t,
-                                         "wiki": wikiID })    
+                                         "wiki": wikiID,
+                                          "ultimoModificado": True })    
     articulo_json = json.loads(json_util.dumps(articulo_doc))
 
     return articulo_json
@@ -120,5 +121,7 @@ async def getArticulosPorUsuarioOrdenadoPorFecha(wiki: ObjectId, usuario: str):
     articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
     
     return articulosJSON
+
+
 
 
