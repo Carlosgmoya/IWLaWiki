@@ -72,6 +72,8 @@ function PantallaInicio() {
     setMostrarEditor(false);
   };
 
+  
+
   return (
     <>
 

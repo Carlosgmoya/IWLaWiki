@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import ArticulosWiki from "../Componentes/ArticulosWiki";
 import ResultadosBusqueda from '../Componentes/ResultadosBusqueda';
 import EditorWiki from "../Componentes/EditorWiki";
+import CrearArticulo from "../Componentes/CrearArticulo";
 
 function WikiDetalle() {
   const { nombre } = useParams(); // Obtener el nombre de la URL
@@ -12,6 +13,7 @@ function WikiDetalle() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [mostrarEditor, setMostrarEditor] = useState(false);
+  const [mostrarCrearArticulo, setMostrarArticulo] = useState(false);
 
   const fetchWikiDatos = useCallback(async () => {
     try {
@@ -52,19 +54,28 @@ function WikiDetalle() {
   }, [nombre]);
 
   const handleAbrirEditor = () => {
+    setMostrarArticulo(false);
     setMostrarEditor(true); // Muestra el editor
   };
 
   const handleCerrarEditor = () => {
-    // Restablece el formulario
     setMostrarEditor(false);
+  };
+
+  const handleAbrirCrearArticulo = () => {
+    setMostrarEditor(false);
+    setMostrarArticulo(true);
+  };
+
+  const handleCerrarCrearArticulo = () => {
+    setMostrarArticulo(false);
   };
 
   const handleWikiUpdated = (updatedWiki) => {
     setWiki(updatedWiki); // Actualiza la wiki localmente.
     fetchWikiDatos(); // Refresca los datos desde el servidor.
     setMostrarEditor(false);
-};
+  };
 
   useEffect(() => {
     fetchWikiDatos();
@@ -92,7 +103,7 @@ function WikiDetalle() {
         <>
           <h1>{wiki.nombre}</h1>
 
-          {!mostrarEditor ? (
+          {!mostrarEditor && !mostrarCrearArticulo ? (
             <>
               <p>{wiki.descripcion}</p>
               <div className="input">
@@ -110,15 +121,30 @@ function WikiDetalle() {
                 <ArticulosWiki listaArticulos={listaArticulos} nombre={nombre} />
               )}
 
-              <form>
+              <div>
                 <button onClick={handleAbrirEditor}>Modificar Wiki</button>
-              </form>
+              </div>
+
+              <div>
+                <button onClick={handleAbrirCrearArticulo}>Crear Artículo</button>
+              </div>
             </>
 
           ) : (
-            <EditorWiki  wiki={wiki}
-            onCancelar={handleCerrarEditor}
-            onWikiUpdated={handleWikiUpdated}/>
+            <>
+              {mostrarEditor ? (
+                <EditorWiki wiki={wiki}
+                  onCancelar={handleCerrarEditor}
+                  onWikiUpdated={handleWikiUpdated} />
+              ) : (
+                <CrearArticulo nombreWiki={nombre}
+                  onCancelar={handleCerrarCrearArticulo} />
+              )}
+
+
+
+            </>
+
 
           )}
 

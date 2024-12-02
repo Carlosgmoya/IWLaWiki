@@ -17,7 +17,7 @@ async def getArticulo(wikiID: ObjectId, t: str):
 
 
 async def getTodosArticulos(wikiID: ObjectId):
-    articulosDoc = articuloBD.find({"wiki": wikiID})
+    articulosDoc = articuloBD.find({"wiki": wikiID,"ultimoModificado": True})
     articulosJSON = json.loads(json_util.dumps(articulosDoc))
 
     return articulosJSON
@@ -25,7 +25,7 @@ async def getTodosArticulos(wikiID: ObjectId):
 
 async def getArticulosPorTitulo(wikiID: ObjectId, term: str):
     articulosDoc = articuloBD.find({"titulo": {"$regex": term, "$options": "i"},
-                                      "wiki": wikiID})
+                                      "wiki": wikiID,"ultimoModificado": True})
     articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
     
     return articulosJSON
@@ -40,7 +40,8 @@ async def getArticulosPorTituloYContenido(wikiID: ObjectId, term: str):
     articulosDoc = articuloBD.find({
         "$and": [
             {"$or": regex_patterns},
-            {"wiki": wikiID}
+            {"wiki": wikiID},
+            {"ultimoModificado": True}
         ]
     })
 

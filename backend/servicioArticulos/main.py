@@ -96,7 +96,7 @@ async def crearArticulo(request: Request, nombre: str, wiki: str = Query(...)):
 
     articuloJSON = await articuloAPI.getArticulo(wiki, titulo)
    
-    return await articuloAPI.crearArticulo(titulo, wiki, contenido, creador) if articuloJSON is None else "Ya existe articulo con ese nombre"
+    return await articuloAPI.crearArticulo(titulo, wiki, contenido, creador) if articuloJSON is None else "Ya existe un articulo con ese nombre"
 
 
 # ACTUALIZAR UN ARTÍCULO
