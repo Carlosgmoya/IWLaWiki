@@ -32,8 +32,9 @@ class Usuario(BaseModel):
 # Modelo Valoracion
 class Valoracion(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=ObjectId, alias="_id")
-    de_usuario: str
-    a_usuario: str
+    de_usuario: str # email del usuario que pone la valoración
+    a_usuario: str # email del usuario al que va dirigida la valoración
+    valor: int # valoracion entre 1 y 5 estrellas
     class Config:
         json_encoders = {ObjectId: str}
-        populate_by_name = True
+        allow_population_by_field_name = True

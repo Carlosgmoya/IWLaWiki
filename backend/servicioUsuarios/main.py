@@ -68,11 +68,22 @@ async def getValoraciones():
 
 @api.post(path + "/valoraciones", response_model=Valoracion)
 async def crearValoracion(valoracion: Valoracion):
-    """Crea una nueva valoracion"""
+    """Crea una nueva valoración. Para evitar que un mismo usuario no
+    valore a otro muchas veces, solo se guardará la valoración más reciente"""
     valoracion_dict = valoracion.dict(by_alias=True)
+
+    filtro = {
+        "de_usuario": valoracion_dict["de_usuario"],
+        "a_usuario": valoracion_dict["a_usuario"]
+    }
+
+    #si ya existe una valoracion con los mismos usuarios, borrarla
+    valoracionBD.delete_one(filtro)
+
     resultado = valoracionBD.insert_one(valoracion_dict)
     valoracion_dict["_id"] = resultado.inserted_id
-    return Usuario(**valoracion_dict)
+    return Valoracion(**valoracion_dict)
+
 
 @api.get(path + "/valoraciones/de/{usuario_email}", response_model=List[Valoracion])
 async def getValoracionesDeUsuario(usuario_email: str):
@@ -95,6 +106,6 @@ async def getValoracionDeUsuario(usuario_email: str):
     suma = 0
     for valoracion in valoraciones:
         suma += valoracion["valor"]
-    media = suma / len(valoraciones)
+    media = suma / len(valoraciones)    
     return {"valor": media}
 
