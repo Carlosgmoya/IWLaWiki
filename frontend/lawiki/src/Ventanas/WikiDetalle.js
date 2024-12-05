@@ -4,6 +4,7 @@ import ArticulosWiki from "../Componentes/ArticulosWiki";
 import ResultadosBusqueda from '../Componentes/ResultadosBusqueda';
 import EditorWiki from "../Componentes/EditorWiki";
 import CrearArticulo from "../Componentes/CrearArticulo";
+import '../Estilos/WikiDetalle.css';
 
 function WikiDetalle() {
   const { nombre } = useParams(); // Obtener el nombre de la URL
@@ -101,7 +102,12 @@ function WikiDetalle() {
     <div>
       {wiki ? (
         <>
-          <h1>{wiki.nombre}</h1>
+          <div className="cabeceraWiki">
+            <h1 className="tituloWiki">{wiki.nombre}</h1>
+            <button title="Editar wiki" className="irAModificarWiki" onClick={handleAbrirEditor}>
+              <img src="/Iconos/IconoEditar.svg" alt="Editar wiki" />
+            </button>
+          </div>
 
           {!mostrarEditor && !mostrarCrearArticulo ? (
             <>
@@ -121,12 +127,8 @@ function WikiDetalle() {
                 <ArticulosWiki listaArticulos={listaArticulos} nombre={nombre} />
               )}
 
-              <div>
-                <button onClick={handleAbrirEditor}>Modificar Wiki</button>
-              </div>
-
-              <div>
-                <button onClick={handleAbrirCrearArticulo}>Crear Artículo</button>
+              <div>  
+                <button className="irACrearArticulo" onClick={handleAbrirCrearArticulo}>Crear Artículo</button>
               </div>
             </>
 

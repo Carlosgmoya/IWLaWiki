@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import './PantallaInicio.css';
+import '../Estilos/PantallaInicio.css';
 import ResultadosBusqueda from '../Componentes/ResultadosBusqueda';
 import InicioDestacados from '../Componentes/InicioDestacados';
 import EditorWiki from "../Componentes/EditorWiki";
@@ -76,11 +76,6 @@ function PantallaInicio() {
 
   return (
     <>
-
-      <div className="Titulo">
-        <h1>La Wiki:</h1>
-      </div>
-
       {!mostrarEditor ? (
         <>
           <div className="input">
@@ -88,19 +83,21 @@ function PantallaInicio() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar wikis..."
+              placeholder=" Buscar wikis..."
             />
           </div>
 
-          {searchTerm !== "" ? (
-            <ResultadosBusqueda listaBusqueda={listaBusqueda} nombrewiki={null} />
-          ) : (
-            <InicioDestacados listaWikis={listaWikis} />
-          )}
+          <div className="output">
+            {searchTerm !== "" ? (
+              <ResultadosBusqueda listaBusqueda={listaBusqueda} nombrewiki={null} />
+            ) : (
+              <InicioDestacados listaWikis={listaWikis} />
+            )}
 
-          <form>
-            <button onClick={handleAbrirEditor}>Crear Wiki</button>
-          </form>
+            <form>
+              <button className="botonIrACrearWiki" onClick={handleAbrirEditor}>Crear Wiki</button>
+            </form>
+          </div>
         </>
       ) : (
         <EditorWiki wiki={null}

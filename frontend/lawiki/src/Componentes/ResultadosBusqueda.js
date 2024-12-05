@@ -2,19 +2,20 @@ import React from "react";
 
 function ResultadosBusqueda({ listaBusqueda, nombrewiki }) {
   return (
-    <div>
+    <div className="listaWikis">
 
       {nombrewiki == null ? (
         <>
           <h2>Resultados de la Búsqueda</h2>
           {listaBusqueda.length > 0 ? (
-            <ul>
+            <ul className="ulWikis">
               {listaBusqueda.map((wiki, index) => (
-                <li key={index}>
-                  <a href={`http://localhost:3000/wikis/${wiki.nombre}`}>
-                    {wiki.nombre}
-                  </a>
-                </li>
+                <a title={"Ir a " + wiki.nombre} href={`http://localhost:3000/wikis/${wiki.nombre}`}>
+                  <li key={index}>          
+                    <p>{wiki.nombre}</p>
+                    <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + wiki.nombre}></img>                 
+                  </li>
+                </a>
               ))}
             </ul>
           ) : (
@@ -25,13 +26,13 @@ function ResultadosBusqueda({ listaBusqueda, nombrewiki }) {
         <>
           <h2>Resultados de la Búsqueda</h2>
           {listaBusqueda.length > 0 ? (
-            <ul>
+            <ul className="ulArticulos">
               {listaBusqueda.map((articulo, index) => (
-                <li key={index}>
-                  <a href={`http://localhost:3000/wikis/${nombrewiki}/articulos/${articulo.titulo}`}>
-                    {articulo.titulo}
-                  </a>
-                </li>
+                <a href={`http://localhost:3000/wikis/${nombrewiki}/articulos/${articulo.titulo}`}>
+                  <li key={index}>
+                    <p>{articulo.titulo}</p>
+                  </li>
+                </a>
               ))}
             </ul>
           ) : (

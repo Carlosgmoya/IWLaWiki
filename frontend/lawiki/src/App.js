@@ -3,31 +3,34 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PantallaInicio from './Ventanas/PantallaInicio';
 import WikiDetalle from './Ventanas/WikiDetalle';
 import ArticuloDetalle from './Ventanas/ArticuloDetalle';
+import HeaderWiki from './Componentes/HeaderWiki';
 
 function App() {
   return (
     <>
-      <div> {/*ESTO ES EL HEADER*/}
-        <h1><a href='http://localhost:3000/'>LaWiki</a></h1> 
-        
+      <div class="cabecera">
+        <HeaderWiki />
       </div>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={<PantallaInicio />}
-          />
 
-          <Route 
-            path="/wikis/:nombre" 
-            element={<WikiDetalle />} /> {/* Ruta dinámica */}
+      <div className="pagina">
+        <Router>
+          <Routes>
+            <Route
+              path="/"
+              element={<PantallaInicio />}
+            />
 
-          <Route 
-          path="/wikis/:nombre/:titulo"
-          element={<ArticuloDetalle/>}
-          />  
-        </Routes>
-      </Router>
+            <Route 
+              path="/wikis/:nombre" 
+              element={<WikiDetalle />} /> {/* Ruta dinámica */}
+
+            <Route 
+            path="/wikis/:nombre/:titulo"
+            element={<ArticuloDetalle/>}
+            />  
+          </Routes>
+        </Router>
+      </div>
     </>
 
     

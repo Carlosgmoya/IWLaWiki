@@ -48,21 +48,21 @@ function EditorWiki({ onCancelar }) {
     <>
       {mostrarFormulario ? (
         <form onSubmit={handleSubmit}>
-          <h2>Inserta el nombre de la wiki</h2>
-          <input
+          <h2>Título</h2>
+          <input className="editorTituloWiki"
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
             required
           />
-          <h2>Inserta la descripcion</h2>
-          <textarea
+          <h2>Descripción</h2>
+          <textarea className="editorWiki"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
             required
           />
-          <button type="submit">Crear</button>
-          <button onClick={onCancelar} >Cancelar</button>
+          <button className="botonCrear" type="submit">Crear</button>
+          <button className="botonCancelar" onClick={onCancelar} >Cancelar</button>
         </form>
       ) : (
         <div>

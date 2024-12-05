@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Scope+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Poly:ital@0;1&family=Scope+One&display=swap');
 .App {
   text-align: center;
 }
@@ -35,4 +37,15 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.cabecera h1{
+  font-family: "Scope One";
+  font-weight: bold;
+}
+
+.pagina {
+  font-family: "Poly";
+  margin-left: 20px;
+  margin-right: 20px;
 }

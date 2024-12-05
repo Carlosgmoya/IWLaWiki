@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Goldman:wght@400;700&display=swap');
+
+body {
+    background: rgb(195, 195, 195);
+}
+
+input{
+    width: 60%;
+    height: 40px;
+    border: 1px solid #ccc;
+    background-color: #ffeaea;  
+    font-family: "Poly";
+    font-size: 16px;
+}
+
+.input{
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.output .listaWikis {
+    margin-top: 10px;
+    padding: 15px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: gray;
+}
+
+.output .listaArticulos {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: gray;
+}
+
+.output .wikisDestacadas {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: gray;
+}
+
+/* Botones */
+
+.botonIrACrearWiki {
+    background: cyan;
+    font-family: "Kanit", sans-serif;
+    font-size: 18px;
+    width: 150px;
+    height: 40px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.botonIrACrearWiki:hover {
+    background-color: rgb(0, 200, 255);
+    cursor: pointer;
+}
+
+.botonCrear {
+    background: cyan;
+    font-family: "Kanit", sans-serif;
+    font-size: 18px;
+    width: 150px;
+    height: 40px;
+    border-radius: 10px;
+}
+
+.botonCrear:hover {
+    background-color: rgb(0, 200, 255);
+    cursor: pointer;
+}
+
+.botonCancelar {
+    font-family: "Kanit", sans-serif;
+    font-size: 18px;
+    width: 150px;
+    height: 40px;
+    border-radius: 10px;
+}
+
+.botonCancelar:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+/* Listas */
+
+.ulWikis {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ulWikis a {
+    text-decoration: none;
+}
+
+.ulWikis a li {  
+    display: flex;
+    justify-content: space-between;
+    background: rgb(202, 199, 199);
+    text-decoration: none;
+    height: 60px;
+    border: 1px solid darkgray;
+}
+
+
+.ulWikis a li p {
+    font-family: "Goldman", sans-serif;
+    font-size: 20px;
+    padding-left: 20px;
+    color: black;
+}
+
+
+.ulWikis a li img {
+    padding-right: 20px;
+    width: 27px;
+    height: auto;
+}
+
+.ulArticulos {
+    list-style-type: none;
+    margin-bottom: 20px;
+}
+
+.ulArticulos a {
+    text-decoration: none;
+}
+
+.ulArticulos a li p {
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+
+/* EditorWiki */
+
+.editorTituloWiki {
+    border-radius: 0px;
+    font-size: 16px;
+}
+
+.editorWiki {
+    display:flex;
+    width: 60%;
+    height: 400px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}

@@ -7,10 +7,14 @@ function ArticulosWiki({ listaArticulos, nombre}) {
       <div>
         <h2>Lista Articulos</h2>
         {listaArticulos.length > 0 ? (
-            <ul>
+            <ul className="ulArticulos">
               {listaArticulos.map((articulo, index) => (
                 //<li key={index}>{listaArticulos.titulo}</li> // Asumiendo que cada wiki tiene un campo `nombre`
-                <li key={index}><a href={`http://localhost:3000/wikis/${nombre}/${articulo.titulo}`}>{articulo.titulo || "Artículo sin título"}</a></li>
+                <a href={`http://localhost:3000/wikis/${nombre}/${articulo.titulo}`}>
+                  <li key={index}>
+                    <p>{articulo.titulo || "Artículo sin título"}</p>
+                  </li>
+                </a>
               ))}
             </ul>
           ) : (
