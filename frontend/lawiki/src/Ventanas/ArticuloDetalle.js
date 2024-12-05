@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import ComentariosArticulo from '../Componentes/ComentariosArticulo';
 import VerArticulo from "../Componentes/VerArticulo";
 import EditarArticulo from "../Componentes/EditarArticulo";
+import SubirImagen from "../Componentes/SubirImagen";
 
 function ArticuloDetalle() {
   const { nombre } = useParams();
@@ -56,6 +57,10 @@ function ArticuloDetalle() {
                         <div>
                             <button onClick={handleCerrarEditor}>Cancelar</button>
                         </div>
+                        <div>
+                            <h1>Subir Imagen</h1>
+                            <SubirImagen />
+                         </div>
                     </>
                 )}
             </>

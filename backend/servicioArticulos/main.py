@@ -1,6 +1,7 @@
 from services import articulo as articuloAPI
+from services import imagenes
 
-from fastapi import FastAPI, Request, HTTPException, Query
+from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File
 
 from typing import Any
 from bson.objectid import ObjectId
@@ -9,8 +10,9 @@ import json
 from fastapi.middleware.cors import CORSMiddleware
 import re
 from markdown import markdown
-
-
+import os
+from pathlib import Path
+import shutil
 
 api = FastAPI()
 
@@ -141,6 +143,26 @@ async def eliminarArticulo(nombre: str, titulo: str, id: str = Query(None, min_l
 
     return "Artículo eliminado con éxito"
 
+# SUBIR ARCHIVOS A DROPBOX
+@api.post(path + "/subirImagen")
+async def subirImagen(archivo : UploadFile = File(...)):
+    #rutaLocal = "C:/Users/cgmoy/Desktop/prueba.png"
+    carpeta_destino = Path("imagenes_temporales")
+    carpeta_destino.mkdir(parents=True, exist_ok=True)
+    rutaLocal = carpeta_destino / archivo.filename
+    with rutaLocal.open("wb") as buffer:
+        shutil.copyfileobj(archivo.file, buffer)
+
+    if rutaLocal:  # Si el usuario seleccionó un archivo
+        rutaRemota = f"/{archivo.filename}"  # Asignar un nombre de archivo en Dropbox
+        imagenes.subirImagenDropbox(rutaLocal, rutaRemota)
+        enlace = imagenes.obtenerEnlaceImagen(rutaRemota)
+        print(f"Enlace directo a la imagen: {enlace}")
+    else:
+        print("No se seleccionó ningún archivo.")
+    os.remove(rutaLocal)
+   
+    return await "Ya existe una imagen con ese nombre" if enlace is None else "Subido satisfactoria mente"
 
 ########## Metodos Complementarios ############
 

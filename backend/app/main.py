@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Request, HTTPException, Query
+from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File
 from contextlib import asynccontextmanager
 import httpx
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from bson.objectid import ObjectId
+from pathlib import Path
 
 # python -m uvicorn main:app --reload --port 8000
 
@@ -240,6 +241,19 @@ async def eliminarArticulo(nombre: str, titulo: str, id: str = Query(None, min_l
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
 
     return respuesta.json()
+
+@app.post("/subirImagen")
+async def subirImagen(archivo : UploadFile = File(...)):
+    try:
+        files = {"archivo": (archivo.filename, archivo.file, archivo.content_type)}
+        respuesta = await clienteArticulo.post(f"/subirImagen", files = files)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+        
+    return respuesta.json
 
 
 ###--------------------------------CRUD COMENTARIOS-----------------------------------###
