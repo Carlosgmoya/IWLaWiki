@@ -5,7 +5,6 @@ import json
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from bson.objectid import ObjectId
-from pathlib import Path
 
 # python -m uvicorn main:app --reload --port 8000
 

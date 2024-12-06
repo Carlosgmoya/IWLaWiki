@@ -5,6 +5,7 @@ import ComentariosArticulo from '../Componentes/ComentariosArticulo';
 import VerArticulo from "../Componentes/VerArticulo";
 import EditarArticulo from "../Componentes/EditarArticulo";
 import SubirImagen from "../Componentes/SubirImagen";
+import SubirMapa from "../Componentes/SubirMapa";
 
 function ArticuloDetalle() {
   const { nombre } = useParams();
@@ -60,7 +61,10 @@ function ArticuloDetalle() {
                         <div>
                             <h1>Subir Imagen</h1>
                             <SubirImagen />
-                         </div>
+                        </div>
+                        <div>
+                            <SubirMapa />
+                        </div>
                     </>
                 )}
             </>
