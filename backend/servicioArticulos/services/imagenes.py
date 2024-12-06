@@ -1,7 +1,5 @@
 import dropbox
 import requests
-from tkinter import Tk
-from tkinter.filedialog import askopenfilename
 
 APP_KEY = '550i2tid5x9fltn'
 APP_SECRET = 'kzwo0g16zld74yi'
@@ -30,14 +28,6 @@ else:
     print("No se pudo obtener un Access Token válido.")
 
 dbx = dropbox.Dropbox(ACCESS_TOKEN)
-
-def seleccionarArchivo():
-    # Crear una ventana oculta de Tkinter
-    root = Tk()
-    root.withdraw()  # Oculta la ventana principal
-    # Abre el diálogo para seleccionar un archivo
-    rutaArchivo = askopenfilename(title="Seleccionar archivo para subir a Dropbox")
-    return rutaArchivo
 
 def generar_nombre_unico(ruta_remota):
     """Genera un nombre único si el archivo ya existe en Dropbox."""
