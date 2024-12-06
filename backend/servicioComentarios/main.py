@@ -1,17 +1,8 @@
 #ejecutar de manera local -> python -m uvicorn main:api --reload --port 8003
-from fastapi import FastAPI, Request, HTTPException, Query
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-
-from typing import Any, Union
-from bson import json_util
+from fastapi import FastAPI, HTTPException, Query
 from bson.objectid import ObjectId
 from typing import List
-import json
 from datetime import datetime
-import httpx
-from fastapi.middleware.cors import CORSMiddleware
 
 from models import Comentario
 from bd import comentarioBD
@@ -20,14 +11,6 @@ from bd import comentarioBD
 path = "/api/v1"
 
 api = FastAPI()
-
-api.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # URL del frontend
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 @api.get(path + "/insertComentarios")
 async def crear_comentario():

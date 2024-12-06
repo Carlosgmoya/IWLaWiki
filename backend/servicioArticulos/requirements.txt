@@ -2,8 +2,7 @@ uvicorn
 fastApi
 pydantic
 pymongo[srv]
-fastapi-cors
 markdown
 requests
 dropbox
-tkinter
+python-multipart

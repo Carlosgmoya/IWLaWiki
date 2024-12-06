@@ -2,5 +2,3 @@ uvicorn
 fastApi
 pydantic
 pymongo[srv]
-httpx
-fastapi-cors

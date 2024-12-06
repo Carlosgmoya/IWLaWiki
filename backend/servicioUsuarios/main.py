@@ -1,13 +1,7 @@
 #ejecutar de manera local -> python -m uvicorn main:api --reload --port 8004
-from fastapi import FastAPI, Request, HTTPException, Query
-
-from typing import Any, Union
-from bson import json_util
+from fastapi import FastAPI, HTTPException
 from bson.objectid import ObjectId
 from typing import List
-import json
-from datetime import datetime
-import httpx
 from fastapi.middleware.cors import CORSMiddleware
 
 from models import Usuario, Valoracion

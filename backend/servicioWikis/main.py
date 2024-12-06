@@ -4,18 +4,9 @@ from fastapi import FastAPI, Request, HTTPException, Query
 from typing import Any
 from bson.objectid import ObjectId
 from typing import List
-from fastapi.middleware.cors import CORSMiddleware
 
 
 api = FastAPI()
-
-api.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # URL del frontend
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # prefijo para todas las URLs
 path = "/api/v1"

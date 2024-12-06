@@ -7,8 +7,6 @@ from typing import Any
 from bson.objectid import ObjectId
 from typing import List
 import json
-from fastapi.middleware.cors import CORSMiddleware
-import re
 from markdown import markdown
 import os
 from pathlib import Path
@@ -20,14 +18,6 @@ api = FastAPI()
 path = "/api/v1" 
 
 api = FastAPI()
-
-api.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # URL del frontend
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 #   -ejecutar de manera local -> python -m uvicorn main:api --reload --port 8002
 
