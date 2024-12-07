@@ -254,6 +254,88 @@ async def subirImagen(archivo : UploadFile = File(...)):
         
     return respuesta.json
 
+###--------------------------------CRUD MAPAS-----------------------------------###
+# GET MAPA
+@app.get("/wikis/{nombre}/articulos/{titulo}/mapa")
+async def getMapa(nombre : str, titulo : str):
+    articuloJSON = await getArticulo(nombre, titulo)
+    articuloID = getID(articuloJSON)
+    
+    try:
+        query_params = {}
+        query_params["art"] = articuloID
+
+        respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos/{titulo}/mapa", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+# CREAR MAPA
+@app.post("/wikis/{nombre}/articulos/{titulo}/mapas")
+async def crearMapa(request: Request, nombre: str, titulo : str):
+    articuloJSON = await getArticulo(nombre, titulo)
+    articuloID = getID(articuloJSON)
+    
+    try:
+        data = await request.json()
+
+        query_params = {}
+        query_params["art"] = articuloID
+
+        respuesta = await clienteArticulo.post(f"/wikis/{nombre}/articulos/{titulo}/mapas", params=query_params, json=data)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+# ACTUALIZAR MAPA
+@app.put("/wikis/{nombre}/articulos/{titulo}/mapas")
+async def crearMapa(request: Request, nombre: str, titulo : str):
+    articuloJSON = await getArticulo(nombre, titulo)
+    articuloID = getID(articuloJSON)
+    mapaJSON = await getMapa(nombre, titulo)
+    mapaID = getID(mapaJSON)
+    
+    try:
+        data = await request.json()
+
+        query_params = {}
+        query_params["mapa"] = mapaID
+        query_params["art"] = articuloID
+
+        respuesta = await clienteArticulo.put(f"/wikis/{nombre}/articulos/{titulo}/mapas", params=query_params, json=data)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+# BORRAR MAPA
+@app.delete("/wikis/{nombre}/articulos/{titulo}/borrarMapa")
+async def eliminarMapa(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
+    try:
+        query_params = {}
+        if id is not None:
+            query_params["id"] = id
+
+        respuesta = await clienteArticulo.delete(f"/wikis/{nombre}/articulos/{titulo}/borrarMapa", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+
+    return respuesta.json()
+
 
 ###--------------------------------CRUD COMENTARIOS-----------------------------------###
 

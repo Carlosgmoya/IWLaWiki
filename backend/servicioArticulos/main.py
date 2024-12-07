@@ -1,5 +1,6 @@
 from services import articulo as articuloAPI
 from services import imagenes
+from services import mapa as mapaAPI
 
 from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File
 
@@ -153,6 +154,72 @@ async def subirImagen(archivo : UploadFile = File(...)):
     os.remove(rutaLocal)
    
     return await "Ya existe una imagen con ese nombre" if enlace is None else "Subido satisfactoria mente"
+
+# GET MAPAS DE UN ARTICULO
+@api.get(path + "/wikis/{nombre}/articulos/{titulo}/mapa")
+async def getMapas(nombre: str, titulo: str,  art: str = Query(...)):
+    artObjID = getObjID(art)
+
+    mapasJSON = await mapaAPI.getMapa(artObjID)
+
+    return mapasJSON
+
+# CREAR MAPA
+@api.post(path + "/wikis/{nombre}/articulos/{titulo}/mapas")
+async def crearMapa(request: Request, nombre: str, titulo: str, art: str = Query(...)):
+    artObjID = getObjID(art)
+    
+    try:
+        data = await request.json()
+    except Exception as e:
+        data = {}
+
+    if not data:
+        raise HTTPException(status_code=400, detail="Parametros de request vacío")
+    
+    latitud = data.get("latitud")
+    longitud = data.get("longitud")
+    nombreUbicacion = data.get("nombreUbicacion")
+    articulo = artObjID
+
+    mapaJSON = await mapaAPI.getMapa(art)
+   
+    return await mapaAPI.crearMapa(latitud, longitud, nombreUbicacion, articulo) if mapaJSON is None else "Ya existe un articulo con ese nombre"
+
+# ACTUALIZAR MAPA
+@api.put(path + "/wikis/{nombre}/articulos/{titulo}/mapas")
+async def actualizarMapa(request: Request, nombre: str, titulo: str, mapa: str, art: str = Query(...)):
+    artObjID = getObjID(art)
+    mapaObjID = getObjID(mapa)
+    
+    try:
+        data = await request.json()
+    except Exception as e:
+        data = {}
+
+    if not data:
+        raise HTTPException(status_code=400, detail="Parametros de request vacío")
+    
+    mapa = mapaObjID
+    latitud = data.get("latitud")
+    longitud = data.get("longitud")
+    nombreUbicacion = data.get("nombreUbicacion")
+    articulo = artObjID
+   
+    result = await mapaAPI.actualizarMapa(mapaObjID, latitud, longitud, nombreUbicacion, articulo)
+    return result
+
+# BORRAR UN MAPA
+@api.delete(path + "/wikis/{nombre}/articulos/{titulo}/borrarMapa")
+async def eliminarMapa(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
+    mapaObjID = getObjID(id)
+    result = await mapaAPI.eliminarMapa(mapaObjID)
+        
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail=f"Versión del artículo no encontrada")
+
+    return "Mapa eliminado con éxito"
 
 ########## Metodos Complementarios ############
 
