@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const EditarArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial }) => {
+const EditarArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancelar }) => {
   const [contenido, setContenido] = useState(contenidoInicial);
   const [mensaje, setMensaje] = useState("");
 
@@ -29,6 +29,7 @@ const EditarArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial }) => {
 
       if (response.ok) {
         setMensaje("¡Guardado exitosamente!");
+        onCancelar();
       } else {
         const errorData = await response.json();
         console.error("Error:", errorData);

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import ComentariosArticulo from '../Componentes/ComentariosArticulo';
 import VerArticulo from "../Componentes/VerArticulo";
+import VerMapa from "../Componentes/VerMapa";
 import EditarArticulo from "../Componentes/EditarArticulo";
 import SubirImagen from "../Componentes/SubirImagen";
 import SubirMapa from "../Componentes/SubirMapa";
@@ -39,6 +40,10 @@ function ArticuloDetalle() {
                 <h1>{articulo.titulo}</h1>
                 {!mostrarEditor ? (
                     <>
+                        <VerMapa
+                            nombreWiki={nombre}
+                            tituloArticulo={titulo}
+                        />
                         <VerArticulo contenido_html={articulo.contenido_html} />
                         <div>
                             <button onClick={handleAbrirEditor}>Editar Articulo</button>
@@ -54,6 +59,7 @@ function ArticuloDetalle() {
                             nombreWiki={nombre}
                             tituloArticulo={titulo}
                             contenidoInicial={articulo.contenido}
+                            onCancelar={handleCerrarEditor}
                         />
                         <div>
                             <button onClick={handleCerrarEditor}>Cancelar</button>
@@ -63,7 +69,10 @@ function ArticuloDetalle() {
                             <SubirImagen />
                         </div>
                         <div>
-                            <SubirMapa />
+                            <SubirMapa
+                                nombreWiki={nombre}
+                                tituloArticulo={titulo}
+                            />
                         </div>
                     </>
                 )}

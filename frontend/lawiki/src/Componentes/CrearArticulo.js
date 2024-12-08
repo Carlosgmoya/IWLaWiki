@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SubirMapa from "./SubirMapa";
 
 const CrearArticulo = ({ nombreWiki, onCancelar }) => {
     const [contenido, setContenido] = useState("");
