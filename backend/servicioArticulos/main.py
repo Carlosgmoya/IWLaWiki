@@ -153,7 +153,7 @@ async def subirImagen(archivo : UploadFile = File(...)):
         print("No se seleccionó ningún archivo.")
     os.remove(rutaLocal)
    
-    return await "Ya existe una imagen con ese nombre" if enlace is None else "Subido satisfactoria mente"
+    return "Ya existe una imagen con ese nombre" if enlace is None else f"Subido satisfactoria mente a {enlace}"
 
 # GET MAPAS DE UN ARTICULO
 @api.get(path + "/wikis/{nombre}/articulos/{titulo}/mapa")
