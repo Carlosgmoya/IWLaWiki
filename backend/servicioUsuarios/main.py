@@ -79,22 +79,38 @@ async def crearValoracion(valoracion: Valoracion):
     return Valoracion(**valoracion_dict)
 
 
-@api.get(path + "/valoraciones/de/{usuario_email}", response_model=List[Valoracion])
+# ---------- PENDIENTE DE CAMBIAR A NOMBRE DE USUARIO EN LUGAR DE EMAIL ------------- #
+
+@api.get(path + "deprecated/valoraciones/de/{usuario_email}", response_model=List[Valoracion])
 async def getValoracionesDeUsuario(usuario_email: str):
     """Devuelve todas las valoraciones hechas por un usuario"""
     valoraciones = list(valoracionBD.find({"de_usuario": usuario_email}))
     return [Valoracion(**valoracion) for valoracion in valoraciones]
 
-@api.get(path + "/valoraciones/a/{usuario_email}", response_model=List[Valoracion])
+@api.get(path + "deprecated/valoraciones/a/{usuario_email}", response_model=List[Valoracion])
 async def getValoracionesDeUsuario(usuario_email: str):
     """Devuelve todas las valoraciones dirigidas a un usuario"""
     valoraciones = list(valoracionBD.find({"a_usuario": usuario_email}))
     return [Valoracion(**valoracion) for valoracion in valoraciones]
 
-@api.get(path + "/valoracion/{usuario_email}")
-async def getValoracionDeUsuario(usuario_email: str):
+@api.get(path + "deprecated/valoracion/{usuario_email}")
+async def getValoracionDeUsuario2(usuario_email: str):
     """Devuelve la media de las valoraciones de un usuario, o 0 si no tiene"""
     valoraciones = list(valoracionBD.find({"a_usuario": usuario_email}))
+    if len(valoraciones) == 0:
+        return {"valor": 0}
+    suma = 0
+    for valoracion in valoraciones:
+        suma += valoracion["valor"]
+    media = suma / len(valoraciones)    
+    return {"valor": media}
+# ---------------------------------------------------------------------------------------#
+
+
+@api.get(path + "/valoracion/{usuario}")
+async def getValoracionDeUsuario(usuario: str):
+    """Devuelve la media de las valoraciones de un usuario, o 0 si no tiene"""
+    valoraciones = list(valoracionBD.find({"a_usuario": usuario}))
     if len(valoraciones) == 0:
         return {"valor": 0}
     suma = 0

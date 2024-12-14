@@ -11,15 +11,17 @@ from bson.objectid import ObjectId
 clienteWiki: httpx.AsyncClient = None
 clienteArticulo: httpx.AsyncClient = None
 clienteComentario: httpx.AsyncClient = None
+clienteUsuario: httpx.AsyncClient = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Establecer conexión con los microservicios
-    global clienteWiki, clienteArticulo, clienteComentario
+    global clienteWiki, clienteArticulo, clienteComentario, clienteUsuario
 
     clienteWiki = httpx.AsyncClient(base_url="http://localhost:8001/api/v1")        # url local
     clienteArticulo = httpx.AsyncClient(base_url="http://localhost:8002/api/v1")    # url local
     clienteComentario = httpx.AsyncClient(base_url="http://localhost:8003/api/v1")  # url local
+    clienteUsuario = httpx.AsyncClient(base_url="http://localhost:8004/api/v1")     # url local
 
     # clienteWiki = httpx.AsyncClient(base_url="http://lawiki-modulo-wiki:8001/api/v1")        # url entorno Docker
     # clienteArticulo = httpx.AsyncClient(base_url="http://lawiki-modulo-articulo:8002/api/v1")    # url entorno Docker
@@ -29,6 +31,7 @@ async def lifespan(app: FastAPI):
     await clienteWiki.aclose()
     await clienteArticulo.aclose()
     await clienteComentario.aclose()
+    await clienteUsuario.aclose()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -208,6 +211,14 @@ async def actualizarArticulo(request: Request, nombre: str, titulo: str):
     wikiJSON = await getWiki(nombre)
     wikiID = getID(wikiJSON)
 
+    #Actualizar mapa
+    mapaAntiguo = await getMapa(nombre, titulo)
+    print(mapaAntiguo)
+    mapaNuevo = {}
+    mapaNuevo["latitud"] = mapaAntiguo["latitud"]
+    mapaNuevo["longitud"] = mapaAntiguo["longitud"]
+    mapaNuevo["nombreUbicacion"] = mapaAntiguo["nombreUbicacion"]
+
     try:
         data = await request.json()
 
@@ -220,8 +231,26 @@ async def actualizarArticulo(request: Request, nombre: str, titulo: str):
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    respuestaJSON = respuesta.json()
 
-    return respuesta.json()
+    #actualizar mapa despues de cambiar el objID del articulo
+    articuloID = respuestaJSON["_id"]
+    mapaID = getID(mapaAntiguo)
+    
+    try:
+        query_params = {}
+        query_params["mapa"] = mapaID
+        query_params["art"] = articuloID
+
+        respuesta = await clienteArticulo.put(f"/wikis/{nombre}/articulos/{titulo}/mapas", params=query_params, json=mapaNuevo)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con mapa")
+
+    return "Artículo actualizado con éxito"
 
 
 # BORRAR UNA TODAS LAS VERSIONES DEL ARTÍCULO O SOLO UNA VERSION SI SE PASA ID
@@ -256,7 +285,7 @@ async def subirImagen(archivo : UploadFile = File(...)):
 
 ###--------------------------------CRUD MAPAS-----------------------------------###
 # GET MAPA
-@app.get("/wikis/{nombre}/articulos/{titulo}/mapa")
+@app.get("/wikis/{nombre}/articulos/{titulo}/mapas")
 async def getMapa(nombre : str, titulo : str):
     articuloJSON = await getArticulo(nombre, titulo)
     articuloID = getID(articuloJSON)
@@ -297,7 +326,7 @@ async def crearMapa(request: Request, nombre: str, titulo : str):
 
 # ACTUALIZAR MAPA
 @app.put("/wikis/{nombre}/articulos/{titulo}/mapas")
-async def crearMapa(request: Request, nombre: str, titulo : str):
+async def actualizarMapa(request: Request, nombre: str, titulo : str):
     articuloJSON = await getArticulo(nombre, titulo)
     articuloID = getID(articuloJSON)
     mapaJSON = await getMapa(nombre, titulo)
@@ -320,7 +349,7 @@ async def crearMapa(request: Request, nombre: str, titulo : str):
     return respuesta.json()
 
 # BORRAR MAPA
-@app.delete("/wikis/{nombre}/articulos/{titulo}/borrarMapa")
+@app.delete("/wikis/{nombre}/articulos/{titulo}/mapas")
 async def eliminarMapa(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
     try:
         query_params = {}
@@ -410,4 +439,38 @@ async def eliminarComentario(comentarioID: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloComentario")
     
+    return respuesta.json()
+
+
+###----------------------------------CRUD USUARIOS-------------------------------------###
+
+
+# GET USUARIO POR ID
+@app.get("/usuarios/id/{usuarioID}")
+async def getUsuariosPorId(usuarioID: str):
+    try:
+        respuesta = await clienteUsuario.get(f"/usuarios/id/{usuarioID}")
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
+
+    return respuesta.json()
+
+
+###----------------------------------CRUD VALORACIONES-------------------------------------###
+
+
+# GET MEDIA VALORACIONES DE USUARIO POR EMAIL
+@app.get("/valoracion/{usuario}")
+async def getValoracionDeUsuario(usuario: str):
+    try:
+        respuesta = await clienteUsuario.get(f"/valoracion/{usuario}")
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
+
     return respuesta.json()

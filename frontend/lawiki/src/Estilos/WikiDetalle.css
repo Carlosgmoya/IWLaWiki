@@ -4,17 +4,22 @@
     align-items: center;
     border: 2px solid darkgray;
     margin-top: 10px;
+    margin-bottom: 10px;
     padding-left: 10px;
     padding-right: 10px;
 }
 
-.irAModificarWiki {
+.nombreWiki {
+    padding-left: 7px;
+}
+
+.botonEditar {
     border-radius: 20%;
     border-width: 2px;
     background: none;
 }
 
-.irAModificarWiki:hover {
+.botonEditar:hover {
     background-color: darkgray;
 }
 

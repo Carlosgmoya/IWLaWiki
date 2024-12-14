@@ -103,10 +103,14 @@ function WikiDetalle() {
       {wiki ? (
         <>
           <div className="cabeceraWiki">
-            <h1 className="tituloWiki">{wiki.nombre}</h1>
-            <button title="Editar wiki" className="irAModificarWiki" onClick={handleAbrirEditor}>
-              <img src="/Iconos/IconoEditar.svg" alt="Editar wiki" />
-            </button>
+            <h1 className="nombreWiki">{wiki.nombre}</h1>
+            {
+            (!mostrarEditor && !mostrarCrearArticulo) && (
+              <button title="Editar wiki" className="botonEditar" onClick={handleAbrirEditor}>
+                <img src="/Iconos/IconoEditar.svg" alt="Editar wiki" />
+              </button>
+              )
+            }
           </div>
 
           {!mostrarEditor && !mostrarCrearArticulo ? (

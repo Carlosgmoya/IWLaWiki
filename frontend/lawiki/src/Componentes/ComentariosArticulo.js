@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import "../Estilos/Comentarios.css";
+
 function ComentariosArticulo() {
   const { nombre } = useParams();
   const { titulo } = useParams();
@@ -22,8 +24,7 @@ function ComentariosArticulo() {
   }, [nombre, titulo])
 
   return (
-    <div>
-      <div>
+      <div className="comentarios">
         <h2>Comentarios del artículo</h2>
         {listaComentarios === null ? (
           <p>Cargando...</p>
@@ -44,7 +45,6 @@ function ComentariosArticulo() {
           </>
         )}
       </div>
-    </div>
   );
 }
 export default ComentariosArticulo;

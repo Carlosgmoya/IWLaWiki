@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet"; // Leaflet is required for some additional functionality
 import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
 
-function SubirMapa() {
+function SubirMapa({ nombreWiki, tituloArticulo }) {
     
     const [mostrarSubirMapa, setMostrarSubirMapa] = useState(false);
     const [ubicacion, setUbicacion] = useState("");
@@ -49,7 +49,7 @@ function SubirMapa() {
             const response = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
                 method: 'GET',
                 headers: {
-                    'User-Agent': 'laWiki/1.0 alexfusun@gmail.com',
+                    'User-Agent': 'laWiki/1.0 lawiki.iweb@gmail.com',
                 },
             });
 
@@ -79,6 +79,28 @@ function SubirMapa() {
             lon: longitud,
         });
         setNombreUbicacion(nombre);
+    }
+
+    const handleGuardarMapa = async () => {
+        const datos = {
+            latitud: coordenadas.lat,
+            longitud: coordenadas.lon,
+            nombreUbicacion: nombreUbicacion,
+        }
+
+        try {
+            const response = await fetch(
+                `http://127.0.0.1:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(datos),
+                }
+            );
+        } catch(error) {
+            console.error("Error:", error);
+            setError("Error inesperado al conectar con backend.");
+        }
     }
 
     const MapComponent = ({ coordinates, locationName }) => {
@@ -142,7 +164,10 @@ function SubirMapa() {
                     )}
                 </div>
                 {coordenadas && (
-                    <MapComponent coordinates={coordenadas} locationName={nombreUbicacion} />
+                    <div>
+                        <MapComponent coordinates={coordenadas} locationName={nombreUbicacion} />
+                        <button onClick={handleGuardarMapa}>Confirmar</button>
+                    </div>
                 )}
             </>
             )

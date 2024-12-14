@@ -1,9 +1,11 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import HeaderWiki from './Componentes/HeaderWiki';
 import PantallaInicio from './Ventanas/PantallaInicio';
 import WikiDetalle from './Ventanas/WikiDetalle';
 import ArticuloDetalle from './Ventanas/ArticuloDetalle';
-import HeaderWiki from './Componentes/HeaderWiki';
+import UsuarioDetalle from './Ventanas/UsuarioDetalle';
 
 function App() {
   return (
@@ -27,6 +29,11 @@ function App() {
             <Route 
             path="/wikis/:nombre/:titulo"
             element={<ArticuloDetalle/>}
+            />
+
+            <Route
+              path="/usuario/:nombre"
+              element={<UsuarioDetalle/>}
             />  
           </Routes>
         </Router>

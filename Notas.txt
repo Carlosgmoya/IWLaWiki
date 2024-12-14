@@ -1,0 +1,12 @@
+Consideraciones/sugerencias:
+    -Devolver elementos en una unica llamada API al backend. Ej.: Devolver datos de articulo y creador en una sola llamada.
+    -Refactorizar backend --- Objetivo: Claridad y limpieza en el codigo, seguir mismo estandar (camelCase, pydantic).
+    -Guardar los tokens, credenciales, etc en variables de Entorno.
+    -Usar variables de entorno u otro metodo para definir las URL de las APIs.
+
+A tener en cuenta:
+    -Usar <Link to=''></Link> en lugar de <a href=''></a> en el frontend.
+    -Cuando se implemente Login, si un usuario es la primera vez q inicia sesion, se le exigiria introducir un nombre de usuario,
+    no se podran repetir nombres de usuario, de esta manera se facilita el manejo de los datos de un usuario (El frontend hace llamadas API
+    al backend directamente con el nombre de usuario que se encuentra en el path URL). Por tanto, se considera utilizar nombre en lugar de email 
+    para las consultas a BD de usuario, valoraciones, etc.
