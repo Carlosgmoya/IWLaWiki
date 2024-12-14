@@ -281,7 +281,7 @@ async def subirImagen(archivo : UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
         
-    return respuesta.json
+    return respuesta.text
 
 ###--------------------------------CRUD MAPAS-----------------------------------###
 # GET MAPA

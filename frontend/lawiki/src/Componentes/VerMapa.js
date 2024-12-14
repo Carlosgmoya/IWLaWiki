@@ -53,11 +53,7 @@ function VerMapa({ nombreWiki, tituloArticulo }) {
         );
       };
 
-    return (
-      <>
-        <MapComponent coordinates={coordenadas} locationName={nombreUbicacion} />
-      </>
-    );
+    return <MapComponent coordinates={coordenadas} locationName={nombreUbicacion} />;
 }
 
 export default VerMapa;
