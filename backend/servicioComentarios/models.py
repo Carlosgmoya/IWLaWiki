@@ -24,7 +24,7 @@ class PyObjectId(ObjectId):
 class Comentario(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=ObjectId, alias="_id")
     fecha: datetime
-    usuario_id: PyObjectId
+    usuario: str
     articulo_id: PyObjectId
     contenido: str
 

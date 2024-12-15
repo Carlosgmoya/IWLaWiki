@@ -1,5 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import HeaderWiki from './Componentes/HeaderWiki';
 import PantallaInicio from './Ventanas/PantallaInicio';
@@ -38,6 +40,8 @@ function App() {
           </Routes>
         </Router>
       </div>
+
+      <ToastContainer />
     </>
 
     

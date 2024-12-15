@@ -462,6 +462,19 @@ async def getUsuariosPorId(usuarioID: str):
 ###----------------------------------CRUD VALORACIONES-------------------------------------###
 
 
+@app.post("/valoraciones")
+async def crearValoracion(request: Request):
+    try:
+        data = await request.json()
+        respuesta = await clienteUsuario.post("/valoraciones", json=data)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
+    
+    return respuesta.json()
+
 # GET MEDIA VALORACIONES DE USUARIO POR EMAIL
 @app.get("/valoracion/{usuario}")
 async def getValoracionDeUsuario(usuario: str):

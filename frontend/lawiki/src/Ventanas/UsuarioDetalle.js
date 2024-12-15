@@ -1,6 +1,8 @@
 import React, { useEffect, useState} from "react";
 import { useParams } from "react-router-dom";
 
+import Valoraciones from "../Componentes/Valoraciones";
+
 function UsuarioDetalle() {
     const { nombre } = useParams();
     const [valoraciones, setValoraciones] = useState(null);
@@ -18,31 +20,7 @@ function UsuarioDetalle() {
         <div>
             <h2>Perfil de {nombre}</h2>
             
-            <div className="valoraciones">
-                <h2>Valoraciones</h2>
-                {valoraciones ? (
-                    <div className="estrellasValoracion">
-                        <p>{valoraciones.valor} estrellas</p>
-                        {Array.from({ length: valoraciones.valor }).map((_, index) => (
-                            <img 
-                                key={index}
-                                src="/Iconos/Estrella1.png"
-                                alt={'Estrella'}
-                            />
-                        ))}
-                        {valoraciones.valor % 1 >= 0.5 && <img src="/Iconos/Estrella2.png" alt="Media Estrella" />}
-                        {Array.from({ length: (5 - valoraciones.valor) }).map((_, index) => (
-                            <img 
-                                key={index}
-                                src="/Iconos/Estrella3.png"
-                                alt={'Estrella'}
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <p>Cargando valoraciones...</p>
-                )}  
-            </div>
+            <Valoraciones usuario={nombre} />
             <div className="listaArticulos">
                 <h2>Articulos publicados</h2>
                 <p>En desarrollo...</p>

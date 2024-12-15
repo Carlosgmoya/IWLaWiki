@@ -19,7 +19,7 @@ Entidad articulo:
 Entidad comentario 
     -id 
     -fecha -> Date
-    -usuario -> usuario.id
+    -usuario -> usuario.id      PENDIENTE DE CAMBIAR A NOMBRE USUARIO
     -articulo -> articulo.id
     -contenido -> String
 
