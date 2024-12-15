@@ -22,7 +22,7 @@ const CrearArticulo = ({ nombreWiki, onCancelar }) => {
 
         try {
             const response = await fetch(
-                `http://127.0.0.1:8000/wikis/${nombreWiki}/articulos`,
+                `http://lawiki-gateway:8000/wikis/${nombreWiki}/articulos`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

@@ -90,7 +90,7 @@ function SubirMapa({ nombreWiki, tituloArticulo }) {
 
         try {
             const response = await fetch(
-                `http://127.0.0.1:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
+                `http://lawiki-gateway:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },

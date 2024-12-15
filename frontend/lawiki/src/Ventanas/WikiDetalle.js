@@ -18,7 +18,7 @@ function WikiDetalle() {
 
   const fetchWikiDatos = useCallback(async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/wikis/${nombre}`);
+      const response = await fetch(`http://lawiki-gateway:8000/wikis/${nombre}`);
       const data = await response.json();
       setWiki(data);
     } catch (error) {
@@ -28,7 +28,7 @@ function WikiDetalle() {
 
   const fetchArticulosWiki = useCallback(async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/wikis/${nombre}/articulos`);
+      const response = await fetch(`http://lawiki-gateway:8000/wikis/${nombre}/articulos`);
       const data = await response.json();
       if (Array.isArray(data)) {
         setListaArticulos(data);
@@ -42,7 +42,7 @@ function WikiDetalle() {
 
   const fetchBusqueda = useCallback(async (term) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/wikis/${nombre}/articulos?terminoDeBusqueda=${term}`);
+      const response = await fetch(`http://lawiki-gateway:8000/wikis/${nombre}/articulos?terminoDeBusqueda=${term}`);
       const data = await response.json();
       if (Array.isArray(data)) {
         setListaBusqueda(data);

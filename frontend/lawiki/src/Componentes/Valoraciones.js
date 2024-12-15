@@ -12,7 +12,7 @@ function Valoraciones({ usuario }) {
     const [logged, setLogged] = useState(false);
     
     useEffect (() => {
-        fetch(`http://127.0.0.1:8000/valoracion/${usuario}`)
+        fetch(`http://lawiki-gateway:8000/valoracion/${usuario}`)
             .then((response) => response.json())
             .then((data) => {
                 console.log("Datos Valoraciones:", data);
@@ -54,7 +54,7 @@ function Valoraciones({ usuario }) {
             valor: puntuacion,
         };
 
-        fetch(`http://127.0.0.1:8000/valoraciones`,
+        fetch(`http://lawiki-gateway:8000/valoraciones`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},

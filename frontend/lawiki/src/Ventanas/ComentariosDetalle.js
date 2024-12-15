@@ -9,7 +9,7 @@ function ComentariosDetalle() {
     const [listaComentarios, setListaComentarios] = useState([]);
 
     useEffect(() => {
-        fetch(`http://127.0.0.1:8000/wikis/${nombre}/articulo/${titulo}/comentarios`)
+        fetch(`http://lawiki-gateway:8000/wikis/${nombre}/articulo/${titulo}/comentarios`)
         .then((response) => response.json())
         .then((data) => {
             console.log(data)

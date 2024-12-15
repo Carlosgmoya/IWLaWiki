@@ -19,7 +19,7 @@ const EditarArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancel
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}`,
+        `http://lawiki-gateway:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

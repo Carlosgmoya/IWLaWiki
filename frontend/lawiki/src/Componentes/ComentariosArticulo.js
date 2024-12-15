@@ -17,7 +17,7 @@ function ComentariosArticulo() {
   };
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/wikis/${nombre}/articulos/${titulo}/comentarios`)
+    fetch(`http://lawiki-gateway:8000/wikis/${nombre}/articulos/${titulo}/comentarios`)
     .then((response) => response.json())
     .then((data) => {
       if(data["detail"] !== null) {
@@ -37,7 +37,7 @@ function ComentariosArticulo() {
     };
     console.log("comentario: ", comentario);
 
-    fetch(`http://127.0.0.1:8000/wikis/${nombre}/articulos/${titulo}/comentarios`,
+    fetch(`http://lawiki-gateway:8000/wikis/${nombre}/articulos/${titulo}/comentarios`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json"},

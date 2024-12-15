@@ -20,11 +20,11 @@ function ArticuloDetalle() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response1 = await fetch(`http://127.0.0.1:8000/wikis/${nombre}/articulos/${titulo}`);
+                const response1 = await fetch(`http://lawiki-gateway:8000/wikis/${nombre}/articulos/${titulo}`);
                 const datosArticulo = await response1.json();
                 setArticulo(datosArticulo); // Almacena la lista completa de articulos
 
-                const response2 = await fetch(`http://127.0.0.1:8000/usuarios/id/${datosArticulo.creador.$oid}`);
+                const response2 = await fetch(`http://lawiki-gateway:8000/usuarios/id/${datosArticulo.creador.$oid}`);
                 const datosCreador = await response2.json();
                 setCreador(datosCreador);
                 } catch (error) {

@@ -37,7 +37,7 @@ function PantallaInicio() {
 
   const fetchWikisDestacadas = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/wikis");
+      const response = await fetch("http://lawiki-gateway:8000/wikis");
       const data = await response.json();
       if (Array.isArray(data)) {
         setListaWikis(data); // Carga las wikis destacadas.
@@ -51,7 +51,7 @@ function PantallaInicio() {
 
   const fetchBusqueda = async (term) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/wikis?term=${term}`);
+      const response = await fetch(`http://lawiki-gateway:8000/wikis?term=${term}`);
       const data = await response.json();
       if (Array.isArray(data)) {
         setListaBusqueda(data); // Actualiza los resultados de búsqueda.

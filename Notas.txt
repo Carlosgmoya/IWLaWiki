@@ -1,16 +1,18 @@
 Consideraciones/sugerencias:
-    -Devolver elementos en una unica llamada API al backend. Ej.: Devolver datos de articulo y creador en una sola llamada.
-    -Refactorizar backend --- Objetivo: Claridad y limpieza en el codigo, seguir mismo estandar (camelCase, pydantic).
+    
     -Guardar los tokens, credenciales, etc en variables de Entorno.
     -Usar variables de entorno u otro metodo para definir las URL de las APIs.
     -Añadir comentarios (opcionales) a las valoraciones, parecido a google maps.
-    -Dividir trabajo (backend, frontend), postman.
+    -Dividir trabajo (backend, frontend), postman. Parejas de trabajo para funcionalidades (backend-frontend)
+
+    Para Backend:
+        -Devolver elementos en una unica llamada API al backend. Ej.: Devolver datos de articulo y creador en una sola llamada.
+        -Refactorizar backend --- Objetivo: Claridad y limpieza en el codigo, seguir mismo estandar (camelCase, pydantic).
 
     Para Frontend:
         -Toast
         -Usar <Link to=''></Link> en lugar de <a href=''></a> en el frontend.
-
-    Para Backend:
+        -Refactorizar
 
 
 A tener en cuenta:
