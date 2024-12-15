@@ -18,7 +18,7 @@ const SubirImagen = () => {
         formData.append("archivo", file); // El nombre "archivo" es el nombre del campo que usaremos en el backend
         try {
             const response = await fetch(
-                `http://lawiki-gateway:8000/subirImagen`,
+                `http://localhost:8000/subirImagen`,
                 {
                     method: "POST",
                     body: formData,

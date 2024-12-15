@@ -10,7 +10,7 @@ function EditorWiki({ onCancelar }) {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://lawiki-gateway:8000/wikis", {
+      const response = await fetch("http://localhost:8000/wikis", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

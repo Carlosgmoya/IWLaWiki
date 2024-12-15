@@ -20,11 +20,11 @@ function ArticuloDetalle() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response1 = await fetch(`http://lawiki-gateway:8000/wikis/${nombre}/articulos/${titulo}`);
+                const response1 = await fetch(`http://localhost:8000/wikis/${nombre}/articulos/${titulo}`);
                 const datosArticulo = await response1.json();
                 setArticulo(datosArticulo); // Almacena la lista completa de articulos
 
-                const response2 = await fetch(`http://lawiki-gateway:8000/usuarios/id/${datosArticulo.creador.$oid}`);
+                const response2 = await fetch(`http://localhost:8000/usuarios/id/${datosArticulo.creador.$oid}`);
                 const datosCreador = await response2.json();
                 setCreador(datosCreador);
                 } catch (error) {
@@ -45,7 +45,7 @@ function ArticuloDetalle() {
 
     return (<>
         <div className="cabeceraWiki">
-            <h1 className="nombreWiki"><Link to={`http://localhost:3000/wikis/${nombre}`}>{nombre}</Link></h1>
+            <h1 className="nombreWiki"><Link to={`/wikis/${nombre || 'defaultNombre'}`}>{nombre}</Link></h1>
         </div>
         {(articulo && creador) ? (
             <>
@@ -55,7 +55,7 @@ function ArticuloDetalle() {
                     {!mostrarEditor &&
                         (
                         <div>
-                            <Link to={`/usuario/${creador.nombre}`}>Creador</Link>
+                            <Link to={`/usuario/${creador.nombre || 'defaultCreador'}`}>Creador</Link>
                             <button title="Editar artículo" className="botonEditar" onClick={handleAbrirEditor}>
                                 <img src="/Iconos/IconoEditar.svg" alt="Editar articulo" />
                             </button>

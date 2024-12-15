@@ -8,7 +8,7 @@ function UsuarioDetalle() {
     const [valoraciones, setValoraciones] = useState(null);
 
     useEffect (() => {
-        fetch(`http://lawiki-gateway:8000/valoracion/${nombre}`)
+        fetch(`http://localhost:8000/valoracion/${nombre}`)
             .then((response) => response.json())
             .then((data) => {
                 console.log("Datos Valoraciones:", data);

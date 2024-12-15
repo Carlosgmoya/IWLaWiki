@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function ArticulosWiki({ listaArticulos, nombre}) {
   return (
@@ -10,11 +11,11 @@ function ArticulosWiki({ listaArticulos, nombre}) {
             <ul className="ulArticulos">
               {listaArticulos.map((articulo, index) => (
                 //<li key={index}>{listaArticulos.titulo}</li> // Asumiendo que cada wiki tiene un campo `nombre`
-                <a href={`http://localhost:3000/wikis/${nombre}/${articulo.titulo}`}>
+                <Link to={`/wikis/${nombre || 'defaultNombre'}/${articulo.titulo || 'defaultArticulo'}`}>
                   <li key={index}>
                     <p>{articulo.titulo || "Artículo sin título"}</p>
                   </li>
-                </a>
+                </Link>
               ))}
             </ul>
           ) : (

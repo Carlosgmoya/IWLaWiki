@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function InicioDestacados({ listaWikis }) {
   return (
@@ -13,12 +14,12 @@ function InicioDestacados({ listaWikis }) {
         {listaWikis.length > 0 ? (
           <ul className="ulWikis">
             {listaWikis.map((wiki, index) => (
-              <a title={"Ir a " + wiki.nombre} href={`http://localhost:3000/wikis/${wiki.nombre}`}>
+              <Link title={"Ir a " + wiki.nombre} to={`/wikis/${wiki.nombre || 'defaultWiki'}`}>
                 <li key={index}>
                   <p>{wiki.nombre}</p>
                   <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + wiki.nombre}></img>
                 </li>
-              </a>
+              </Link>
             ))}
           </ul>
         ) : (

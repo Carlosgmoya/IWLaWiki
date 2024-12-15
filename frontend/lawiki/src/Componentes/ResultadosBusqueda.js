@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 function ResultadosBusqueda({ listaBusqueda, nombrewiki }) {
   return (
@@ -10,12 +11,12 @@ function ResultadosBusqueda({ listaBusqueda, nombrewiki }) {
           {listaBusqueda.length > 0 ? (
             <ul className="ulWikis">
               {listaBusqueda.map((wiki, index) => (
-                <a title={"Ir a " + wiki.nombre} href={`http://localhost:3000/wikis/${wiki.nombre}`}>
+                <Link title={"Ir a " + wiki.nombre} to={`/wikis/${wiki.nombre || 'defaultWiki'}`}>
                   <li key={index}>          
                     <p>{wiki.nombre}</p>
                     <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + wiki.nombre}></img>                 
                   </li>
-                </a>
+                </Link>
               ))}
             </ul>
           ) : (
@@ -28,11 +29,11 @@ function ResultadosBusqueda({ listaBusqueda, nombrewiki }) {
           {listaBusqueda.length > 0 ? (
             <ul className="ulArticulos">
               {listaBusqueda.map((articulo, index) => (
-                <a href={`http://localhost:3000/wikis/${nombrewiki}/articulos/${articulo.titulo}`}>
+                <Link href={`/wikis/${nombrewiki}/articulos/${articulo.titulo || 'defaultArticulo'}`}>
                   <li key={index}>
                     <p>{articulo.titulo}</p>
                   </li>
-                </a>
+                </Link>
               ))}
             </ul>
           ) : (

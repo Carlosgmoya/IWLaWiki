@@ -12,12 +12,14 @@ import UsuarioDetalle from './Ventanas/UsuarioDetalle';
 function App() {
   return (
     <>
-      <div class="cabecera">
-        <HeaderWiki />
-      </div>
+      
+      <Router>
 
-      <div className="pagina">
-        <Router>
+        <div class="cabecera">
+          <HeaderWiki />
+        </div>
+
+        <div className="pagina">
           <Routes>
             <Route
               path="/"
@@ -38,8 +40,9 @@ function App() {
               element={<UsuarioDetalle/>}
             />  
           </Routes>
-        </Router>
-      </div>
+          </div>
+      </Router>
+      
 
       <ToastContainer />
     </>

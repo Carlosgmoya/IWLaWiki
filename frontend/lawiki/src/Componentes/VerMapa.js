@@ -9,7 +9,7 @@ function VerMapa({ nombreWiki, tituloArticulo }) {
     const fetchMapa = useCallback(async () => {
         try {
             const response = await fetch(
-                `http://lawiki-gateway:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
+                `http://localhost:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
             );
             const datos = await response.json();
             setCoordenadas({

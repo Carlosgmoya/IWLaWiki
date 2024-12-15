@@ -1,20 +1,29 @@
-# Use the specific Node.js version 22.11.0 as a parent image
-FROM node:22.11.0 AS build
+# Use an official Node.js runtime as the base image for building
+FROM node:22.11.0 AS builder
 
-# Set the working directory inside the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files
+# Copy the package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the entire application
+# Copy the entire application code
 COPY . .
 
-# Expose the port where React development server will run (default is 3000)
-EXPOSE 3000
+# Build the React app
+RUN npm run build
 
-# Run the React development server
-CMD ["npm", "start"]
+# Use a lightweight web server for the production build
+FROM nginx:alpine
+
+# Copy the build output to NGINX's html directory
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Expose the default NGINX port
+EXPOSE 80
+
+# Start NGINX server
+CMD ["nginx", "-g", "daemon off;"]
