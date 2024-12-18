@@ -6,6 +6,8 @@ Entidad wiki:
     -fecha -> date
     -descripcion -> String
     -creador -> usuario.id
+    -portada -> String (url dropbox)
+    -cabecera -> String (url dropbox)
 
 Entidad articulo:
     -id
@@ -14,12 +16,13 @@ Entidad articulo:
     -wiki -> wiki.id
     -fecha -> Date
     -ultimoModificado -> Bool
-    -contenido -> String ¡Se debe gestionar una subestructura!
+    -contenido -> String
+    -idioma -> String
 
 Entidad comentario 
     -id 
     -fecha -> Date
-    -usuario -> usuario.id      PENDIENTE DE CAMBIAR A NOMBRE USUARIO
+    -usuario -> String (usuario->nombre)      PENDIENTE DE CAMBIAR A NOMBRE USUARIO EN API
     -articulo -> articulo.id
     -contenido -> String
 
@@ -27,3 +30,12 @@ Entidad usuario
     -id 
     -nombre -> String
     -email -> String
+    -esAdmin -> Bool
+
+Entidad valoracion
+    -id
+    -de_usuario -> String (nombre de usuario)
+    -a_usuario -> String (nombre de usuario)
+    -valor -> int (0 a 5)
+    -(OPCIONAL) reseña -> String
+

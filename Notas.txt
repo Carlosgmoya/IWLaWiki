@@ -21,3 +21,6 @@ A tener en cuenta:
     no se podran repetir nombres de usuario, de esta manera se facilita el manejo de los datos de un usuario (El frontend hace llamadas API
     al backend directamente con el nombre de usuario que se encuentra en el path URL). Por tanto, se considera utilizar nombre en lugar de email 
     para las consultas a BD de usuario, valoraciones, comentarios, etc.
+
+SI TENGO TIEMPO: IMPLEMENTAR CAMPO COMENTARIO OPCIONAL EN VALORACION
+FRONTEND AUTENTICACION Y ROLES.
