@@ -1,9 +1,9 @@
 import dropbox
 import requests
 
-APP_KEY = '550i2tid5x9fltn'
-APP_SECRET = 'kzwo0g16zld74yi'
-REFRESH_TOKEN = 'Pj7dO7dLu7QAAAAAAAAAAXv2H57ljLRGU3W7fm_os_z1liNm-rwcbUPehWFomQlz'
+APP_KEY = 'jceh9h8d9377e2c'
+APP_SECRET = 'ruitu5uzew9ernf'
+REFRESH_TOKEN = 'jHTk0YhbHIYAAAAAAAAAARecc2rKN5UzfwRfvFh6iIlxGCRRGP9i9Cp5TEeRnDo0'
 
 def renovar_access_token():
     url = "https://api.dropbox.com/oauth2/token"
@@ -29,7 +29,7 @@ else:
 
 dbx = dropbox.Dropbox(ACCESS_TOKEN)
 
-def generar_nombre_unico(ruta_remota):
+def generarNombreUnico(ruta_remota):
     """Genera un nombre único si el archivo ya existe en Dropbox."""
     try:
         dbx.files_get_metadata(ruta_remota)
@@ -37,22 +37,22 @@ def generar_nombre_unico(ruta_remota):
         nombre, extension = ruta_remota.rsplit('.', 1) if '.' in ruta_remota else (ruta_remota, '')
         contador = 1
         while True:
-            nuevo_nombre = f"{nombre} ({contador})"
+            nuevoNombre = f"{nombre} ({contador})"
             if extension:
-                nuevo_nombre += f".{extension}"
-            nuevo_ruta_remota = f"/{nuevo_nombre}"
+                nuevoNombre += f".{extension}"
+            nuevoRutaRemota = f"/{nuevoNombre}"
             try:
-                dbx.files_get_metadata(nuevo_ruta_remota)
+                dbx.files_get_metadata(nuevoRutaRemota)
             except dropbox.exceptions.ApiError:
                 # Si no existe, devolvemos el nuevo nombre
-                return nuevo_ruta_remota
+                return nuevoRutaRemota
             contador += 1
     except dropbox.exceptions.ApiError:
         # Si no existe, devolvemos el nombre original
         return ruta_remota
 
 def subirImagenDropbox(rutaLocal, rutaRemota):
-    rutaRemota = generar_nombre_unico(rutaRemota)
+    rutaRemota = generarNombreUnico(rutaRemota)
     try :
         with open(rutaLocal, 'rb') as archivo:
             dbx.files_upload(archivo.read(), rutaRemota, mode=dropbox.files.WriteMode.overwrite)
@@ -63,13 +63,17 @@ def subirImagenDropbox(rutaLocal, rutaRemota):
         print(f"Error al subir el archivo: {e}")
 
 
-def obtenerEnlaceImagen(ruta_remota):
+def obtenerEnlaceImagen(rutaRemota):
     try:
         # Crear enlace compartido para el archivo
-        enlace_compartido = dbx.sharing_create_shared_link_with_settings(ruta_remota).url
+        enlaceCompartido = dbx.sharing_create_shared_link_with_settings(rutaRemota).url
         # Modificar el enlace para que sea un enlace directo (descarga)
-        enlace_descarga = enlace_compartido.replace('?dl=0', '?raw=1')
-        return enlace_descarga
+        if '?dl=0' in enlaceCompartido:
+            enlaceDescarga = enlaceCompartido.replace('?dl=0', '?raw=1')
+        else:
+            # Si el enlace no tiene 'dl=0', añadir 'raw=1' correctamente
+            enlaceDescarga = f"{enlaceCompartido}&raw=1"
+        return enlaceDescarga
     except dropbox.exceptions.ApiError as e:
         print(f"Error al obtener el enlace: {e}")
         return None

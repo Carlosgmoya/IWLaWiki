@@ -2,7 +2,7 @@ from bson import json_util
 from bson.objectid import ObjectId
 import json
 
-from bd import articuloBD, mapaBD
+from bd import mapaBD
 
 async def getMapa(artID: ObjectId):
     mapasDoc = mapaBD.find_one({"articulo": artID})

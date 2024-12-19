@@ -1,7 +1,5 @@
-from typing import Any
 from bson import json_util
 from bson.objectid import ObjectId
-from typing import List
 import json
 from datetime import datetime
 

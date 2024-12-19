@@ -1,19 +1,17 @@
-from typing import Any
 from bson import json_util
 from bson.objectid import ObjectId
-from typing import List
 import json
 from datetime import datetime
 
 from bd import articuloBD, usuarioBD
 
 async def getArticulo(wikiID: ObjectId, t: str):
-    articulo_doc = articuloBD.find_one({ "titulo" : t,
+    articuloDoc = articuloBD.find_one({ "titulo" : t,
                                          "wiki": wikiID,
                                           "ultimoModificado": True })    
-    articulo_json = json.loads(json_util.dumps(articulo_doc))
+    articuloJson = json.loads(json_util.dumps(articuloDoc))
 
-    return articulo_json
+    return articuloJson
 
 
 async def getTodosArticulos(wikiID: ObjectId):

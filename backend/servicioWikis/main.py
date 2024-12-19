@@ -1,9 +1,7 @@
 from services import wiki as wikiAPI
 
 from fastapi import FastAPI, Request, HTTPException, Query
-from typing import Any
 from bson.objectid import ObjectId
-from typing import List
 
 
 api = FastAPI()

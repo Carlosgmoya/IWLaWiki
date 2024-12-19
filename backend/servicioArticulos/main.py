@@ -4,9 +4,7 @@ from services import mapa as mapaAPI
 
 from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File
 
-from typing import Any
 from bson.objectid import ObjectId
-from typing import List
 import json
 from markdown import markdown
 import os
@@ -34,7 +32,7 @@ def getObjID(id: str):
 
 # GET ARTICULOS DE UNA WIKI
 @api.get(path + "/wikis/{nombre}/articulos")
-async def getArticulos(nombre: str, terminoDeBusqueda: str | None = None, usuario: str | None = None, wiki: str = Query(...)):
+async def getArticulos(terminoDeBusqueda: str | None = None, usuario: str | None = None, wiki: str = Query(...)):
     wikiObjID = getObjID(wiki)
 
     if terminoDeBusqueda is not None:
@@ -49,7 +47,7 @@ async def getArticulos(nombre: str, terminoDeBusqueda: str | None = None, usuari
 
 # GET ARTICULO
 @api.get(path + "/wikis/{nombre}/articulos/{titulo}")
-async def getArticulo(nombre : str, titulo : str, wiki: str = Query(...)):
+async def getArticulo(titulo : str, wiki: str = Query(...)):
     wikiObjID = getObjID(wiki)
     
     articulo_json = await articuloAPI.getArticulo(wikiObjID, titulo)
@@ -57,7 +55,7 @@ async def getArticulo(nombre : str, titulo : str, wiki: str = Query(...)):
     if articulo_json is None:
         raise HTTPException(status_code=404, detail="Artículo no encontrado")
      # Formatear el contenido de cada artículo
-    articulo_json["contenido_html"] = convertir_a_html( articulo_json["contenido"])
+    articulo_json["contenido_html"] = convertirAHtml( articulo_json["contenido"])
     #articulo_json["contenido"] = formatearContenido(articulo_json["contenido"])
     
     return articulo_json
@@ -65,7 +63,7 @@ async def getArticulo(nombre : str, titulo : str, wiki: str = Query(...)):
 
 # CREAR ARTICULO
 @api.post(path + "/wikis/{nombre}/articulos")
-async def crearArticulo(request: Request, nombre: str, wiki: str = Query(...)):
+async def crearArticulo(request: Request, wiki: str = Query(...)):
     wikiObjID = getObjID(wiki)
     
     try:
@@ -94,7 +92,7 @@ async def crearArticulo(request: Request, nombre: str, wiki: str = Query(...)):
 
 # ACTUALIZAR UN ARTÍCULO
 @api.put(path + "/wikis/{nombre}/articulos/{titulo}")
-async def actualizarArticulo(request: Request, nombre: str, titulo: str, wiki: str = Query(...)):
+async def actualizarArticulo(request: Request, titulo: str, wiki: str = Query(...)):
     wikiObjID = getObjID(wiki)
 
     try:
@@ -121,7 +119,7 @@ async def actualizarArticulo(request: Request, nombre: str, titulo: str, wiki: s
 
 # BORRAR UNA TODAS LAS VERSIONES DEL ARTÍCULO O SOLO UNA VERSION SI SE PASA ID
 @api.delete(path + "/wikis/{nombre}/articulos/{titulo}")
-async def eliminarArticulo(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
+async def eliminarArticulo(titulo: str, id: str = Query(None, min_length=1)):
     if id is None:
         result = await articuloAPI.eliminarTodasVersionesArticulo(titulo)
     else:
@@ -148,7 +146,6 @@ async def subirImagen(archivo : UploadFile = File(...)):
         rutaRemota = f"/{archivo.filename}"  # Asignar un nombre de archivo en Dropbox
         imagenes.subirImagenDropbox(rutaLocal, rutaRemota)
         enlace = imagenes.obtenerEnlaceImagen(rutaRemota)
-        print(f"Enlace directo a la imagen: {enlace}")
     else:
         print("No se seleccionó ningún archivo.")
     os.remove(rutaLocal)
@@ -157,7 +154,7 @@ async def subirImagen(archivo : UploadFile = File(...)):
 
 # GET MAPAS DE UN ARTICULO
 @api.get(path + "/wikis/{nombre}/articulos/{titulo}/mapa")
-async def getMapas(nombre: str, titulo: str,  art: str = Query(...)):
+async def getMapas(art: str = Query(...)):
     artObjID = getObjID(art)
 
     mapasJSON = await mapaAPI.getMapa(artObjID)
@@ -166,7 +163,7 @@ async def getMapas(nombre: str, titulo: str,  art: str = Query(...)):
 
 # CREAR MAPA
 @api.post(path + "/wikis/{nombre}/articulos/{titulo}/mapas")
-async def crearMapa(request: Request, nombre: str, titulo: str, art: str = Query(...)):
+async def crearMapa(request: Request, art: str = Query(...)):
     artObjID = getObjID(art)
     
     try:
@@ -188,7 +185,7 @@ async def crearMapa(request: Request, nombre: str, titulo: str, art: str = Query
 
 # ACTUALIZAR MAPA
 @api.put(path + "/wikis/{nombre}/articulos/{titulo}/mapas")
-async def actualizarMapa(request: Request, nombre: str, titulo: str, mapa: str, art: str = Query(...)):
+async def actualizarMapa(request: Request,mapa: str, art: str = Query(...)):
     artObjID = getObjID(art)
     mapaObjID = getObjID(mapa)
     
@@ -211,7 +208,7 @@ async def actualizarMapa(request: Request, nombre: str, titulo: str, mapa: str, 
 
 # BORRAR UN MAPA
 @api.delete(path + "/wikis/{nombre}/articulos/{titulo}/borrarMapa")
-async def eliminarMapa(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
+async def eliminarMapa(id: str = Query(None, min_length=1)):
     mapaObjID = getObjID(id)
     result = await mapaAPI.eliminarMapa(mapaObjID)
         
@@ -236,7 +233,7 @@ def getWikiObjID(wikiJSON: json):
     return objID
 
 
-def convertir_a_html(contenido_md: str) -> str:
+def convertirAHtml(contenido_md: str) -> str:
     return markdown(contenido_md)
 
 # def formatearContenido(contenido):
