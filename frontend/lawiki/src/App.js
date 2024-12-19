@@ -1,22 +1,21 @@
 import './App.css';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import HeaderWiki from './Componentes/HeaderWiki';
+import Cabecera from './Componentes/Cabecera';
 import PantallaInicio from './Ventanas/PantallaInicio';
-import WikiDetalle from './Ventanas/WikiDetalle';
-import ArticuloDetalle from './Ventanas/ArticuloDetalle';
-import UsuarioDetalle from './Ventanas/UsuarioDetalle';
+import VentanaWiki from './Ventanas/VentanaWiki';
+import VentanaArticulo from './Ventanas/VentanaArticulo';
+import VentanaUsuario from './Ventanas/VentanaUsuario';
 
 function App() {
   return (
     <>
-      
       <Router>
 
         <div class="cabecera">
-          <HeaderWiki />
+          <Cabecera />
         </div>
 
         <div className="pagina">
@@ -26,28 +25,27 @@ function App() {
               element={<PantallaInicio />}
             />
 
-            <Route 
-              path="/wikis/:nombre" 
-              element={<WikiDetalle />} /> {/* Ruta dinámica */}
+            <Route
+              path="/wikis/:nombre"
+              element={<VentanaWiki />} 
+            /> {/* Ruta dinámica */}
 
-            <Route 
-            path="/wikis/:nombre/:titulo"
-            element={<ArticuloDetalle/>}
+            <Route
+              path="/wikis/:nombre/:titulo"
+              element={<VentanaArticulo />}
             />
 
             <Route
               path="/usuario/:nombre"
-              element={<UsuarioDetalle/>}
-            />  
+              element={<VentanaUsuario />}
+            />
           </Routes>
-          </div>
+        </div>
       </Router>
-      
-
       <ToastContainer />
     </>
 
-    
+
   );
 }
 
