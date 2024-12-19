@@ -5,14 +5,15 @@ Entidad wiki:
     -nombre -> String
     -fecha -> date
     -descripcion -> String
-    -creador -> usuario.id
+    -creador -> usuario (nombre de usuario)
     -portada -> String (url dropbox)
     -cabecera -> String (url dropbox)
 
 Entidad articulo:
     -id
     -titulo -> String
-    -creador -> usuario.id
+    -creador -> usuario (nombre de usuario)
+    -editor -> usuario  (nombre de usuario)
     -wiki -> wiki.id
     -fecha -> Date
     -ultimoModificado -> Bool
@@ -23,7 +24,8 @@ Entidad comentario
     -id 
     -fecha -> Date
     -usuario -> String (usuario->nombre)      PENDIENTE DE CAMBIAR A NOMBRE USUARIO EN API
-    -articulo -> articulo.id
+    -articulo -> articulo.id                  CAMBIAR A STRING (NOMBRE ARTICULO), EN LA API COMENTARIO
+                                            DEVOLVER COMENTARIOS DE UN ARTICULO POR NOMBRE (ASEGURAR QUE ES EL ULTIMO MODIFICADO)
     -contenido -> String
 
 Entidad usuario 

@@ -18,15 +18,15 @@ async def lifespan(app: FastAPI):
     # Establecer conexión con los microservicios
     global clienteWiki, clienteArticulo, clienteComentario, clienteUsuario
 
-    # clienteWiki = httpx.AsyncClient(base_url="http://localhost:8001/api/v1")        # url local
-    # clienteArticulo = httpx.AsyncClient(base_url="http://localhost:8002/api/v1")    # url local
-    # clienteComentario = httpx.AsyncClient(base_url="http://localhost:8003/api/v1")  # url local
-    # clienteUsuario = httpx.AsyncClient(base_url="http://localhost:8004/api/v1")     # url local
+    clienteWiki = httpx.AsyncClient(base_url="http://localhost:8001/api/v1")        # url local
+    clienteArticulo = httpx.AsyncClient(base_url="http://localhost:8002/api/v1")    # url local
+    clienteComentario = httpx.AsyncClient(base_url="http://localhost:8003/api/v1")  # url local
+    clienteUsuario = httpx.AsyncClient(base_url="http://localhost:8004/api/v1")     # url local
 
-    clienteWiki = httpx.AsyncClient(base_url="http://lawiki-modulo-wiki:8001/api/v1")        # url entorno Docker
-    clienteArticulo = httpx.AsyncClient(base_url="http://lawiki-modulo-articulo:8002/api/v1")    # url entorno Docker
-    clienteComentario = httpx.AsyncClient(base_url="http://lawiki-modulo-comentario:8003/api/v1")    # url entorno Docker
-    clienteUsuario = httpx.AsyncClient(base_url="http://lawiki-modulo-usuario:8004/api/v1")    # url entorno Docker
+    #clienteWiki = httpx.AsyncClient(base_url="http://lawiki-modulo-wiki:8001/api/v1")        # url entorno Docker
+    #clienteArticulo = httpx.AsyncClient(base_url="http://lawiki-modulo-articulo:8002/api/v1")    # url entorno Docker
+    #clienteComentario = httpx.AsyncClient(base_url="http://lawiki-modulo-comentario:8003/api/v1")    # url entorno Docker
+    #clienteUsuario = httpx.AsyncClient(base_url="http://lawiki-modulo-usuario:8004/api/v1")    # url entorno Docker
 
     yield
     # Cerrar la conexión con los microservicios
