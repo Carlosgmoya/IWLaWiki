@@ -28,18 +28,18 @@ async def getUsuarios():
     usuarios = list(usuarioBD.find())
     return [Usuario(**usuario) for usuario in usuarios]
 
-@api.get(path + "/usuarios/id/{usuario_id}", response_model=Usuario)
-async def getUsuariosPorId(usuario_id: str):
+@api.get(path + "/usuarios/id/{usuarioId}", response_model=Usuario)
+async def getUsuariosPorId(usuarioId: str):
     """Busca un usuario por su id"""
-    usuario = usuarioBD.find_one({"_id": ObjectId(usuario_id)})
+    usuario = usuarioBD.find_one({"_id": ObjectId(usuarioId)})
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return Usuario(**usuario)
 
-@api.get(path + "/usuarios/email/{usuario_email}", response_model=Usuario)
-async def getUsuariosPorEmail(usuario_email: str):
+@api.get(path + "/usuarios/email/{usuarioEmail}", response_model=Usuario)
+async def getUsuariosPorEmail(usuarioEmail: str):
     """Busca un usuario por su id"""
-    usuario = usuarioBD.find_one({"email": usuario_email})
+    usuario = usuarioBD.find_one({"email": usuarioEmail})
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return Usuario(**usuario)
@@ -47,10 +47,10 @@ async def getUsuariosPorEmail(usuario_email: str):
 @api.post(path + "/usuarios", response_model=Usuario)
 async def crearUsuario(usuario: Usuario):
     """Crea un nuevo usuario"""
-    usuario_dict = usuario.dict(by_alias=True)
-    resultado = usuarioBD.insert_one(usuario_dict)
-    usuario_dict["_id"] = resultado.inserted_id
-    return Usuario(**usuario_dict)
+    usuarioDict = usuario.dict(by_alias=True)
+    resultado = usuarioBD.insert_one(usuarioDict)
+    usuarioDict["_id"] = resultado.inserted_id
+    return Usuario(**usuarioDict)
 
 ######## VALORACIONES ########
 
@@ -64,39 +64,39 @@ async def getValoraciones():
 async def crearValoracion(valoracion: Valoracion):
     """Crea una nueva valoración. Para evitar que un mismo usuario no
     valore a otro muchas veces, solo se guardará la valoración más reciente"""
-    valoracion_dict = valoracion.dict(by_alias=True)
+    valoracionDict = valoracion.dict(by_alias=True)
 
     filtro = {
-        "de_usuario": valoracion_dict["de_usuario"],
-        "a_usuario": valoracion_dict["a_usuario"]
+        "de_usuario": valoracionDict["de_usuario"],
+        "a_usuario": valoracionDict["a_usuario"]
     }
 
     #si ya existe una valoracion con los mismos usuarios, borrarla
     valoracionBD.delete_one(filtro)
 
-    resultado = valoracionBD.insert_one(valoracion_dict)
-    valoracion_dict["_id"] = resultado.inserted_id
-    return Valoracion(**valoracion_dict)
+    resultado = valoracionBD.insert_one(valoracionDict)
+    valoracionDict["_id"] = resultado.inserted_id
+    return Valoracion(**valoracionDict)
 
 
 # ---------- PENDIENTE DE CAMBIAR A NOMBRE DE USUARIO EN LUGAR DE EMAIL ------------- #
 
-@api.get(path + "deprecated/valoraciones/de/{usuario_email}", response_model=List[Valoracion])
-async def getValoracionesDeUsuariov1(usuario_email: str):
+@api.get(path + "deprecated/valoraciones/de/{usuarioEmail}", response_model=List[Valoracion])
+async def getValoracionesDeUsuariov1(usuarioEmail: str):
     """Devuelve todas las valoraciones hechas por un usuario"""
-    valoraciones = list(valoracionBD.find({"de_usuario": usuario_email}))
+    valoraciones = list(valoracionBD.find({"de_usuario": usuarioEmail}))
     return [Valoracion(**valoracion) for valoracion in valoraciones]
 
-@api.get(path + "deprecated/valoraciones/a/{usuario_email}", response_model=List[Valoracion])
-async def getValoracionesDeUsuariov1(usuario_email: str):
+@api.get(path + "deprecated/valoraciones/a/{usuarioEmail}", response_model=List[Valoracion])
+async def getValoracionesDeUsuariov1(usuarioEmail: str):
     """Devuelve todas las valoraciones dirigidas a un usuario"""
-    valoraciones = list(valoracionBD.find({"a_usuario": usuario_email}))
+    valoraciones = list(valoracionBD.find({"a_usuario": usuarioEmail}))
     return [Valoracion(**valoracion) for valoracion in valoraciones]
 
-@api.get(path + "deprecated/valoracion/{usuario_email}")
-async def getValoracionDeUsuariov1(usuario_email: str):
+@api.get(path + "deprecated/valoracion/{usuarioEmail}")
+async def getValoracionDeUsuariov1(usuarioEmail: str):
     """Devuelve la media de las valoraciones de un usuario, o 0 si no tiene"""
-    valoraciones = list(valoracionBD.find({"a_usuario": usuario_email}))
+    valoraciones = list(valoracionBD.find({"a_usuario": usuarioEmail}))
     if len(valoraciones) == 0:
         return {"valor": 0}
     suma = 0
