@@ -39,6 +39,10 @@
   }
 }
 
+.cabecera {
+  border-bottom: 2px solid black;
+}
+
 .cabecera h1{
   font-family: "Scope One";
   font-weight: bold;

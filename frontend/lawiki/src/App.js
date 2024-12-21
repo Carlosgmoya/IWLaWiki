@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { Sesion } from './Login/authContext';
 import Cabecera from './Componentes/Cabecera';
 import PantallaInicio from './Ventanas/PantallaInicio';
 import VentanaWiki from './Ventanas/VentanaWiki';
@@ -11,7 +12,7 @@ import VentanaUsuario from './Ventanas/VentanaUsuario';
 
 function App() {
   return (
-    <>
+    <Sesion>
       <Router>
 
         <div class="cabecera">
@@ -43,7 +44,7 @@ function App() {
         </div>
       </Router>
       <ToastContainer />
-    </>
+    </Sesion>
 
 
   );
