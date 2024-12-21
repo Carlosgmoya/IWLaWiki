@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File
+from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File, Form
 from contextlib import asynccontextmanager
 import httpx
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
@@ -98,10 +99,22 @@ async def getWiki(nombre: str):
 
 # CREAR WIKI
 @app.post( "/wikis")
-async def crearWiki(request: Request):
+async def crearWiki(nombre: str = Form(...),
+    descripcion: str = Form(...),
+    archivoP: UploadFile = File(...),
+    archivoC: UploadFile = File(...),):
     try:
-        data = await request.json()
-        respuesta = await clienteWiki.post("/wikis", json=data)
+        data = {
+            "nombre": nombre,
+            "descripcion": descripcion,
+        }
+        # Crear el payload de archivos
+        files = {
+            "archivoP": (archivoP.filename, archivoP.file, archivoP.content_type),
+            "archivoC": (archivoC.filename, archivoC.file, archivoC.content_type),
+        }
+        # Hacer la solicitud
+        respuesta = await clienteWiki.post(f"/wikis", data=data, files=files)
         respuesta.raise_for_status()
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
@@ -284,6 +297,46 @@ async def subirImagen(archivo : UploadFile = File(...)):
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
         
     return respuesta.text
+
+@app.get("/wikis/{nombre}/articulos/{titulo}/versiones")
+async def todasVersiones(nombre : str, titulo : str):
+    articuloJSON = await getArticulo(nombre, titulo)
+    articuloID = getID(articuloJSON)
+    
+    try:
+        query_params = {}
+        query_params["titulo"] = articuloID
+
+        respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos/{titulo}/versiones", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+@app.put("/wikis/{nombre}/articulos/{titulo}/cambiarVersion")
+async def cambiarVersion(nombre : str, titulo : str, idVersion : str):
+    articuloJSON = await getArticulo(nombre, titulo)
+    articuloID = getID(articuloJSON)
+    articuloVersionID = getObjID(idVersion)
+
+    try:
+        query_params = {}
+        query_params["idActual"] = articuloID
+        query_params["idVolver"] = articuloVersionID
+
+        respuesta = await clienteArticulo.put(f"/wikis/{nombre}/articulos/{titulo}/cambiarVersion", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+
 
 ###--------------------------------CRUD MAPAS-----------------------------------###
 # GET MAPA

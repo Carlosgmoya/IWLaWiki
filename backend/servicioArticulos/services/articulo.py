@@ -54,7 +54,7 @@ async def buscarVersionPorFecha(titulo: str, fecha: datetime):
     return articulo_json
 
 
-async def crearArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: ObjectId):
+async def crearArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: ObjectId, idioma : str):
     fecha = datetime.utcnow()
     nuevoArticulo = {
         "titulo": titulo,
@@ -62,7 +62,9 @@ async def crearArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: Ob
         "fecha": fecha,
         "ultimoModificado": True,
         "contenido": contenido,
-        "creador": creador
+        "creador": creador,
+        "fechaCreacion": fecha,
+        "idioma": idioma
     }
     result = articuloBD.insert_one(nuevoArticulo)
     nuevoArticulo["_id"] = str(result.inserted_id)
@@ -72,15 +74,19 @@ async def crearArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: Ob
     return nuevoArticulo
 
 
-async def actualizarArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: ObjectId):
+async def actualizarArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: ObjectId, idioma : str):
     fecha = datetime.utcnow()
+    primerArticulo = articuloBD.find_one({"titulo": titulo}, sort=[("fechaCreacion", 1)])
+    fechaCreacion = primerArticulo.get("fechaCreacion")
     nuevaVersion = {
         "titulo": titulo,
         "wiki": wiki,
         "fecha": fecha,
         "ultimoModificado": True,
         "contenido": contenido,
-        "creador": creador
+        "creador": creador,
+        "fechaCreacion": fechaCreacion,
+        "idioma" : idioma
     }
 
     #Actualiza el estado UltimoModificado de la version anterior a false
@@ -121,6 +127,27 @@ async def getArticulosPorUsuarioOrdenadoPorFecha(wiki: ObjectId, usuario: str):
     
     return articulosJSON
 
+async def versionesAnteriores(titulo : str):
+    articulosDoc = articuloBD.find({"titulo": titulo,"ultimoModificado": False})
+    articulosJSON = json.loads(json_util.dumps(articulosDoc))
 
+    return articulosJSON
+
+async def cambiarVersion(idActual : ObjectId, idVolver : ObjectId):
+    result1 = articuloBD.update_one(
+        {"_id" :idActual},
+        {"$set": {"ultimoModificado": False}}
+    )
+    result2 = articuloBD.update_one(
+        {"_id" :idVolver},
+        {"$set": {"ultimoModificado": True}}
+    )
+
+    if result1.matched_count == 0:
+        return "Error al encontrar el articulo actual"
+    elif result2.matched_count == 0:
+        return "Error al encontrar la version anterior del articulo"
+    else :
+        return "Articulo cambiado de version" 
 
 

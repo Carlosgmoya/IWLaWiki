@@ -78,6 +78,7 @@ async def crearArticulo(request: Request, wiki: str = Query(...)):
     wiki = wikiObjID
     contenido = data.get("contenido")
     creador = data.get("creador")
+    idioma = data.get("idioma")
     if isinstance(creador, dict) and "$oid" in creador:
         creador = ObjectId(creador["$oid"])  # Convert the string inside "$oid" to ObjectId
 
@@ -87,7 +88,7 @@ async def crearArticulo(request: Request, wiki: str = Query(...)):
 
     articuloJSON = await articuloAPI.getArticulo(wiki, titulo)
    
-    return await articuloAPI.crearArticulo(titulo, wiki, contenido, creador) if articuloJSON is None else "Ya existe un articulo con ese nombre"
+    return await articuloAPI.crearArticulo(titulo, wiki, contenido, creador, idioma) if articuloJSON is None else "Ya existe un articulo con ese nombre"
 
 
 # ACTUALIZAR UN ARTÍCULO
@@ -106,6 +107,7 @@ async def actualizarArticulo(request: Request, titulo: str, wiki: str = Query(..
     wiki = wikiObjID
     contenido = data.get("contenido")
     creador = data.get("creador")
+    idioma = data.get("idioma")
     if isinstance(creador, dict) and "$oid" in creador:
         creador = ObjectId(creador["$oid"])  # Convert the string inside "$oid" to ObjectId
 
@@ -113,7 +115,7 @@ async def actualizarArticulo(request: Request, titulo: str, wiki: str = Query(..
     elif isinstance(creador, str):
         creador = ObjectId(creador)
 
-    result = await articuloAPI.actualizarArticulo(titulo, wiki, contenido, creador)
+    result = await articuloAPI.actualizarArticulo(titulo, wiki, contenido, creador, idioma)
 
     return result
 
@@ -131,6 +133,23 @@ async def eliminarArticulo(titulo: str, id: str = Query(None, min_length=1)):
         raise HTTPException(status_code=404, detail=f"Versión del artículo no encontrada")
 
     return "Artículo eliminado con éxito"
+
+@api.get(path + "/wikis/{nombre}/articulos/{titulo}/versiones")
+async def todasVersiones(titulo : str):
+    articulo_json = await articuloAPI.versionesAnteriores(titulo)
+
+    if articulo_json is None:
+        raise HTTPException(status_code=404, detail="El artículo no tiene más versiones")
+    return articulo_json
+
+@api.put(path + "/wikis/{nombre}/articulos/{titulo}/cambiarVersion")
+async def cambiarVersion(idActual : str = Query(...), idVolver : str = Query(...)):
+    actualID = getObjID(idActual)
+    volverID = getObjID(idVolver)
+
+    result = await articuloAPI.cambiarVersion(actualID, volverID)
+
+    return result
 
 # SUBIR ARCHIVOS A DROPBOX
 @api.post(path + "/subirImagen")

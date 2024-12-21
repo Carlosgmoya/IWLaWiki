@@ -1,3 +1,5 @@
 uvicorn
 fastApi
 pymongo[srv]
+dropbox
+requests

@@ -37,12 +37,14 @@ async def getWikisPorNombre(term: str):
     return wikisJSON
 
 
-async def crearWiki(nombre: str, descripcion: str):
+async def crearWiki(nombre: str, descripcion: str, portada : str, cabecera : str):
     fecha = datetime.utcnow()
     nuevaWiki = {
         "nombre": nombre,
         "fecha": fecha,
-        "descripcion": descripcion
+        "descripcion": descripcion,
+        "portada": portada,
+        "cabecera" : cabecera
     }
     
     result = wikiBD.insert_one(nuevaWiki)
@@ -58,10 +60,12 @@ async def eliminarWiki(wikiID: ObjectId):
     return result
 
 
-async def actualizarWiki(wikiID: ObjectId, nombre: str, descripcion: str):
+async def actualizarWiki(wikiID: ObjectId, nombre: str, descripcion: str, portada : str, cabecera : str):
     result = wikiBD.update_one({"_id": wikiID},
                                 {"$set":
                                  {"nombre": nombre,
-                                 "descripcion": descripcion}
+                                 "descripcion": descripcion,
+                                 "portada": portada,
+                                 "cabecera": cabecera}
                                 })
     return result

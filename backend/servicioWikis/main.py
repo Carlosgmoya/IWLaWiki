@@ -1,6 +1,10 @@
 from services import wiki as wikiAPI
+from services import imagenes
+import os
+from pathlib import Path
+import shutil
 
-from fastapi import FastAPI, Request, HTTPException, Query
+from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File, Form
 from bson.objectid import ObjectId
 
 
@@ -32,13 +36,35 @@ async def getWiki(nombre: str):
     
 # CREAR WIKI
 @api.post(path + "/wikis")
-async def crearWiki(request: Request):
-    data = await request.json()
-    nombre = data.get("nombre")
-    descripcion = data.get("descripcion")
+async def crearWiki(nombre : str = Form(...), descripcion : str = Form(...) , archivoP : UploadFile = File(...), archivoC : UploadFile = File(...)):
+    carpetaDestino = Path("imagenesTemporales")
+    carpetaDestino.mkdir(parents=True, exist_ok=True)
+    rutaLocalP = carpetaDestino / archivoP.filename
+    with rutaLocalP.open("wb") as buffer:
+        shutil.copyfileobj(archivoP.file, buffer)
+
+    if rutaLocalP:  # Si el usuario seleccionó un archivo
+        rutaRemotaP = f"/{archivoP.filename}"  # Asignar un nombre de archivo en Dropbox
+        imagenes.subirImagenDropbox(rutaLocalP, rutaRemotaP)
+        portada = imagenes.obtenerEnlaceImagen(rutaRemotaP)
+    else:
+        print("No se seleccionó ningún archivo.")
+
+    rutaLocalC = carpetaDestino / archivoC.filename
+    with rutaLocalC.open("wb") as buffer:
+        shutil.copyfileobj(archivoC.file, buffer)
+
+    if rutaLocalC:  # Si el usuario seleccionó un archivo
+        rutaRemotaC = f"/{archivoC.filename}"  # Asignar un nombre de archivo en Dropbox
+        imagenes.subirImagenDropbox(rutaLocalC, rutaRemotaC)
+        cabecera = imagenes.obtenerEnlaceImagen(rutaRemotaC)
+    else:
+        print("No se seleccionó ningún archivo.")
     wikiJSON = await wikiAPI.getWiki(nombre)
 
-    return await wikiAPI.crearWiki(nombre, descripcion) if wikiJSON is None else "Ya existe una wiki con ese nombre"
+    os.remove(rutaLocalP)
+    os.remove(rutaLocalC)
+    return await wikiAPI.crearWiki(nombre, descripcion, portada, cabecera) if wikiJSON is None else "Ya existe una wiki con ese nombre"
 
 
 # ACTUALIZAR WIKI
@@ -49,12 +75,13 @@ async def actualizarWiki(request: Request, wikiID: str):
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid ObjectId format")
     
-    # TODO: sustituir esto por un modelo de pydantic
     data = await request.json()
     nombre = data.get("nombre")
     descripcion = data.get("descripcion")
+    portada = data.get("portada")
+    cabecera = data.get("cabecera")
     
-    result = await wikiAPI.actualizarWiki(ObjID, nombre, descripcion)
+    result = await wikiAPI.actualizarWiki(ObjID, nombre, descripcion, portada, cabecera)
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Wiki no encontrada")
     if result.modified_count == 0:
