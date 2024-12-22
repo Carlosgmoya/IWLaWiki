@@ -38,7 +38,7 @@ async def getUsuariosPorId(usuarioId: str):
 
 @api.get(path + "/usuarios/email/{usuarioEmail}", response_model=Usuario)
 async def getUsuariosPorEmail(usuarioEmail: str):
-    """Busca un usuario por su id"""
+    """Busca un usuario por su email"""
     usuario = usuarioBD.find_one({"email": usuarioEmail})
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")

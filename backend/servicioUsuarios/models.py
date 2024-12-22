@@ -25,6 +25,7 @@ class Usuario(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=ObjectId, alias="_id")
     nombre: str
     email: str
+    esAdmin: bool
     class Config:
         json_encoders = {ObjectId: str}
         populate_by_name = True

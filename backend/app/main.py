@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File, Form
 from contextlib import asynccontextmanager
 import httpx
-from requests_toolbelt.multipart.encoder import MultipartEncoder
+# from requests_toolbelt.multipart.encoder import MultipartEncoder
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
@@ -513,6 +513,34 @@ async def getUsuariosPorId(usuarioID: str):
 
     return respuesta.json()
 
+# GET USUARIO POR EMAIL
+@app.get("/usuarios/email/{usuarioEmail}")
+async def getUsuariosPorId(usuarioEmail: str):
+    try:
+        respuesta = await clienteUsuario.get(f"/usuarios/email/{usuarioEmail}")
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
+
+    return respuesta.json()
+
+# CREAR NUEVO USUARIO
+@app.post("/usuarios/")
+async def crearUsuario(request: Request):
+    try:
+        data = await request.json()
+        # por defecto, el nuevo usuario no es admin
+        data["esAdmin"] = False
+        respuesta = await clienteUsuario.post("/usuarios", json=data)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
+    
+    return respuesta.json()
 
 ###----------------------------------CRUD VALORACIONES-------------------------------------###
 
