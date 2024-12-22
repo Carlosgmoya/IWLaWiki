@@ -4,14 +4,15 @@ import { useSesion } from '../Login/authContext';
 import '../Estilos/Cabecera.css';
 
 function Cabecera() {
-    const { usuario, iniciarSesion, cerrarSesion } = useSesion();
+    const { usuario, nombreUsuario, iniciarSesion } = useSesion();
 
     return <header className="contenedorCabecera">
-        <h1><Link className="lawiki" to='/' reloadDocument>laWiki</Link></h1>
+        <h1><Link className="lawiki" to='/'>laWiki</Link></h1>
         {usuario ? (
             <div>
-                <img className="iconoPerfil" src={usuario.photoURL} alt={usuario.display_name} />
-                <button className="logout" onClick={cerrarSesion}>Cerrar sesión</button>
+                <Link title="Ir a mi perfil" to={`/usuario/${nombreUsuario}`}>
+                    <img className="iconoPerfil" src={usuario.photoURL} alt={usuario.display_name} />
+                </Link>
             </div>
         ) : (
             <>

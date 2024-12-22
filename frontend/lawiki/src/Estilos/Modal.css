@@ -1,0 +1,85 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: rgb(183, 183, 183);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 90%;
+    position: relative;
+    text-align: center;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #333;
+}
+
+.modal-content p {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 11px;
+    color: gray;
+}
+
+.modal-content input {
+    border-radius: 4px;
+    padding: 0px 6px;
+    font-size: small;
+}
+
+.modal-content input::placeholder {
+    opacity: 0.5;
+}
+
+.modal-content .contenedorBotones {
+    margin-top: 10px;
+}
+
+.modal-content .botonRegistrar{
+    border-radius: 4px;
+    background-color: #4CAF50;
+    padding: 4px 8px;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.modal-content .botonNoRegistrar{
+    border-radius: 4px;
+    background-color: #d33a2f;
+    padding: 4px 8px;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+.modal-content .botonRegistrar:hover {
+    background-color: #429a45;
+    transform: scale(1.07);
+}
+
+.modal-content .botonNoRegistrar:hover {
+    background-color: rgb(186, 47, 45);
+    transform: scale(1.07);
+}
+
+.modal-content:focus {
+    outline: none; /* Removes default outline */
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.6); /* Adds a glowing border effect when focused */
+}

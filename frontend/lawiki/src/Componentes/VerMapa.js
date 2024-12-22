@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
 function VerMapa({ nombreWiki, tituloArticulo }) {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
 
     const [coordenadas, setCoordenadas] = useState(null);
     const [nombreUbicacion, setNombreUbicacion] = useState("");
@@ -9,7 +10,7 @@ function VerMapa({ nombreWiki, tituloArticulo }) {
     const fetchMapa = useCallback(async () => {
         try {
             const response = await fetch(
-                `http://localhost:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
+                `${backendURL}/${nombreWiki}/articulos/${tituloArticulo}/mapas`
             );
             const datos = await response.json();
             setCoordenadas({

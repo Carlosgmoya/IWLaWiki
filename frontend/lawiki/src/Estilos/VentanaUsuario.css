@@ -1,0 +1,20 @@
+.logout {
+    background-color: #f44336; /* Red background color for logout */
+    color: white; /* White text color */
+    font-size: 14px; /* Small text size */
+    padding: 8px 16px; /* Padding to make the button small but clickable */
+    border: none; /* Removes default border */
+    border-radius: 20px; /* Rounded corners */
+    cursor: pointer; /* Adds pointer cursor on hover */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+.logout:hover {
+    background-color: #e53935; /* Slightly darker red */
+    transform: scale(1.05); /* Slightly enlarges the button */
+}
+
+.logout:focus {
+    outline: none; /* Removes default outline */
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.6); /* Adds a glowing border effect when focused */
+}
