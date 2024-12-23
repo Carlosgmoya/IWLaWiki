@@ -48,6 +48,10 @@ async def getUsuariosPorEmail(usuarioEmail: str):
 async def crearUsuario(usuario: Usuario):
     """Crea un nuevo usuario"""
     usuarioDict = usuario.dict(by_alias=True)
+    # comprobar si un usuario con el mismo nombre ya existe
+    usuarioExistente = usuarioBD.find_one({"nombre": usuarioDict["nombre"]})
+    if usuarioExistente:
+        raise HTTPException(status_code=409, detail="El nombre de usuario ya existe")
     resultado = usuarioBD.insert_one(usuarioDict)
     usuarioDict["_id"] = resultado.inserted_id
     return Usuario(**usuarioDict)
