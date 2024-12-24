@@ -9,15 +9,17 @@ function VerMapa({ nombreWiki, tituloArticulo }) {
 
     const fetchMapa = useCallback(async () => {
         try {
-            const response = await fetch(
+            const respuesta = await fetch(
                 `${backendURL}/${nombreWiki}/articulos/${tituloArticulo}/mapas`
             );
-            const datos = await response.json();
-            setCoordenadas({
-                lat: datos.latitud,
-                lon: datos.longitud,
-            });
-            setNombreUbicacion(datos.nombreUbicacion);
+            if (respuesta.ok) {
+              const datos = await respuesta.json();
+              setCoordenadas({
+                  lat: datos.latitud,
+                  lon: datos.longitud,
+              });
+              setNombreUbicacion(datos.nombreUbicacion);
+            }
         } catch (error) {
             console.error("Error al obtener los detalles de mapa:", error);
         }

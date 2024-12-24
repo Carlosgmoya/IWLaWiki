@@ -18,6 +18,9 @@ export const Sesion = ({ children }) => {
     useEffect(() => {
         const sesion = auth.onAuthStateChanged((usuario) => {
             setUsuario(usuario);    // usuario actual o null
+            if (usuario) {
+                setNombreUsuario(usuario.displayName);
+            }
         });
         return () => sesion();
       }, []);
