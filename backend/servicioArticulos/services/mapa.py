@@ -38,6 +38,6 @@ async def actualizarMapa(mapaId: ObjectId, latitud: float, longitud: float, nomb
         "acknowledged": result.acknowledged  # Si la operación fue reconocida por el servidor
     }
 
-async def eliminarMapa(mapa_id: ObjectId):
-    result = mapaBD.delete_one({"_id": mapa_id})
+async def eliminarMapa(artId: ObjectId):
+    result = mapaBD.delete_one({"articulo": artId})
     return result

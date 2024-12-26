@@ -404,11 +404,13 @@ async def actualizarMapa(request: Request, nombre: str, titulo : str):
 
 # BORRAR MAPA
 @app.delete("/wikis/{nombre}/articulos/{titulo}/mapas")
-async def eliminarMapa(nombre: str, titulo: str, id: str = Query(None, min_length=1)):
+async def eliminarMapa(nombre: str, titulo: str):
+    articuloJSON = await getArticulo(nombre, titulo)
+    articuloID = getID(articuloJSON)
+
     try:
         query_params = {}
-        if id is not None:
-            query_params["id"] = id
+        query_params["id"] = articuloID
 
         respuesta = await clienteArticulo.delete(f"/wikis/{nombre}/articulos/{titulo}/borrarMapa", params=query_params)
         respuesta.raise_for_status()

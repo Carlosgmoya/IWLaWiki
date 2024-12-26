@@ -3,6 +3,8 @@ import SubirMapa from "./SubirMapa";
 import SubirImagen from "./SubirImagen";
 
 const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancelar }) => {
+  const backendURL = process.env.REACT_APP_BACKEND_URL;
+
   const [contenido, setContenido] = useState(contenidoInicial);
   const [mensaje, setMensaje] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(true); // Estado para alternar formulario/mensaje 
@@ -23,20 +25,44 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancel
       creador: { $oid: creadorId }, // Incluye el ID del creador en el formato requerido
     };
 
+    //comprobar si el articulo tenia mapa y actualizar la referencia al articulo
+    try {
+      const respuesta = await fetch(
+        `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
+      );
+      
+      if (respuesta.ok) {
+        const mapa = respuesta.json();
+        const mapaActualizado = {
+          latitud: mapa.latitud,
+          longitud: mapa.longitud,
+          nombreUbicacion: mapa.nombreUbicacion,
+        }
+        const actualizar = await fetch(
+          `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: mapaActualizado,
+          }
+        );
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
     try {
       const response = await fetch(
-        `http://localhost:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}`,
+        `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(datos),
         }
-      );
-      
+      ); 
 
       if (response.ok) {
-        setMensaje("¡Guardado exitosamente!");
-        
+        setMensaje("¡Guardado exitosamente!");    
       } else {
         const errorData = await response.json();
         console.error("Error:", errorData);

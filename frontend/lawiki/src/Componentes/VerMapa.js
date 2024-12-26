@@ -10,7 +10,7 @@ function VerMapa({ nombreWiki, tituloArticulo }) {
     const fetchMapa = useCallback(async () => {
         try {
             const respuesta = await fetch(
-                `${backendURL}/${nombreWiki}/articulos/${tituloArticulo}/mapas`
+                `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
             );
             if (respuesta.ok) {
               const datos = await respuesta.json();

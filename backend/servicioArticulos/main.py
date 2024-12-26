@@ -228,8 +228,8 @@ async def actualizarMapa(request: Request,mapa: str, art: str = Query(...)):
 # BORRAR UN MAPA
 @api.delete(path + "/wikis/{nombre}/articulos/{titulo}/borrarMapa")
 async def eliminarMapa(id: str = Query(None, min_length=1)):
-    mapaObjID = getObjID(id)
-    result = await mapaAPI.eliminarMapa(mapaObjID)
+    artObjID = getObjID(id)
+    result = await mapaAPI.eliminarMapa(artObjID)
         
 
     if result.deleted_count == 0:

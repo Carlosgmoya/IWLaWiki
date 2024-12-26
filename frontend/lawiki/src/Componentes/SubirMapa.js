@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet"; // Leaflet is required for some additional functionality
 import "leaflet/dist/leaflet.css"; // Import Leaflet CSS
+import { toast } from "react-toastify";
 
 function SubirMapa({ nombreWiki, tituloArticulo }) {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
     
     const [mostrarSubirMapa, setMostrarSubirMapa] = useState(false);
     const [ubicacion, setUbicacion] = useState("");
@@ -82,6 +84,27 @@ function SubirMapa({ nombreWiki, tituloArticulo }) {
     }
 
     const handleGuardarMapa = async () => {
+        setMostrarSubirMapa(false);
+
+        //borrar mapa anterior si hay
+        try {
+            const respuesta = await fetch(
+                `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
+            );
+
+            if (respuesta.ok) {
+                const borrar = await fetch(
+                    `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+            }
+        } catch(error) {
+            console.error("Error:", error);
+            setError("Error inesperado al conectar con backend.");
+        }
+
         const datos = {
             latitud: coordenadas.lat,
             longitud: coordenadas.lon,
@@ -89,14 +112,26 @@ function SubirMapa({ nombreWiki, tituloArticulo }) {
         }
 
         try {
-            const response = await fetch(
-                `http://localhost:8000/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
+            const respuesta = await fetch(
+                `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(datos),
                 }
             );
+
+            if (respuesta.ok) {
+                toast.success("Mapa actualizado con éxito", {
+                            position: "top-right",
+                            autoClose: 3000, // Auto close after 3 seconds
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                          });
+            }
         } catch(error) {
             console.error("Error:", error);
             setError("Error inesperado al conectar con backend.");
