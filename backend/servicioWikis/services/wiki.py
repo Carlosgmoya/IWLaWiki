@@ -30,8 +30,29 @@ async def getWikiPorID(id: ObjectId):
     return None if wikiDoc is None else json.loads(json_util.dumps(wikiDoc))
 
 
-async def getWikisPorNombre(term: str):
-    wikisDoc = wikiBD.find({"nombre": {"$regex": term, "$options": "i"}})
+async def getWikisPorFiltros(term: str, minFecha: str, maxFecha: str):
+    filtro = {}
+
+    if term is not None:
+        filtro["nombre"] = {"$regex": term, "$options": "i"}
+
+    if minFecha is not None or maxFecha is not None:
+        try:
+            minDatetime = datetime.min if minFecha is None else datetime.strptime(minFecha, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            minDatetime = datetime.min if minFecha is None else datetime.strptime(minFecha, "%Y-%m-%dT%H:%M:%SZ")
+
+        try:
+            maxDatetime = datetime.max if maxFecha is None else datetime.strptime(maxFecha, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            maxDatetime = datetime.max if maxFecha is None else datetime.strptime(maxFecha, "%Y-%m-%dT%H:%M:%SZ")
+        
+        filtro["fecha"] = {
+            "$gte": minDatetime,
+            "$lte": maxDatetime
+        }
+
+    wikisDoc = wikiBD.find(filtro)
     wikisJSON = [json.loads(json_util.dumps(doc)) for doc in wikisDoc]
     
     return wikisJSON

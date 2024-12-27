@@ -20,8 +20,15 @@ path = "/api/v1"
 
 # PAGINA PRINCIPAL: DEVUELVE TODAS LAS WIKIS O DEVUELVE LAS WIKIS QUE CUMPLEN UNOS CRITERIOS
 @api.get(path + "/wikis")
-async def getWikis(term: str = Query(None, min_length=1)):
-    return await wikiAPI.getTodasWikis() if term is None else await wikiAPI.getWikisPorNombre(term)
+async def getWikis(
+    term: str | None = Query(None, min_length=1),
+    minFecha: str | None = Query(None, min_length=1),
+    maxFecha: str | None = Query(None, min_length=1)
+    ):
+    hayFiltros = term is not None or minFecha is not None or maxFecha is not None
+    listaWikis = await wikiAPI.getWikisPorFiltros(term, minFecha, maxFecha) if hayFiltros else await wikiAPI.getTodasWikis()
+
+    return listaWikis
 
 
 # PAGINA WIKI
