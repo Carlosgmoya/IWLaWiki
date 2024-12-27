@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useSesion } from "../Login/authContext";
 
 import Valoraciones from "../Componentes/Valoraciones";
@@ -8,6 +8,7 @@ import "../Estilos/VentanaUsuario.css";
 
 function VentanaUsuario() {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
+    const navigate = useNavigate();
 
     const { nombre } = useParams();
     const { nombreUsuario, cerrarSesion } = useSesion();
@@ -32,12 +33,17 @@ function VentanaUsuario() {
             })
     }, [nombre]);
 
+    const handleCerrarSesion = () => {
+        cerrarSesion();
+        navigate(-1);
+    }
+
     return (
         <>
             {miPerfil ? (
                 <>
                     <h2>Mi perfil</h2>
-                    <button className="logout" onClick={cerrarSesion}>Cerrar sesión</button>
+                    <button className="logout" onClick={handleCerrarSesion}>Cerrar sesión</button>
                 </>
             ) : (
                 <>

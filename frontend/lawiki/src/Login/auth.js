@@ -1,7 +1,7 @@
 // src/auth.js
 const roles = {
-    admin: ["crearWiki", "editarWiki", "eliminarWiki", "crearArticulo", "editarArticulo", "eliminarArticulo"],
-    redactor: ["crearArticulo", "editarArticulo", "editarArticuloMio"],
+    admin: ["crearWiki", "editarWiki", "eliminarWiki", "crearArticulo", "editarArticulo", "eliminarArticulo", "crearComentario", "crearValoracion"],
+    redactor: ["crearArticulo", "editarArticulo", "editarArticuloMio", "crearComentario", "crearValoracion"],
   };
   
   // Check if the user's role includes a specific permission

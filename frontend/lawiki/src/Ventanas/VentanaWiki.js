@@ -1,16 +1,20 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
+
 import EditorWiki from "../Componentes/EditorWiki";
 import CrearArticulo from "../Componentes/CrearArticulo";
 import ListaArticulo from "../Componentes/ListaArticulo";
+import { useSesion } from "../Login/authContext";
+import { tienePermiso } from "../Login/auth";
 
 import '../Estilos/VentanaWiki.css';
 
 function VentanaWiki() {
-
   const backendURL = process.env.REACT_APP_BACKEND_URL;
 
   const { nombre } = useParams(); // Obtener el nombre de la URL
+  const { rolUsuario } = useSesion();
+
   const [wiki, setWiki] = useState(null);
   const [mostrarEditor, setMostrarEditor] = useState(false);
   const [mostrarCrearArticulo, setMostrarArticulo] = useState(false);
@@ -61,6 +65,7 @@ function VentanaWiki() {
           <div className="cabeceraWiki">
             <h1 className="nombreWiki">{wiki.nombre}</h1>
             {
+            (tienePermiso(rolUsuario, "editarWiki")) &&
             (!mostrarEditor && !mostrarCrearArticulo) && (
               <button title="Editar wiki" className="botonEditar" onClick={handleAbrirEditor}>
                 <img src="/Iconos/IconoEditar.svg" alt="Editar wiki" />
@@ -74,9 +79,12 @@ function VentanaWiki() {
               <p>{wiki.descripcion}</p>
               <ListaArticulo nombreWiki={nombre}/>
 
+              {
+              tienePermiso(rolUsuario, "crearArticulo") &&
               <div>  
                 <button className="irACrearArticulo" onClick={handleAbrirCrearArticulo}>Crear Artículo</button>
               </div>
+              }
             </>
           ) : (
             <>

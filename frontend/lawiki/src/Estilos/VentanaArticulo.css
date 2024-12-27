@@ -1,0 +1,87 @@
+.cabeceraWiki h1 a {
+    text-decoration: none;
+    color: rgb(95, 95, 95);
+}
+
+.cabeceraWiki h1 a:hover {
+    background-color: gray;
+    border-radius: 5px;
+}
+
+.articulo {
+    border: 2px solid darkgray;
+}
+
+.tituloArticulo {
+    padding-left: 7px;
+}
+
+.cabeceraArticulo {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid darkgray;
+    margin-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 10px;
+}
+
+.cuerpoArticulo {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.contenidoArticulo {
+    flex: 4;
+}
+
+.informacionArticulo {
+    flex: 1;
+    border: 1.5px solid gray;
+    height: 500px;
+}
+
+.informacionArticulo h3 {
+    padding-left: 15px;
+}
+
+.contenedorMapa{
+    border: 2px solid darkgray;
+    margin: 5%;
+}
+
+.botonCreador {
+    border-radius: 20%;
+    border-width: 2px;
+    background: none;
+}
+
+.botonCreador:hover {
+    background-color: darkgray;
+}
+
+.botonComentarios {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position:relative;
+    border-radius: 10%;
+    border-width: 2px;
+    background: none;
+    width: 250px;
+    height: 30px;
+    margin-left: 15px;
+}
+
+.botonComentarios:hover {
+    background-color: darkgray;
+}
+
+.botonComentarios p {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}

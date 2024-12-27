@@ -8,18 +8,34 @@ const authContext = createContext();
 
 export const useSesion = () => useContext(authContext);
 
-const backendURL = process.env.REACT_APP_BACKEND_URL;
-
 export const Sesion = ({ children }) => {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
+
     const [usuario, setUsuario] = useState(null);
     const [nuevoUsuario, setNuevoUsuario] = useState(false);
     const [nombreUsuario, setNombreUsuario] = useState("");
+    const [rolUsuario, setRolUsuario] = useState("lector");
+    const [mensajeError, setMensajeError] = useState("");
     
     useEffect(() => {
         const sesion = auth.onAuthStateChanged((usuario) => {
             setUsuario(usuario);    // usuario actual o null
             if (usuario) {
-                setNombreUsuario(usuario.displayName);
+                const fetchData = async () => {
+                    try {
+                        const respuesta = await fetch(`${backendURL}/usuarios/email/${usuario.email}`);
+                        const datosUsuario = await respuesta.json();
+                        setNombreUsuario(datosUsuario["nombre"]);
+                        if (datosUsuario["esAdmin"]) {
+                            setRolUsuario("admin");
+                        } else {
+                            setRolUsuario("redactor");
+                        }
+                    } catch (error) {
+                        console.error("Error al obtener datos:", error);
+                    }
+                };
+                fetchData();
             }
         });
         return () => sesion();
@@ -41,6 +57,11 @@ export const Sesion = ({ children }) => {
                 const datosUsuario = await respuesta.json();
                 console.log("Iniciado sesion como:", datosUsuario["nombre"]);
                 setNombreUsuario(datosUsuario["nombre"]);
+                if (datosUsuario["esAdmin"]) {
+                    setRolUsuario("admin");
+                } else {
+                    setRolUsuario("redactor");
+                }
             }
 
         } catch (error) {
@@ -75,6 +96,8 @@ export const Sesion = ({ children }) => {
                     progress: undefined,
                 });
                 setNuevoUsuario(false);
+            } else if(respuesta.status === 409) {
+                setMensajeError("Nombre de usuario ya existe");
             } else {
                 console.error("Error registrando usuario:", respuesta.status);
             }
@@ -89,13 +112,14 @@ export const Sesion = ({ children }) => {
             setUsuario(null);
             setNombreUsuario("");
             setNuevoUsuario(false);
+            setRolUsuario("lector");
         } catch (error) {
             console.error("Error cerrando sesion:", error.message);
         }
     };
 
     return (
-        <authContext.Provider value={{ usuario, nombreUsuario, iniciarSesion, cerrarSesion }}>
+        <authContext.Provider value={{ usuario, nombreUsuario, rolUsuario, iniciarSesion, cerrarSesion }}>
             {children}
             
             {nuevoUsuario && (
@@ -112,6 +136,9 @@ export const Sesion = ({ children }) => {
                         value={nombreUsuario}
                         onChange={(e) => setNombreUsuario(e.target.value)}
                     />
+                    <div className="errorUsuario">
+                        {mensajeError}
+                    </div>
                     <div className="contenedorBotones">
                         <button className="botonRegistrar" onClick={registrarUsuario}>Registrar usuario</button>
                         <button className="botonNoRegistrar" onClick={cerrarSesion}>No quiero registrarme</button>

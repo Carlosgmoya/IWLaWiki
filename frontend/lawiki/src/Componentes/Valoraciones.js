@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+import { useSesion } from "../Login/authContext";
+import { tienePermiso } from "../Login/auth";
+
 function Valoraciones({ usuario }) {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
+
+    const { nombreUsuario, rolUsuario } = useSesion();
+
     const [valoraciones, setValoraciones] = useState(null);
     const [mostrarValorar, setMostrarValorar] = useState(false);
     const [puntuacion, setPuntuacion] = useState(0);
     const [puntuacionSeleccionada, setPuntuacionSeleccionada] = useState(0);
+    const [nuevaValoracion, setNuevaValoracion] = useState(false);
 
-    //Provisional, usuario visitante de la pagina
-    const [usuarioVisitante, setUsuarioVisitante] = useState("");
-    const [logged, setLogged] = useState(false);
-    
-    useEffect (() => {
-        fetch(`http://localhost:8000/valoracion/${usuario}`)
+    useEffect(() => {
+        if (nuevaValoracion) {
+            console.log("Nueva valoracion añadida");
+            setNuevaValoracion(false);
+        }
+        fetch(`${backendURL}/valoracion/${usuario}`)
             .then((response) => response.json())
             .then((data) => {
                 console.log("Datos Valoraciones:", data);
                 setValoraciones(data);
             })
-    }, [usuario]);
+    }, [usuario, nuevaValoracion]);
 
     const handleAbrirValorar = () => {
         setMostrarValorar(true);
@@ -26,14 +34,6 @@ function Valoraciones({ usuario }) {
 
     const handleCerrarValorar = () => {
         setMostrarValorar(false);
-    };
-
-    const handleInput = (event) => {
-        setUsuarioVisitante(event.target.value);
-    };
-
-    const handleSetUsuarioVisitante = () => {
-        setLogged(true);
     };
 
     const handlePuntuar = (estrellas) => {
@@ -49,20 +49,21 @@ function Valoraciones({ usuario }) {
 
     const handleConfirmarPuntuacion = () => {
         const datos = {
-            de_usuario: usuarioVisitante,
+            de_usuario: nombreUsuario,
             a_usuario: usuario,
             valor: puntuacion,
         };
 
-        fetch(`http://localhost:8000/valoraciones`,
+        fetch(`${backendURL}/valoraciones`,
             {
                 method: "POST",
-                headers: { "Content-Type": "application/json"},
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(datos),
             }
         );
 
         setMostrarValorar(false);
+        setNuevaValoracion(true);
 
         toast.success("Valoración enviada con éxito", {
             position: "top-right",
@@ -72,7 +73,7 @@ function Valoraciones({ usuario }) {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-          });
+        });
     };
 
     return (
@@ -82,7 +83,7 @@ function Valoraciones({ usuario }) {
                 <div className="estrellasValoracion">
                     <p>{valoraciones.valor} estrellas</p>
                     {Array.from({ length: valoraciones.valor }).map((_, index) => (
-                        <img 
+                        <img
                             key={index}
                             src="/Iconos/Estrella1.png"
                             alt={'Estrella'}
@@ -90,7 +91,7 @@ function Valoraciones({ usuario }) {
                     ))}
                     {valoraciones.valor % 1 >= 0.5 && <img src="/Iconos/Estrella2.png" alt="Media Estrella" />}
                     {Array.from({ length: (5 - valoraciones.valor) }).map((_, index) => (
-                        <img 
+                        <img
                             key={index}
                             src="/Iconos/Estrella3.png"
                             alt={'Estrella'}
@@ -100,45 +101,34 @@ function Valoraciones({ usuario }) {
             ) : (
                 <p>Cargando valoraciones...</p>
             )}
-            <button onClick={handleAbrirValorar}>Valorar a {usuario}</button>
-            {mostrarValorar && (
-                <div className="valorar">
-                {!logged ? (
-                    <div className="loginProvisional">
-                        <input 
-                            type="text"
-                            value={usuarioVisitante}
-                            onChange={handleInput}
-                            placeholder="Introduzca su nombre de usuario"
-                        />
-                        <button onClick={handleSetUsuarioVisitante}>Confirmar</button>
-                        <button onClick={handleCerrarValorar}>Cancelar</button>
-                    </div>
-                ) : (
-                    <div>
-                        <h3>Hola {usuarioVisitante}! Puntúa a {usuario}</h3>
-                        {Array.from({ length: 5 }).map((_, index) => (
-                            <button
-                                key={index + 1}
-                                onClick={() => handlePuntuar(index + 1)}
-                            >
-                                {index >= puntuacion ? (
-                                    <img src="/Iconos/Estrella3.png" alt="Estrella vacia"/>
-                                ) : (
-                                    <img src="/Iconos/Estrella1.png" alt="Estrella"/>
-                                )}
-                            </button>
-                        ))}
-                        <textarea className="reseña"
-                            type="text"
-                            placeholder="Comparte tu crítica constructiva del usuario"
-                        />
-                        <button onClick={handleConfirmarPuntuacion}>Confirmar</button>
-                        <button onClick={handleCerrarValorar}>Cancelar</button>
-                    </div>
-                )} 
-                </div> 
-            )}  
+            {tienePermiso(rolUsuario, "crearValoracion") &&
+                <>
+                    <button onClick={handleAbrirValorar}>Valorar a {usuario}</button>
+                    {mostrarValorar && 
+                        <div className="valorar">
+                            <h3>Hola {nombreUsuario}! Puntúa a {usuario}</h3>
+                            {Array.from({ length: 5 }).map((_, index) => (
+                                <button
+                                    key={index + 1}
+                                    onClick={() => handlePuntuar(index + 1)}
+                                >
+                                    {index >= puntuacion ? (
+                                        <img src="/Iconos/Estrella3.png" alt="Estrella vacia" />
+                                        ) : (
+                                        <img src="/Iconos/Estrella1.png" alt="Estrella" />
+                                    )}
+                                </button>
+                            ))}
+                            <textarea className="reseña"
+                                type="text"
+                                placeholder="Comparte tu crítica constructiva del usuario"
+                            />
+                            <button onClick={handleConfirmarPuntuacion}>Confirmar</button>
+                            <button onClick={handleCerrarValorar}>Cancelar</button>
+                        </div>
+                    }
+                </>
+            }
         </div>
     );
 }

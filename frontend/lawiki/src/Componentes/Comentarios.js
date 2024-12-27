@@ -2,16 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { useSesion } from "../Login/authContext";
+import { tienePermiso } from "../Login/auth";
+
 import "../Estilos/VentanaComentario.css";
 
 function Comentarios() {
-
   const backendURL = process.env.REACT_APP_BACKEND_URL;
+
+  const { nombreUsuario, rolUsuario } = useSesion();
 
   const { nombre } = useParams();
   const { titulo } = useParams();
   const [listaComentarios, setListaComentarios] = useState(null);
   const [comentario, setComentario] = useState("");
+  const [nuevoComentario, setNuevoComentario] = useState(false);
 
   const options = {
     year: "numeric",
@@ -20,6 +25,10 @@ function Comentarios() {
   };
 
   useEffect(() => {
+    if (nuevoComentario) {
+      console.log("Nuevo comentario añadido");
+      setNuevoComentario(false);
+    }
     fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/comentarios`)
     .then((response) => response.json())
     .then((data) => {
@@ -27,7 +36,7 @@ function Comentarios() {
         setListaComentarios(data);
       }
     })
-  }, [nombre, titulo]);
+  }, [nombre, titulo, nuevoComentario]);
 
   const handleInput = (event) => {
     setComentario(event.target.value);
@@ -35,7 +44,7 @@ function Comentarios() {
 
   const handleEnviarComentario = () => {
     const datos = {
-      usuario: "Pepe",  //Provisional antes de implementar autenticacion
+      usuario: nombreUsuario,
       contenido: comentario,
     };
     console.log("comentario: ", comentario);
@@ -48,6 +57,8 @@ function Comentarios() {
       }
     );
 
+    console.log("Comentario enviado por:", nombreUsuario);
+    setNuevoComentario(true);
     toast.success("Comentario enviado con éxito", {
                 position: "top-right",
                 autoClose: 3000, // Auto close after 3 seconds
@@ -62,15 +73,20 @@ function Comentarios() {
   return (
       <div className="comentarios">
         <h2>Comentarios del artículo</h2>
-        <textarea className="escribirComentario"
-          type="text"
-          value={comentario}
-          onChange={handleInput}
-          placeholder="Escribe un comentario"
-        />
-        <button className="botonComentar" onClick={handleEnviarComentario}>
-          <img src="/Iconos/IconoEnviar.svg" alt="Enviar comentario" />
-        </button>
+        {
+        tienePermiso(rolUsuario, "crearComentario") &&
+        <div className="contenedorComentar">
+          <textarea className="escribirComentario"
+            type="text"
+            value={comentario}
+            onChange={handleInput}
+            placeholder="Escribe un comentario"
+          />
+          <button className="botonComentar" onClick={handleEnviarComentario}>
+            <img src="/Iconos/IconoEnviar.svg" alt="Enviar comentario" />
+          </button>
+        </div>
+        }
         {listaComentarios === null ? (
           <p>Cargando...</p>
         ) : (
@@ -79,7 +95,8 @@ function Comentarios() {
             <ul>
               {listaComentarios.map((comentario, index) => (
                 <li key={index}>
-                  <h3>{new Date(comentario["fecha"]).toLocaleDateString("es-ES", options)}, {new Date(comentario["fecha"]).toLocaleTimeString("es-ES")}</h3>
+                  <h3>{comentario["usuario"]}</h3>
+                  <h4>{new Date(comentario["fecha"]).toLocaleDateString("es-ES", options)}, {new Date(comentario["fecha"]).toLocaleTimeString("es-ES")}</h4>
                   <p>{comentario["contenido"] || ""}</p>
                 </li>
               ))}
