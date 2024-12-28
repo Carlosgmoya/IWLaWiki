@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File, Form
 from contextlib import asynccontextmanager
 import httpx
+from httpx import Timeout
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
@@ -18,7 +19,7 @@ async def lifespan(app: FastAPI):
     # Establecer conexión con los microservicios
     global clienteWiki, clienteArticulo, clienteComentario, clienteUsuario
 
-    clienteWiki = httpx.AsyncClient(base_url="http://localhost:8001/api/v1")        # url local
+    clienteWiki = httpx.AsyncClient(base_url="http://localhost:8001/api/v1", timeout=Timeout(10.0))        # url local
     clienteArticulo = httpx.AsyncClient(base_url="http://localhost:8002/api/v1")    # url local
     clienteComentario = httpx.AsyncClient(base_url="http://localhost:8003/api/v1")  # url local
     clienteUsuario = httpx.AsyncClient(base_url="http://localhost:8004/api/v1")     # url local
@@ -98,7 +99,8 @@ async def getWiki(nombre: str):
 
 # CREAR WIKI
 @app.post( "/wikis")
-async def crearWiki(nombre: str = Form(...),
+async def crearWiki(
+    nombre: str = Form(...),
     descripcion: str = Form(...),
     archivoP: UploadFile = File(...),
     archivoC: UploadFile = File(...),):
@@ -112,15 +114,34 @@ async def crearWiki(nombre: str = Form(...),
             "archivoP": (archivoP.filename, archivoP.file, archivoP.content_type),
             "archivoC": (archivoC.filename, archivoC.file, archivoC.content_type),
         }
-        # Hacer la solicitud
-        respuesta = await clienteWiki.post(f"/wikis", data=data, files=files)
-        respuesta.raise_for_status()
-    except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=e.response.status_code, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloWiki")
+        archivoP.file.seek(0)
+        archivoC.file.seek(0)
 
-    return respuesta.json()
+        # Hacer la solicitud
+        respuesta = await clienteWiki.post("/wikis", data=data, files=files)
+        respuesta.raise_for_status()
+
+        try:
+            return respuesta.json()
+        except ValueError as json_error:
+            # Si la respuesta no es JSON, devolver un error
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error al interpretar la respuesta del servidor: {str(json_error)}",
+            )
+
+    except httpx.HTTPStatusError as e:
+        # Capturar errores HTTP específicos
+        raise HTTPException(
+            status_code=e.response.status_code,
+            detail=f"Error al crear la Wiki: {e.response.text}",
+        )
+    except Exception as e:
+        # Capturar cualquier otro error
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno al crear la Wiki: {str(e)}",
+        )
 
 # ACTUALIZAR WIKI
 @app.put("/wikis/{wikiID}")
