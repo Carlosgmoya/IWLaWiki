@@ -242,20 +242,13 @@ async def eliminarMapa(id: str = Query(None, min_length=1)):
 @api.put(path + "/wikis/{nombre}/articulos/{titulo}/traducir")
 async def traducirArticulo(request: Request, idioma: str, titulo: str, wiki: str = Query(...)):
     wikiObjID = getObjID(wiki)
-
-    try:
-        data = await request.json()
-    except Exception as e:
-        data = {}
-
-    if not data:
-        raise HTTPException(status_code=400, detail="Parametros de request vacío")
+    articulo = articuloAPI.getArticulo(wikiObjID, titulo)
     
     wiki = wikiObjID
-    contenido = data.get("contenido")
+    contenido = articulo.get("contenido")
     contendioTraducido = traducirAPI.traducirTexto(contenido, idioma)
     tituloTraducido = traducirAPI.traducirTexto(titulo, idioma)
-    creador = data.get("creador")
+    creador = articulo.get("creador")
     if isinstance(creador, dict) and "$oid" in creador:
         creador = ObjectId(creador["$oid"])  # Convert the string inside "$oid" to ObjectId
 
