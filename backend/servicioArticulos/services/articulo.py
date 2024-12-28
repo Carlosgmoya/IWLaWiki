@@ -48,7 +48,7 @@ async def getTodosArticulos(wikiID: ObjectId):
 #    return articulosJSON
 
 
-async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, maxFecha: str, creador: str):
+async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, maxFecha: str, creador: str, idioma: str):
     filtro = {"$and": [{"ultimoModificado": True}]}
 
     if wikiID is not None:
@@ -86,6 +86,9 @@ async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, max
         usuarioId = ObjectId(usuarioJson["_id"]["$oid"])
 
         filtro["$and"].append({"creador": usuarioId})
+    
+    if idioma is not None:
+        filtro["$and"].append({"idioma": idioma})
     
     articulosDoc = articuloBD.find(filtro)
 

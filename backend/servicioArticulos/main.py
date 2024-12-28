@@ -38,9 +38,10 @@ async def getArticulos(
     usuario: str = Query(None, min_length=1),
     wiki: str = Query(None, min_length=1),
     minFecha: str = Query(None, min_length=1),
-    maxFecha: str = Query(None, min_length=1)
+    maxFecha: str = Query(None, min_length=1),
+    idioma: str = Query(None, min_length=1)
     ):
-    hayFiltros = term is not None or wiki is not None or minFecha is not None or maxFecha is not None or usuario is not None
+    hayFiltros = term is not None or wiki is not None or minFecha is not None or maxFecha is not None or usuario is not None or idioma is not None
 
     if wiki is not None:
         wikiObjID = getObjID(wiki)
@@ -48,7 +49,7 @@ async def getArticulos(
         wikiObjID = None
 
     if hayFiltros:
-        listaArticulos = await articuloAPI.getArticulosPorFiltros(wikiObjID, term, minFecha, maxFecha, usuario)
+        listaArticulos = await articuloAPI.getArticulosPorFiltros(wikiObjID, term, minFecha, maxFecha, usuario, idioma)
     else:
         listaArticulos = await articuloAPI.getTodosArticulos()
 
