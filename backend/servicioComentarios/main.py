@@ -36,13 +36,26 @@ def getComentariosPorArticulo(articuloId: str):
         raise HTTPException(status_code=404, detail="No se encontraron comentarios para este artículo.")
     return [Comentario(**comentario) for comentario in comentarios]
 
-@api.get(path + "/comentarios/usuario/{usuarioId}", response_model=List[Comentario])
-def getComentariosPorUsuario(usuario_id: str):
-    """Devuelve los comentarios de un usuario dado su ID."""
-    comentarios = list(comentarioBD.find({"usuarioId": ObjectId(usuario_id)}))
+@api.get(path + "/comentarios/usuario/{usuario}", response_model=List[Comentario])
+def getComentariosPorUsuario(usuario: str):
+    """Devuelve los comentarios de un usuario dado su nombre."""
+    comentarios = list(comentarioBD.find({"usuario": usuario}))
     if not comentarios:
         raise HTTPException(status_code=404, detail="No se encontraron comentarios para este usuario.")
     return [Comentario(**comentario) for comentario in comentarios]
+
+
+@api.get(path + "/comentarios/articulo/{articuloId}/usuario/{usuarioId}", response_model=List[Comentario])
+def getComentariosPorArticuloYUsuario(articuloId: str, usuario: str):
+    """Devuelve los comentarios de un usuario en un artículo."""
+    comentarios = list(comentarioBD.find({
+        "usuario": usuario,
+        "articulo_id": ObjectId(articuloId)
+    }))
+    if not comentarios:
+        raise HTTPException(status_code=404, detail="No se encontraron comentarios para este usuario en este artículo.")
+    return [Comentario(**comentario) for comentario in comentarios]
+
 
 @api.post(path + "/comentarios", response_model=Comentario)
 def crearComentario(comentario: Comentario):
