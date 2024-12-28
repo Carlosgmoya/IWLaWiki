@@ -1,6 +1,7 @@
 from services import articulo as articuloAPI
 from services import imagenes
 from services import mapa as mapaAPI
+from services import traducir as traducirAPI
 
 from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File
 
@@ -32,17 +33,27 @@ def getObjID(id: str):
 
 # GET ARTICULOS DE UNA WIKI
 @api.get(path + "/wikis/{nombre}/articulos")
-async def getArticulos(terminoDeBusqueda: str | None = None, usuario: str | None = None, wiki: str = Query(...)):
-    wikiObjID = getObjID(wiki)
+async def getArticulos(
+    term: str = Query(None, min_length=1),
+    usuario: str = Query(None, min_length=1),
+    wiki: str = Query(None, min_length=1),
+    minFecha: str = Query(None, min_length=1),
+    maxFecha: str = Query(None, min_length=1),
+    idioma: str = Query(None, min_length=1)
+    ):
+    hayFiltros = term is not None or wiki is not None or minFecha is not None or maxFecha is not None or usuario is not None or idioma is not None
 
-    if terminoDeBusqueda is not None:
-        articulosJSON = await articuloAPI.getArticulosPorTituloYContenido(wikiObjID, terminoDeBusqueda)
-    elif usuario is not None:
-        articulosJSON = await articuloAPI.getArticulosPorUsuarioOrdenadoPorFecha(wikiObjID, usuario) # se accede a la base de datos de usuario desde aqui porque aun no se ha implementado el modulo "usuario"
+    if wiki is not None:
+        wikiObjID = getObjID(wiki)
     else:
-        articulosJSON = await articuloAPI.getTodosArticulos(wikiObjID)
+        wikiObjID = None
 
-    return articulosJSON
+    if hayFiltros:
+        listaArticulos = await articuloAPI.getArticulosPorFiltros(wikiObjID, term, minFecha, maxFecha, usuario, idioma)
+    else:
+        listaArticulos = await articuloAPI.getTodosArticulos()
+
+    return listaArticulos
 
 
 # GET ARTICULO
@@ -236,6 +247,28 @@ async def eliminarMapa(id: str = Query(None, min_length=1)):
         raise HTTPException(status_code=404, detail=f"Versión del artículo no encontrada")
 
     return "Mapa eliminado con éxito"
+
+# TRADUCIR UN ARTÍCULO
+@api.put(path + "/wikis/{nombre}/articulos/{titulo}/traducir")
+async def traducirArticulo(request: Request, idioma: str, titulo: str, wiki: str = Query(...)):
+    wikiObjID = getObjID(wiki)
+    articulo = articuloAPI.getArticulo(wikiObjID, titulo)
+    
+    wiki = wikiObjID
+    contenido = articulo.get("contenido")
+    contendioTraducido = traducirAPI.traducirTexto(contenido, idioma)
+    tituloTraducido = traducirAPI.traducirTexto(titulo, idioma)
+    creador = articulo.get("creador")
+    if isinstance(creador, dict) and "$oid" in creador:
+        creador = ObjectId(creador["$oid"])  # Convert the string inside "$oid" to ObjectId
+
+    # If 'creador' is already an ObjectId string or directly an ObjectId
+    elif isinstance(creador, str):
+        creador = ObjectId(creador)
+
+    result = await articuloAPI.actualizarArticulo(tituloTraducido, wiki, contendioTraducido, creador, idioma)
+
+    return result
 
 ########## Metodos Complementarios ############
 

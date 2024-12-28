@@ -332,6 +332,28 @@ async def cambiarVersion(nombre : str, titulo : str, idVersion : str):
     
     return respuesta.json()
 
+# TRADUCIR UN ARTÍCULO
+@app.put("/wikis/{nombre}/articulos/{titulo}/traducir")
+async def traducirArticulo(request: Request, nombre: str, titulo: str, idioma : str):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getID(wikiJSON)
+
+
+    try:
+        query_params = {}
+        query_params["wiki"] = wikiID
+        query_params["idioma"] = idioma
+
+        respuesta = await clienteArticulo.put(f"/wikis/{nombre}/articulos/{titulo}/traducir", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+
+    return "Artículo traducido con éxito"
+
 
 
 ###--------------------------------CRUD MAPAS-----------------------------------###

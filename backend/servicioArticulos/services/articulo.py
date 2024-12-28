@@ -21,27 +21,76 @@ async def getTodosArticulos(wikiID: ObjectId):
     return articulosJSON
 
 
-async def getArticulosPorTitulo(wikiID: ObjectId, term: str):
-    articulosDoc = articuloBD.find({"titulo": {"$regex": term, "$options": "i"},
-                                      "wiki": wikiID,"ultimoModificado": True})
-    articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
+#async def getArticulosPorTitulo(wikiID: ObjectId, term: str):
+#    articulosDoc = articuloBD.find({"titulo": {"$regex": term, "$options": "i"},
+#                                      "wiki": wikiID,"ultimoModificado": True})
+#    articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
+#    
+#    return articulosJSON
+
+
+#async def getArticulosPorTituloYContenido(wikiID: ObjectId, term: str):
+#    terms = term.split()
+#
+#    regex_patterns = [{"titulo": {"$regex": t, "$options": "i"}} for t in terms] + \
+#                 [{"contenido": {"$regex": t, "$options": "i"}} for t in terms]
+#    
+#    articulosDoc = articuloBD.find({
+#        "$and": [
+#            {"$or": regex_patterns},
+#            {"wiki": wikiID},
+#            {"ultimoModificado": True}
+#        ]
+#    })
+#
+#    articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
+#
+#    return articulosJSON
+
+
+async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, maxFecha: str, creador: str, idioma: str):
+    filtro = {"$and": [{"ultimoModificado": True}]}
+
+    if wikiID is not None:
+        filtro["$and"].append({"wiki": wikiID})
+
+    if term is not None:
+        terms = term.split()
+
+        regex_patterns = [{"titulo": {"$regex": t, "$options": "i"}} for t in terms] + \
+            [{"contenido": {"$regex": t, "$options": "i"}} for t in terms]
     
-    return articulosJSON
+        filtro["$and"].append({"$or": regex_patterns})
 
+    if minFecha is not None or maxFecha is not None:
+        try:
+            minDatetime = datetime.min if minFecha is None else datetime.strptime(minFecha, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            minDatetime = datetime.min if minFecha is None else datetime.strptime(minFecha, "%Y-%m-%dT%H:%M:%SZ")
 
-async def getArticulosPorTituloYContenido(wikiID: ObjectId, term: str):
-    terms = term.split()
+        try:
+            maxDatetime = datetime.max if maxFecha is None else datetime.strptime(maxFecha, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            maxDatetime = datetime.max if maxFecha is None else datetime.strptime(maxFecha, "%Y-%m-%dT%H:%M:%SZ")
+        
+        filtro["$and"].append({
+            "fecha": {
+                "$gte": minDatetime,
+                "$lte": maxDatetime
+            }
+        })
 
-    regex_patterns = [{"titulo": {"$regex": t, "$options": "i"}} for t in terms] + \
-                 [{"contenido": {"$regex": t, "$options": "i"}} for t in terms]
+    if creador is not None:
+        usuario = usuarioBD.find_one({"nombre": creador})
+        usuarioJson = json.loads(json_util.dumps(usuario))
+        usuarioId = ObjectId(usuarioJson["_id"]["$oid"])
+
+        filtro["$and"].append({"creador": usuarioId})
     
-    articulosDoc = articuloBD.find({
-        "$and": [
-            {"$or": regex_patterns},
-            {"wiki": wikiID},
-            {"ultimoModificado": True}
-        ]
-    })
+    if idioma is not None:
+        filtro["$and"].append({"idioma": idioma})
+    
+    articulosDoc = articuloBD.find(filtro)
 
     articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
 
@@ -77,7 +126,10 @@ async def crearArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: Ob
 async def actualizarArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: ObjectId, idioma : str):
     fecha = datetime.utcnow()
     primerArticulo = articuloBD.find_one({"titulo": titulo}, sort=[("fechaCreacion", 1)])
-    fechaCreacion = primerArticulo.get("fechaCreacion")
+    if primerArticulo:
+        fechaCreacion = primerArticulo.get("fechaCreacion")
+    else:
+        fechaCreacion = fecha
     nuevaVersion = {
         "titulo": titulo,
         "wiki": wiki,
@@ -91,7 +143,7 @@ async def actualizarArticulo(titulo: str, wiki: ObjectId, contenido: str, creado
 
     #Actualiza el estado UltimoModificado de la version anterior a false
     articuloBD.update_many(
-        {"titulo": titulo, "wiki": wiki},
+        {"titulo": titulo, "wiki": wiki, "idioma": idioma, "ultimoModificado": True},
         {"$set": {"ultimoModificado": False}}
     )
 
@@ -110,22 +162,6 @@ async def eliminarVersionArticulo(articulo_id: ObjectId):
 async def eliminarTodasVersionesArticulo(titulo: str):
     result = articuloBD.delete_many({"titulo": titulo})
     return result
-
-#Modificar un articulo seria crear uno nuevo
-
-async def getArticulosPorUsuarioOrdenadoPorFecha(wiki: ObjectId, usuario: str):
-    # ELIMINAR EL ACCESO A usuarioBD cuando se implemente el microservicio usuario
-    usu= usuarioBD.find_one({"nombre": usuario})
-    usu_json = json.loads(json_util.dumps(usu))
-    usu_dict = usu_json["_id"]
-    usu_id = usu_dict["$oid"]
-    usuId = ObjectId(usu_id)
-
-    articulosDoc = articuloBD.find({"creador": usuId,
-                                      "wiki": wiki}).sort("fecha", -1)
-    articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
-    
-    return articulosJSON
 
 async def versionesAnteriores(titulo : str):
     articulosDoc = articuloBD.find({"titulo": titulo,"ultimoModificado": False})
