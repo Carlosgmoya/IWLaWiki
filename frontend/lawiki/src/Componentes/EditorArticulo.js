@@ -1,9 +1,17 @@
 import React, { useState, useRef } from "react";
+import emailjs from 'emailjs-com';
+
 import SubirMapa from "./SubirMapa";
 import SubirImagen from "./SubirImagen";
+import { useSesion } from "../Login/authContext";
 
-const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancelar }) => {
+const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, emailCreador, creadorId, onCancelar }) => {
   const backendURL = process.env.REACT_APP_BACKEND_URL;
+  const serviceID = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+  const templateID = process.env.REACT_APP_EMAILJS_ARTICLECHANGED_TEMPLATE_ID;
+  const userID = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+
+  const { nombreUsuario } = useSesion();
 
   const [contenido, setContenido] = useState(contenidoInicial);
   const [mensaje, setMensaje] = useState("");
@@ -12,9 +20,6 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancel
   const referenciaTextArea = useRef(null);
 
 
-  // Cambia esto por el ID real del creador que corresponda a tu contexto.
-  const creadorId = "671fcdfdf45c1f9bfed57032";
-
   const handleChange = (e) => {
     setContenido(e.target.value);
   };
@@ -22,22 +27,25 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancel
   const handleGuardar = async () => {
     const datos = {
       contenido,
-      creador: { $oid: creadorId }, // Incluye el ID del creador en el formato requerido
+      creador: { $oid: creadorId },
     };
 
     //comprobar si el articulo tenia mapa y actualizar la referencia al articulo
-    try {
-      const respuesta = await fetch(
-        `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
-      );
-      
-      if (respuesta.ok) {
-        const mapa = respuesta.json();
-        const mapaActualizado = {
-          latitud: mapa.latitud,
-          longitud: mapa.longitud,
-          nombreUbicacion: mapa.nombreUbicacion,
-        }
+
+    const respuesta = await fetch(
+      `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
+    );
+    
+    if (respuesta.status === 404) {
+      console.log("Artículo no tiene mapa");
+    } else if (respuesta.ok) {
+      const mapa = respuesta.json();
+      const mapaActualizado = {
+        latitud: mapa.latitud,
+        longitud: mapa.longitud,
+        nombreUbicacion: mapa.nombreUbicacion,
+      }
+      try {
         const actualizar = await fetch(
           `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
           {
@@ -46,10 +54,11 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancel
             body: mapaActualizado,
           }
         );
+      } catch (error) {
+        console.error("Error:", error);
       }
-    } catch (error) {
-      console.error("Error:", error);
     }
+
 
     try {
       const response = await fetch(
@@ -59,10 +68,23 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancel
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(datos),
         }
-      ); 
+      );
 
       if (response.ok) {
-        setMensaje("¡Guardado exitosamente!");    
+        setMensaje("¡Guardado exitosamente!");
+
+        const datosEmail = {
+          usuario: nombreUsuario,
+          articulo: tituloArticulo,
+          creador: emailCreador,
+        }
+
+        emailjs.send(
+          serviceID,
+          templateID,
+          datosEmail,
+          userID,
+        )
       } else {
         const errorData = await response.json();
         console.error("Error:", errorData);
@@ -161,7 +183,7 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, onCancel
             cols="50"
           />
           <button onClick={handleGuardar}>Guardar</button>
-          
+
           <div>
             <h1>Subir Imagen</h1>
             <SubirImagen />

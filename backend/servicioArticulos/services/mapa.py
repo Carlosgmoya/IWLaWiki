@@ -1,11 +1,14 @@
 from bson import json_util
 from bson.objectid import ObjectId
+from fastapi import HTTPException
 import json
 
 from bd import mapaBD
 
 async def getMapa(artID: ObjectId):
-    mapasDoc = mapaBD.find_one({"articulo": artID})
+    mapasDoc = mapaBD.find_one({"articulo": artID})  
+    if not mapasDoc:
+        raise HTTPException(status_code=404, detail="Mapa no encontrado")
     mapasJSON = json.loads(json_util.dumps(mapasDoc))
 
     return mapasJSON

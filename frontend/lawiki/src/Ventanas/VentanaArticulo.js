@@ -86,7 +86,9 @@ function VentanaArticulo() {
                                     <p>Comentarios</p>
                                 </button>
                                 {mostrarComentarios ?
-                                    <Comentarios /> : null
+                                    <Comentarios 
+                                        emailCreador={creador.email}
+                                    /> : null
                                 }
                             </div>
                             <div className="informacionArticulo">
@@ -105,6 +107,8 @@ function VentanaArticulo() {
                                 nombreWiki={nombre}
                                 tituloArticulo={titulo}
                                 contenidoInicial={articulo.contenido}
+                                emailCreador={creador.email}
+                                creadorId={creador._id}
                                 onCancelar={handleCerrarEditor}
                             />
                             <div>

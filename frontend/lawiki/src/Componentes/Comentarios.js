@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import emailjs from 'emailjs-com';
 
 import { useSesion } from "../Login/authContext";
 import { tienePermiso } from "../Login/auth";
 
 import "../Estilos/VentanaComentario.css";
 
-function Comentarios() {
+function Comentarios({ emailCreador }) {
   const backendURL = process.env.REACT_APP_BACKEND_URL;
+  const serviceID = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+  const templateID = process.env.REACT_APP_EMAILJS_COMMENTS_TEMPLATE_ID;
+  const userID = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
 
   const { nombreUsuario, rolUsuario } = useSesion();
 
@@ -17,6 +21,7 @@ function Comentarios() {
   const [listaComentarios, setListaComentarios] = useState(null);
   const [comentario, setComentario] = useState("");
   const [nuevoComentario, setNuevoComentario] = useState(false);
+  const [heComentado, setHeComentado] = useState(false);
 
   const options = {
     year: "numeric",
@@ -35,21 +40,23 @@ function Comentarios() {
       if(data["detail"] !== null) {
         setListaComentarios(data);
       }
-    })
+    });
+
+    //COMPROBAR SI HE COMENTADO
   }, [nombre, titulo, nuevoComentario]);
 
   const handleInput = (event) => {
     setComentario(event.target.value);
   };
 
-  const handleEnviarComentario = () => {
+  const handleEnviarComentario = async () => {
     const datos = {
       usuario: nombreUsuario,
       contenido: comentario,
     };
     console.log("comentario: ", comentario);
 
-    fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/comentarios`,
+    const respuesta = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/comentarios`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json"},
@@ -57,6 +64,7 @@ function Comentarios() {
       }
     );
 
+    if (respuesta.ok) {
     console.log("Comentario enviado por:", nombreUsuario);
     setNuevoComentario(true);
     toast.success("Comentario enviado con éxito", {
@@ -68,6 +76,21 @@ function Comentarios() {
                 draggable: true,
                 progress: undefined,
               });
+    }
+
+    const datosEmail = {
+      usuario: nombreUsuario,
+      mensaje: comentario,
+      articulo: titulo,
+      creador: emailCreador,
+    };
+
+    emailjs.send(
+      serviceID,
+      templateID,
+      datosEmail,
+      userID,
+    )
   };
 
   return (
@@ -75,6 +98,7 @@ function Comentarios() {
         <h2>Comentarios del artículo</h2>
         {
         tienePermiso(rolUsuario, "crearComentario") &&
+        !heComentado &&
         <div className="contenedorComentar">
           <textarea className="escribirComentario"
             type="text"
