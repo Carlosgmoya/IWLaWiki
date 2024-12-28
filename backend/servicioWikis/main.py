@@ -69,8 +69,11 @@ async def crearWiki(nombre : str = Form(...), descripcion : str = Form(...) , ar
         print("No se seleccionó ningún archivo.")
     wikiJSON = await wikiAPI.getWiki(nombre)
 
-    os.remove(rutaLocalP)
-    os.remove(rutaLocalC)
+    if os.path.exists(rutaLocalP):
+        os.remove(rutaLocalP)
+    if os.path.exists(rutaLocalC):
+        os.remove(rutaLocalC)
+        
     return await wikiAPI.crearWiki(nombre, descripcion, portada, cabecera) if wikiJSON is None else "Ya existe una wiki con ese nombre"
 
 

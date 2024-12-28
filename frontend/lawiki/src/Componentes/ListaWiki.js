@@ -87,7 +87,7 @@ function ListaWiki() {
                             <ul className="ulWikis">
                                 {listaWikis.map((wiki, index) => (
                                     <Link title={"Ir a " + wiki.nombre} to={`/wikis/${wiki.nombre || 'defaultWiki'}`}>
-                                        <li key={index}>
+                                        <li key={index} style={{backgroundImage: `url(${wiki.portada})`,}}>
                                             <p>{wiki.nombre}</p>
                                             <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + wiki.nombre}></img>
                                         </li>

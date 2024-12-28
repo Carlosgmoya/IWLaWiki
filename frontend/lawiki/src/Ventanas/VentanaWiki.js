@@ -62,7 +62,7 @@ function VentanaWiki() {
     <div>
       {wiki ? (
         <>
-          <div className="cabeceraWiki">
+          <div className="cabeceraWiki" style={{ backgroundImage: `url(${wiki.cabecera})`,}}>
             <h1 className="nombreWiki">{wiki.nombre}</h1>
             {
             (tienePermiso(rolUsuario, "editarWiki")) &&
