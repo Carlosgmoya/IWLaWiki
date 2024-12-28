@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import SubirImagen from "./SubirImagen";
 
 function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
   const [nombre, setNombre] = useState("");
@@ -86,7 +87,7 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
         if (wiki) {
           setMensaje("Wiki actualizada con éxito!");
         } else {
-            if (data === "Ya existe una wiki con ese nombre") {
+          if (data === "Ya existe una wiki con ese nombre") {
             setMensaje(data); // Muestra el mensaje de error
           } else {
             setMensaje("Wiki creada con éxito!");
@@ -160,6 +161,10 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
               <div>
                 <button className="botonCrear" type="submit">Actualizar</button>
                 <button className="botonCancelar" onClick={onCancelar} >Cancelar</button>
+              </div>
+              <div>
+                <h1>Subir Imagen</h1>
+                <SubirImagen />
               </div>
             </>
           ) : (
