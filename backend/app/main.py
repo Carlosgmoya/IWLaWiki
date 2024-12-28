@@ -460,6 +460,22 @@ async def getComentarios(nombre: str, titulo: str):
     
     return respuesta.json()
 
+# GET COMENTARIOS DE UN USUARIO EN UN ARTICULO
+@app.get("/wikis/{nombre}/articulos/{titulo}/comentarios/{usuario}")
+async def getComentariosPorArticuloYUsuario(nombre: str, titulo: str, usuario: str):
+    articuloJSON = await getArticulo(nombre, titulo)
+    articuloID = getID(articuloJSON)
+
+    try:
+        respuesta = await clienteComentario.get(f"/comentarios/articulo/{articuloID}/usuario/{usuario}")
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloComentario")
+    
+    return respuesta.json()
+
 
 # CREAR COMENTARIO
 @app.post("/wikis/{nombre}/articulos/{titulo}/comentarios")

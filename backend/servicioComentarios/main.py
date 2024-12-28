@@ -45,7 +45,7 @@ def getComentariosPorUsuario(usuario: str):
     return [Comentario(**comentario) for comentario in comentarios]
 
 
-@api.get(path + "/comentarios/articulo/{articuloId}/usuario/{usuarioId}", response_model=List[Comentario])
+@api.get(path + "/comentarios/articulo/{articuloId}/usuario/{usuario}", response_model=List[Comentario])
 def getComentariosPorArticuloYUsuario(articuloId: str, usuario: str):
     """Devuelve los comentarios de un usuario en un artículo."""
     comentarios = list(comentarioBD.find({

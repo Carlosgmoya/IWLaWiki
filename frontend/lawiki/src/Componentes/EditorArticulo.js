@@ -79,12 +79,12 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, emailCre
           creador: emailCreador,
         }
 
-        emailjs.send(
+        /*emailjs.send(
           serviceID,
           templateID,
           datosEmail,
           userID,
-        )
+        );*/
       } else {
         const errorData = await response.json();
         console.error("Error:", errorData);

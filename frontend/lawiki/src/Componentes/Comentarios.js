@@ -34,15 +34,26 @@ function Comentarios({ emailCreador }) {
       console.log("Nuevo comentario añadido");
       setNuevoComentario(false);
     }
-    fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/comentarios`)
-    .then((response) => response.json())
-    .then((data) => {
-      if(data["detail"] !== null) {
-        setListaComentarios(data);
-      }
-    });
 
-    //COMPROBAR SI HE COMENTADO
+    const fetchData = async () => {
+      await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/comentarios`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data["detail"] !== null) {
+            setListaComentarios(data);
+          }
+        });
+
+      //COMPROBAR SI HE COMENTADO
+      const respuesta = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/comentarios/${nombreUsuario}`);
+
+      if (respuesta.ok) {
+        setHeComentado(true);
+        console.log("He comentado");
+      }
+    }
+
+    fetchData();
   }, [nombre, titulo, nuevoComentario]);
 
   const handleInput = (event) => {
@@ -59,23 +70,23 @@ function Comentarios({ emailCreador }) {
     const respuesta = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/comentarios`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json"},
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos),
       }
     );
 
     if (respuesta.ok) {
-    console.log("Comentario enviado por:", nombreUsuario);
-    setNuevoComentario(true);
-    toast.success("Comentario enviado con éxito", {
-                position: "top-right",
-                autoClose: 3000, // Auto close after 3 seconds
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-              });
+      console.log("Comentario enviado por:", nombreUsuario);
+      setNuevoComentario(true);
+      toast.success("Comentario enviado con éxito", {
+        position: "top-right",
+        autoClose: 3000, // Auto close after 3 seconds
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
 
     const datosEmail = {
@@ -85,18 +96,18 @@ function Comentarios({ emailCreador }) {
       creador: emailCreador,
     };
 
-    emailjs.send(
+    /*emailjs.send(
       serviceID,
       templateID,
       datosEmail,
       userID,
-    )
+    );*/
   };
 
   return (
-      <div className="comentarios">
-        <h2>Comentarios del artículo</h2>
-        {
+    <div className="comentarios">
+      <h2>Comentarios del artículo</h2>
+      {
         tienePermiso(rolUsuario, "crearComentario") &&
         !heComentado &&
         <div className="contenedorComentar">
@@ -110,12 +121,12 @@ function Comentarios({ emailCreador }) {
             <img src="/Iconos/IconoEnviar.svg" alt="Enviar comentario" />
           </button>
         </div>
-        }
-        {listaComentarios === null ? (
-          <p>Cargando...</p>
-        ) : (
-          <>
-            {listaComentarios.length > 0 ? (
+      }
+      {listaComentarios === null ? (
+        <p>Cargando...</p>
+      ) : (
+        <>
+          {listaComentarios.length > 0 ? (
             <ul>
               {listaComentarios.map((comentario, index) => (
                 <li key={index}>
@@ -128,9 +139,9 @@ function Comentarios({ emailCreador }) {
           ) : (
             <p>No hay comentarios disponibles</p>
           )}
-          </>
-        )}
-      </div>
+        </>
+      )}
+    </div>
   );
 }
 export default Comentarios;
