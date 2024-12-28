@@ -77,7 +77,10 @@ async def crearArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: Ob
 async def actualizarArticulo(titulo: str, wiki: ObjectId, contenido: str, creador: ObjectId, idioma : str):
     fecha = datetime.utcnow()
     primerArticulo = articuloBD.find_one({"titulo": titulo}, sort=[("fechaCreacion", 1)])
-    fechaCreacion = primerArticulo.get("fechaCreacion")
+    if primerArticulo:
+        fechaCreacion = primerArticulo.get("fechaCreacion")
+    else:
+        fechaCreacion = fecha
     nuevaVersion = {
         "titulo": titulo,
         "wiki": wiki,
@@ -91,7 +94,7 @@ async def actualizarArticulo(titulo: str, wiki: ObjectId, contenido: str, creado
 
     #Actualiza el estado UltimoModificado de la version anterior a false
     articuloBD.update_many(
-        {"titulo": titulo, "wiki": wiki},
+        {"titulo": titulo, "wiki": wiki, "idioma": idioma, "ultimoModificado": True},
         {"$set": {"ultimoModificado": False}}
     )
 

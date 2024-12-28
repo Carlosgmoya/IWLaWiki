@@ -356,6 +356,54 @@ async def cambiarVersion(nombre : str, titulo : str, idVersion : str):
     
     return respuesta.json()
 
+# TRADUCIR UN ARTÍCULO
+@app.put("/wikis/{nombre}/articulos/{titulo}/traducir")
+async def traducirArticulo(request: Request, nombre: str, titulo: str, idioma : str):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getID(wikiJSON)
+
+    #Actualizar mapa
+    mapaAntiguo = await getMapa(nombre, titulo)
+    print(mapaAntiguo)
+    mapaNuevo = {}
+    mapaNuevo["latitud"] = mapaAntiguo["latitud"]
+    mapaNuevo["longitud"] = mapaAntiguo["longitud"]
+    mapaNuevo["nombreUbicacion"] = mapaAntiguo["nombreUbicacion"]
+
+    try:
+        data = await request.json()
+
+        query_params = {}
+        query_params["wiki"] = wikiID
+        query_params["idioma"] = idioma
+
+        respuesta = await clienteArticulo.put(f"/wikis/{nombre}/articulos/{titulo}/traducir", params=query_params, json=data)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    respuestaJSON = respuesta.json()
+
+    #actualizar mapa despues de cambiar el objID del articulo
+    articuloID = respuestaJSON["_id"]
+    mapaID = getID(mapaAntiguo)
+    
+    try:
+        query_params = {}
+        query_params["mapa"] = mapaID
+        query_params["art"] = articuloID
+
+        respuesta = await clienteArticulo.put(f"/wikis/{nombre}/articulos/{titulo}/mapas", params=query_params, json=mapaNuevo)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con mapa")
+
+    return "Artículo actualizado con éxito"
+
 
 
 ###--------------------------------CRUD MAPAS-----------------------------------###

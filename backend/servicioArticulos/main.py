@@ -1,6 +1,7 @@
 from services import articulo as articuloAPI
 from services import imagenes
 from services import mapa as mapaAPI
+from services import traducir as traducirAPI
 
 from fastapi import FastAPI, Request, HTTPException, Query, UploadFile, File
 
@@ -236,6 +237,35 @@ async def eliminarMapa(id: str = Query(None, min_length=1)):
         raise HTTPException(status_code=404, detail=f"Versión del artículo no encontrada")
 
     return "Mapa eliminado con éxito"
+
+# TRADUCIR UN ARTÍCULO
+@api.put(path + "/wikis/{nombre}/articulos/{titulo}/traducir")
+async def traducirArticulo(request: Request, idioma: str, titulo: str, wiki: str = Query(...)):
+    wikiObjID = getObjID(wiki)
+
+    try:
+        data = await request.json()
+    except Exception as e:
+        data = {}
+
+    if not data:
+        raise HTTPException(status_code=400, detail="Parametros de request vacío")
+    
+    wiki = wikiObjID
+    contenido = data.get("contenido")
+    contendioTraducido = traducirAPI.traducirTexto(contenido, idioma)
+    tituloTraducido = traducirAPI.traducirTexto(titulo, idioma)
+    creador = data.get("creador")
+    if isinstance(creador, dict) and "$oid" in creador:
+        creador = ObjectId(creador["$oid"])  # Convert the string inside "$oid" to ObjectId
+
+    # If 'creador' is already an ObjectId string or directly an ObjectId
+    elif isinstance(creador, str):
+        creador = ObjectId(creador)
+
+    result = await articuloAPI.actualizarArticulo(tituloTraducido, wiki, contendioTraducido, creador, idioma)
+
+    return result
 
 ########## Metodos Complementarios ############
 
