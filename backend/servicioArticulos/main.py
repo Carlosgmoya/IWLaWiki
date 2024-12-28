@@ -33,17 +33,27 @@ def getObjID(id: str):
 
 # GET ARTICULOS DE UNA WIKI
 @api.get(path + "/wikis/{nombre}/articulos")
-async def getArticulos(terminoDeBusqueda: str | None = None, usuario: str | None = None, wiki: str = Query(...)):
-    wikiObjID = getObjID(wiki)
+async def getArticulos(
+    term: str = Query(None, min_length=1),
+    usuario: str = Query(None, min_length=1),
+    wiki: str = Query(None, min_length=1),
+    minFecha: str = Query(None, min_length=1),
+    maxFecha: str = Query(None, min_length=1),
+    idioma: str = Query(None, min_length=1)
+    ):
+    hayFiltros = term is not None or wiki is not None or minFecha is not None or maxFecha is not None or usuario is not None or idioma is not None
 
-    if terminoDeBusqueda is not None:
-        articulosJSON = await articuloAPI.getArticulosPorTituloYContenido(wikiObjID, terminoDeBusqueda)
-    elif usuario is not None:
-        articulosJSON = await articuloAPI.getArticulosPorUsuarioOrdenadoPorFecha(wikiObjID, usuario) # se accede a la base de datos de usuario desde aqui porque aun no se ha implementado el modulo "usuario"
+    if wiki is not None:
+        wikiObjID = getObjID(wiki)
     else:
-        articulosJSON = await articuloAPI.getTodosArticulos(wikiObjID)
+        wikiObjID = None
 
-    return articulosJSON
+    if hayFiltros:
+        listaArticulos = await articuloAPI.getArticulosPorFiltros(wikiObjID, term, minFecha, maxFecha, usuario, idioma)
+    else:
+        listaArticulos = await articuloAPI.getTodosArticulos()
+
+    return listaArticulos
 
 
 # GET ARTICULO
