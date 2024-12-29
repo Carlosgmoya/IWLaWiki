@@ -320,13 +320,11 @@ async def subirImagen(archivo : UploadFile = File(...)):
     return respuesta.text
 
 @app.get("/wikis/{nombre}/articulos/{titulo}/versiones")
-async def todasVersiones(nombre : str, titulo : str):
-    articuloJSON = await getArticulo(nombre, titulo)
-    articuloID = getID(articuloJSON)
+async def todasVersiones(nombre : str, titulo : str, idioma: str = Query(...)):
     
     try:
         query_params = {}
-        query_params["titulo"] = articuloID
+        query_params["idioma"] = idioma
 
         respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos/{titulo}/versiones", params=query_params)
         respuesta.raise_for_status()

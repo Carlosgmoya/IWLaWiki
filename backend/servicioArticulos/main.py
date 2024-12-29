@@ -146,8 +146,8 @@ async def eliminarArticulo(titulo: str, id: str = Query(None, min_length=1)):
     return "Artículo eliminado con éxito"
 
 @api.get(path + "/wikis/{nombre}/articulos/{titulo}/versiones")
-async def todasVersiones(titulo : str):
-    articulo_json = await articuloAPI.versionesAnteriores(titulo)
+async def todasVersiones(titulo : str, idioma : str = Query(...)):
+    articulo_json = await articuloAPI.versionesAnteriores(titulo, idioma)
 
     if articulo_json is None:
         raise HTTPException(status_code=404, detail="El artículo no tiene más versiones")

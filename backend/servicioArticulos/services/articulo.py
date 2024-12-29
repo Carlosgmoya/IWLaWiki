@@ -164,8 +164,8 @@ async def eliminarTodasVersionesArticulo(titulo: str):
     result = articuloBD.delete_many({"titulo": titulo})
     return result
 
-async def versionesAnteriores(titulo : str):
-    articulosDoc = articuloBD.find({"titulo": titulo,"ultimoModificado": False})
+async def versionesAnteriores(titulo : str, idioma : str):
+    articulosDoc = articuloBD.find({"titulo": titulo,"ultimoModificado": False, "idioma": idioma})
     articulosJSON = json.loads(json_util.dumps(articulosDoc))
 
     return articulosJSON
