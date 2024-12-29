@@ -14,6 +14,7 @@ function VentanaHistorial() {
     const { nombre } = useParams();
     const { titulo } = useParams();
     const [listaArticulos, setListaArticulos] = useState(null);
+    const [articuloActual, setArticuloActual] = useState(null);
     const [listaEditores, setListaEditores] = useState(null);
     const [mensaje, setMensaje] = useState("");
     const [mostrarHistorial, setMostrarHistorial] = useState(true);
@@ -33,9 +34,9 @@ function VentanaHistorial() {
     }
 
     const mensajeCambio = function(numero) {
-        if (numero > 0) return "Añadidos " + numero + " bytes";
-        else if (numero < 0) return "Eliminados " + Math.abs(numero) + " bytes";
-        else return "Tamaño no modificado";
+        if (numero > 0) return "Se añadirán " + numero + " bytes";
+        else if (numero < 0) return "Se eliminarán " + Math.abs(numero) + " bytes";
+        else return "No se modificará el tamaño";
     }
 
     const revertirVersion = async(nuevaVersionId) => {
@@ -55,6 +56,7 @@ function VentanaHistorial() {
             try {
                 const respuesta1 = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}`);
                 const articuloJson = await respuesta1.json();
+                setArticuloActual(articuloJson);
 
                 const respuesta2 = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/versiones?idioma=${articuloJson.idioma}`);
                 let listaArticulos = [];
@@ -103,10 +105,10 @@ function VentanaHistorial() {
                   <li key={index}>
                     <h3>{fechaLocale(articulo["fecha"]["$date"])} por <Link to={`/usuario/${listaEditores[index]}`}>{listaEditores[index]}</Link></h3>
                   {articulo.fecha.$date === articulo.fechaCreacion.$date ? (
-                    <p>Artículo creado ({byteSize(articulo.contenido)} bytes)</p>
+                    <p>{mensajeCambio(byteSize(articulo.contenido) - byteSize(articuloActual.contenido))} (artículo creado)</p>
                   ) : (
                     <>
-                    <p>{mensajeCambio(byteSize(articulo.contenido) - byteSize(listaArticulos[index + 1].contenido))} ({byteSize(articulo.contenido)} bytes)</p>
+                    <p>{mensajeCambio(byteSize(articulo.contenido) - byteSize(articuloActual.contenido))} ({byteSize(articulo.contenido)} bytes)</p>
                     </>
                   )}
                     <button onClick={() => revertirVersion(articulo._id.$oid)}>Revertir</button>
