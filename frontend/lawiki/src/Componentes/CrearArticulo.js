@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSesion } from "../Login/authContext";
 
@@ -9,7 +9,11 @@ const CrearArticulo = ({ nombreWiki, onCancelar }) => {
     const [mensaje, setMensaje] = useState("");
     const [titulo, setTitulo] = useState("");
     const [mostrarFormulario, setMostrarFormulario] = useState(true); // Estado para alternar formulario/mensaje
+    const [mostrarFormularioIdiomas, setMostrarFormularioIdiomas] = useState(false);
     const navigate = useNavigate();
+
+    const [listaIdiomas, setListaIdiomas] = useState({});
+    const [idioma, setIdioma] = useState("");
 
     const { nombreUsuario } = useSesion();
 
@@ -25,11 +29,12 @@ const CrearArticulo = ({ nombreWiki, onCancelar }) => {
             titulo,
             contenido,
             creador: await getCreadorId(),
+            idioma: "es"
         };
 
         try {
             const response = await fetch(
-                `http://localhost:8000/wikis/${nombreWiki}/articulos`,
+                `${backendURL}/wikis/${nombreWiki}/articulos`,
                 {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -48,8 +53,48 @@ const CrearArticulo = ({ nombreWiki, onCancelar }) => {
             setMensaje("Error inesperado al conectar con el servidor.");
         } finally {
             setMostrarFormulario(false); // Cambia al mensaje después del envío
+            setMostrarFormularioIdiomas(true);
         }
     };
+
+    const traducir = async(idioma) => {
+        try {
+            const response = await fetch(`${backendURL}/wikis/${nombreWiki}/articulos/${titulo}/traducir?idioma=${idioma}`, {
+                method: "PUT"
+            });
+            const respuestaJson = await response.json();
+            return respuestaJson;
+        } catch (error) {
+            console.error("Error al obtener datos:", error);
+        }
+    }
+
+    const handleSubmit2 = async(e) => {
+        e.preventDefault();
+
+        try {
+            const data = await traducir(idioma);
+            console.log(data);
+
+            if (data.detail != null) {
+                setMensaje("No se ha podido traducir el artículo."); // Muestra el mensaje de error
+            } else {
+                setMensaje("¡Articulo traducido exitosamente!");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setMensaje("Error inesperado al conectar con el servidor.");
+        }
+    }
+
+    useEffect(() => {
+        setListaIdiomas([
+            {"code": "es", "name": "Español"},
+            {"code": "en", "name": "Inglés"},
+            {"code": "fr", "name": "Francés"},
+            {"code": "de", "name": "Alemán"}
+        ])
+    }, [])
 
     const handleVolver = () => {
         // Restablece el formulario
@@ -99,17 +144,33 @@ const CrearArticulo = ({ nombreWiki, onCancelar }) => {
                     ) : (
                         <>
                             <p>{mensaje}</p>
+                            {mostrarFormularioIdiomas &&
+                            <form onSubmit={handleSubmit2}>
+                                <label for="idioma">Seleccione idioma:</label>
+                                <select
+                                    id="idioma"
+                                    value={idioma}
+                                    onChange={(e) => setIdioma(e.target.value)}
+                                >
+                                    <option value=""></option>
+                                    {listaIdiomas.map((idioma) => (
+                                    <option key={idioma.code} value={idioma.code}>
+                                        {idioma.name}
+                                    </option>
+                                    ))
+                                    }
+                                </select>
+                                <button type="submit">Traducir</button>
+                                <button onClick={handleVolverWiki}>Omitir</button>
+                            </form>
+                            }
                             <button onClick={handleVerArticulo}>Ver Articulo</button>
                             <button onClick={handleVolverWiki}>Volver</button>
                         </>
-
                     )}
-
                 </div>
             )}
         </>
-
-
     );
 };
 
