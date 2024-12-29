@@ -95,43 +95,29 @@ function SubirMapa({ nombreWiki, tituloArticulo }) {
     const handleGuardarMapa = async () => {
         setMostrarSubirMapa(false);
 
-        //borrar mapa anterior si hay
+        //actualizar mapa anterior si hay
         try {
+            const datos = {
+                latitud: coordenadas.lat,
+                longitud: coordenadas.lon,
+                nombreUbicacion: nombreUbicacion,
+            }
+
             const respuesta = await fetch(
                 `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`
             );
 
             if (respuesta.ok) {
-                const borrar = await fetch(
+                const actualizar = await fetch(
                     `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
                     {
-                        method: "DELETE"
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(datos),
                     }
-                );
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            setError("Error inesperado al conectar con backend.");
-        }
+                  );
 
-        const datos = {
-            latitud: coordenadas.lat,
-            longitud: coordenadas.lon,
-            nombreUbicacion: nombreUbicacion,
-        }
-
-        try {
-            const respuesta = await fetch(
-                `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(datos),
-                }
-            );
-
-            if (respuesta.ok) {
-                toast.success("Mapa actualizado con éxito", {
+                  toast.success("Mapa actualizado con éxito", {
                     position: "top-right",
                     autoClose: 3000, // Auto close after 3 seconds
                     hideProgressBar: false,
@@ -140,6 +126,28 @@ function SubirMapa({ nombreWiki, tituloArticulo }) {
                     draggable: true,
                     progress: undefined,
                 });
+            } else {
+                console.log(JSON.stringify(datos));
+                const crear = await fetch(
+                    `${backendURL}/wikis/${nombreWiki}/articulos/${tituloArticulo}/mapas`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(datos),
+                    }
+                );
+    
+                if (respuesta.ok) {
+                    toast.success("Mapa añadido con éxito", {
+                        position: "top-right",
+                        autoClose: 3000, // Auto close after 3 seconds
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                    });
+                }
             }
         } catch (error) {
             console.error("Error:", error);

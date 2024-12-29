@@ -236,10 +236,8 @@ async def crearMapa(request: Request, art: str = Query(...)):
     longitud = data.get("longitud")
     nombreUbicacion = data.get("nombreUbicacion")
     articulo = artObjID
-
-    mapaJSON = await mapaAPI.getMapa(art)
    
-    return await mapaAPI.crearMapa(latitud, longitud, nombreUbicacion, articulo) if mapaJSON is None else "Ya existe un articulo con ese nombre"
+    return await mapaAPI.crearMapa(latitud, longitud, nombreUbicacion, articulo)
 
 # ACTUALIZAR MAPA
 @api.put(path + "/wikis/{nombre}/articulos/{titulo}/mapas")
