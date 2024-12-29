@@ -127,6 +127,7 @@ function VentanaArticulo() {
                             tituloArticulo={titulo}
                             contenidoInicial={articulo.contenido}
                             emailCreador={creador.email}
+                            idioma={articulo.idioma}
                             creadorId={creador._id}
                             onCancelar={handleCerrarEditor}
                         />

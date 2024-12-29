@@ -5,7 +5,7 @@ import SubirMapa from "./SubirMapa";
 import SubirImagen from "./SubirImagen";
 import { useSesion } from "../Login/authContext";
 
-const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, emailCreador, creadorId, onCancelar }) => {
+const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, emailCreador, creadorId, idioma, onCancelar }) => {
   const backendURL = process.env.REACT_APP_BACKEND_URL;
   const serviceID = process.env.REACT_APP_EMAILJS_SERVICE_ID;
   const templateID = process.env.REACT_APP_EMAILJS_ARTICLECHANGED_TEMPLATE_ID;
@@ -28,6 +28,7 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, emailCre
     const datos = {
       contenido,
       creador: { $oid: creadorId },
+      idioma
     };
 
     //comprobar si el articulo tenia mapa y actualizar la referencia al articulo
