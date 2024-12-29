@@ -6,7 +6,7 @@ import emailjs from 'emailjs-com';
 import { useSesion } from "../Login/authContext";
 import { tienePermiso } from "../Login/auth";
 
-import "../Estilos/VentanaComentario.css";
+import "../Estilos/Comentarios.css";
 
 function Comentarios({ emailCreador }) {
   const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -123,7 +123,7 @@ function Comentarios({ emailCreador }) {
         </div>
       }
       {listaComentarios === null ? (
-        <p>Cargando...</p>
+        <p className="mensajeCarga">Cargando...</p>
       ) : (
         <>
           {listaComentarios.length > 0 ? (
@@ -137,7 +137,7 @@ function Comentarios({ emailCreador }) {
               ))}
             </ul>
           ) : (
-            <p>No hay comentarios disponibles</p>
+            <p className="mensajeCarga">No hay comentarios disponibles</p>
           )}
         </>
       )}

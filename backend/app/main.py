@@ -619,7 +619,7 @@ async def crearValoracion(request: Request):
     
     return respuesta.json()
 
-# GET MEDIA VALORACIONES DE USUARIO POR EMAIL
+# GET MEDIA VALORACIONES DE USUARIO POR NOMBRE
 @app.get("/valoracion/{usuario}")
 async def getValoracionDeUsuario(usuario: str):
     try:
@@ -631,3 +631,17 @@ async def getValoracionDeUsuario(usuario: str):
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
 
     return respuesta.json()
+
+# GET TOTAL VALORACIONES DE USUARIO POR NOMBRE
+@app.get("/valoraciontotal/{usuario}")
+async def getValoracionDeUsuario(usuario: str):
+    try:
+        respuesta = await clienteUsuario.get(f"/valoraciontotal/{usuario}")
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
+
+    return respuesta.json()
+

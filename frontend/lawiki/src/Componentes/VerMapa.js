@@ -32,10 +32,9 @@ function VerMapa({ nombreWiki, tituloArticulo }) {
     const MapComponent = ({ coordinates, locationName }) => {
         // Check if coordinates exist
         if (!coordinates) {
-          return (<>
-            <img src="/Iconos/NoUbicacion.svg" alt="No ubicación"/>
-            Ubicación no añadida
-          </>);
+          return (
+            <img className="mapaDefault" title="Ubicación no añadida" src="/Iconos/NoUbicacion.svg" alt="No ubicación"/>
+          );
         }
       
         const { lat, lon } = coordinates;

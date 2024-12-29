@@ -123,6 +123,7 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
+            placeholder="Inserte título de wiki"
             required
           />
 
@@ -130,29 +131,30 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
           <textarea className="editorWiki"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
+            placeholder="Escribe una breve descripción de la wiki"
             required
           />
 
           {wiki ? (
             <>
-              <h2>Imagén Portada</h2>
+              <h2>Imagen Portada</h2>
               <img src={wiki.portada} alt="Imagen Portada" />
               <label>
                 En caso de querer cambiar la imagen inserte la nueva url aquí:
                 <input
-                  className="editorTituloWiki"
+                  className="inputPortada"
                   type="text"
                   value={portada}
                   onChange={(e) => setPortada(e.target.value)}
 
                 />
               </label>
-              <h2>Imagén Cabecera</h2>
+              <h2>Imagen Cabecera</h2>
               <img src={wiki.cabecera} alt="Imagen Cabecera" />
               <label>
                 En caso de querer cambiar la imagen inserte la nueva url aquí:
                 <input
-                  className="editorTituloWiki"
+                  className="inputCabecera"
                   type="text"
                   value={cabecera}
                   onChange={(e) => setCabecera(e.target.value)}
@@ -169,7 +171,7 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
             </>
           ) : (
             <>
-              <h2>Imagén Portada</h2>
+              <h2>Imagen Portada</h2>
               <label>
                 En caso de querer cambiar la imagen seleccione:
                 <input
@@ -178,7 +180,7 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
                   required
                 />
               </label>
-              <h2>Imagén Cabecera</h2>
+              <h2>Imagen Cabecera</h2>
               <label>
                 En caso de querer cambiar la imagen seleccione
                 <input
@@ -189,7 +191,7 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
               </label>
               <div>
                 <button className="botonCrear" type="submit">Crear</button>
-                <button className="botonCancelar" onClick={onCancelar} >Cancelar</button>
+                <button className="botonCancelar" onClick={onCancelar}>Cancelar</button>
               </div>
             </>
           )}

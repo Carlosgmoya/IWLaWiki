@@ -15,6 +15,7 @@ function VentanaUsuario() {
 
     const [miPerfil, setMiPerfil] = useState(false);
     const [valoraciones, setValoraciones] = useState(null);
+    const [wikiPuntos, setWikiPuntos] = useState(null);
 
     useEffect(() => {
         if (nombre === nombreUsuario) {
@@ -26,11 +27,18 @@ function VentanaUsuario() {
 
     useEffect(() => {
         fetch(`${backendURL}/valoracion/${nombre}`)
-            .then((response) => response.json())
+            .then((respuesta) => respuesta.json())
             .then((data) => {
                 console.log("Datos Valoraciones:", data);
                 setValoraciones(data);
-            })
+            });
+
+        fetch(`${backendURL}/valoraciontotal/${nombre}`)
+            .then((respuesta) => respuesta.json())
+            .then((data) => {
+                console.log("wikiPuntos:", data);
+                setWikiPuntos(data);
+            });  
     }, [nombre]);
 
     const handleCerrarSesion = () => {
@@ -43,15 +51,46 @@ function VentanaUsuario() {
             {miPerfil ? (
                 <>
                     <h2>Mi perfil</h2>
-                    <button className="logout" onClick={handleCerrarSesion}>Cerrar sesión</button>
+                    <div className="valoraciones">
+                        <h3>Tus wikiPuntos: {wikiPuntos && <>{wikiPuntos.valor}</>}</h3>
+                        <p></p>
+                        {valoraciones ? (
+                            <div className="estrellasValoracion">
+                                {Array.from({ length: valoraciones.valor }).map((_, index) => (
+                                    <img
+                                        key={index}
+                                        src="/Iconos/Estrella1.png"
+                                        alt={'Estrella'}
+                                    />
+                                ))}
+                                {valoraciones.valor % 1 >= 0.5 && <img src="/Iconos/Estrella2.png" alt="Media Estrella" />}
+                                {Array.from({ length: (5 - valoraciones.valor) }).map((_, index) => (
+                                    <img
+                                        key={index}
+                                        src="/Iconos/Estrella3.png"
+                                        alt={'Estrella'}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <p>Cargando valoraciones...</p>
+                        )}
+                        <p>
+                            Mantén al día tus artículos, contribuye a laWiki y a su comunidad
+                            para obtener más wikiPuntos.
+                        </p>
+                    </div>
+                    <div className="contenedorLogout">
+                        <button className="logout" onClick={handleCerrarSesion}>Cerrar sesión</button>
+                    </div>
                 </>
             ) : (
                 <>
-                    <h2>Perfil de {nombre}</h2>
-                    <Valoraciones usuario={nombre} />
+                    <h2 className="cabeceraPerfil">Perfil de {nombre}</h2>
+                    <Valoraciones usuario={nombre} wikiPuntos={wikiPuntos} />
                     <div className="listaArticulos">
                         <h2>Articulos publicados</h2>
-                        <p>En desarrollo...</p>
+                        <p>En desarrollo... GET ARTICULOS DE UN USUARIO</p>
                     </div>
                 </>
             )}

@@ -13,7 +13,6 @@ Entidad articulo:
     -id
     -titulo -> String
     -creador -> usuario (nombre de usuario)
-    -editor -> usuario  (nombre de usuario)
     -wiki -> wiki.id
     -fecha -> Date
     -ultimoModificado -> Bool

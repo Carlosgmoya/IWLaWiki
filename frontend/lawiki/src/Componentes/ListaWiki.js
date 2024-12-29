@@ -120,16 +120,23 @@ function ListaWiki() {
                     <>
                         <h2>Wikis Destacadas</h2>
                         {listaWikis.length > 0 ? (
+                            <div className="contenedorUlWikis">
                             <ul className="ulWikis">
                                 {listaWikis.map((wiki, index) => (
                                     <Link title={"Ir a " + wiki.nombre} to={`/wikis/${wiki.nombre || 'defaultWiki'}`}>
-                                        <li key={index} style={{ backgroundImage: `url(${wiki.portada})`, }}>
+                                        <li key={index} 
+                                            style={{ 
+                                            backgroundImage: `url(${wiki.portada})`,
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                            backgroundRepeat: 'no-repeat'
+                                        }}>
                                             <p>{wiki.nombre}</p>
-                                            <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + wiki.nombre}></img>
                                         </li>
                                     </Link>
                                 ))}
                             </ul>
+                            </div>
                         ) : (
                             <p>No hay wikis disponibles</p>
                         )}

@@ -250,13 +250,13 @@ async def eliminarMapa(id: str = Query(None, min_length=1)):
 
 # TRADUCIR UN ARTÍCULO
 @api.put(path + "/wikis/{nombre}/articulos/{titulo}/traducir")
-async def traducirArticulo(request: Request, idioma: str, titulo: str, wiki: str = Query(...)):
-    wikiObjID = getObjID(wiki)
+async def traducirArticulo(nombre: str, titulo: str, idioma: str = Query(...)):
+    wikiObjID = getObjID(nombre)
     articulo = articuloAPI.getArticulo(wikiObjID, titulo)
     
     wiki = wikiObjID
     contenido = articulo.get("contenido")
-    contendioTraducido = traducirAPI.traducirTexto(contenido, idioma)
+    contenidoTraducido = traducirAPI.traducirTexto(contenido, idioma)
     tituloTraducido = traducirAPI.traducirTexto(titulo, idioma)
     creador = articulo.get("creador")
     if isinstance(creador, dict) and "$oid" in creador:
@@ -266,7 +266,7 @@ async def traducirArticulo(request: Request, idioma: str, titulo: str, wiki: str
     elif isinstance(creador, str):
         creador = ObjectId(creador)
 
-    result = await articuloAPI.actualizarArticulo(tituloTraducido, wiki, contendioTraducido, creador, idioma)
+    result = await articuloAPI.actualizarArticulo(tituloTraducido, wiki, contenidoTraducido, creador, idioma)
 
     return result
 

@@ -48,7 +48,8 @@ function VentanaArticulo() {
         setMostrarEditor(false);
     };
 
-    return (<>
+    return (
+    <div className="paginaArticulo">
         <div className="cabeceraWiki">
             <h1 className="nombreWiki"><Link to={`/wikis/${nombre || 'defaultNombre'}`}>{nombre}</Link></h1>
         </div>
@@ -58,49 +59,53 @@ function VentanaArticulo() {
                     <div className="cabeceraArticulo">
                         <h1 className="tituloArticulo">{articulo.titulo}</h1>
                         {
-                        !mostrarEditor &&
-                        (
-                            <div>
-                                <button title="Creador del artículo" className="botonCreador">
-                                    <Link to={`/usuario/${creador.nombre || 'defaultCreador'}`}>
-                                        <img src="/Iconos/IconoPerfil.svg" alt="Creador del artículo" />
-                                    </Link>
-                                </button>
-                                
-                                {tienePermiso(rolUsuario, "editarArticulo") &&
-                                <button title="Editar artículo" className="botonEditar" onClick={handleAbrirEditor}>
-                                    <img src="/Iconos/IconoEditar.svg" alt="Editar articulo" />
-                                </button>
-                                }
-                            </div>
-                        )
+                            !mostrarEditor &&
+                            (
+                                <div>
+                                    <button title="Creador del artículo" className="botonCreador">
+                                        <Link to={`/usuario/${creador.nombre || 'defaultCreador'}`}>
+                                            <img src="/Iconos/IconoPerfil.svg" alt="Creador del artículo" />
+                                        </Link>
+                                    </button>
+
+                                    {tienePermiso(rolUsuario, "editarArticulo") &&
+                                        <button title="Editar artículo" className="botonEditar" onClick={handleAbrirEditor}>
+                                            <img src="/Iconos/IconoEditar.svg" alt="Editar articulo" />
+                                        </button>
+                                    }
+                                </div>
+                            )
                         }
 
                     </div>
                     {!mostrarEditor ? (
-                        <div className="cuerpoArticulo">
-                            <div className="contenidoArticulo">
-                                <VerArticulo contenido_html={articulo.contenido_html} />
+                        <>
+                            <div className="cuerpoArticulo">
+                                <div className="contenidoArticulo">
+                                    <VerArticulo contenido_html={articulo.contenido_html} />
+                                </div>
+                                <div className="informacionArticulo">
+                                    <h3>Ubicación</h3>
+                                    <div className="contenedorMapa">
+                                        <VerMapa
+                                            nombreWiki={nombre}
+                                            tituloArticulo={titulo}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="contenedorComentarios">
                                 <button className="botonComentarios" onClick={() => setMostrarComentarios(!mostrarComentarios)}>
                                     <img src="/Iconos/Comentarios.svg" alt="Comentarios" />
                                     <p>Comentarios</p>
                                 </button>
-                                {mostrarComentarios ?
-                                    <Comentarios 
-                                        emailCreador={creador.email}
-                                    /> : null
-                                }
                             </div>
-                            <div className="informacionArticulo">
-                                <h3>Ubicación</h3>
-                                <div className="contenedorMapa">
-                                    <VerMapa
-                                        nombreWiki={nombre}
-                                        tituloArticulo={titulo}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                            {mostrarComentarios ?
+                                <Comentarios
+                                    emailCreador={creador.email}
+                                /> : null
+                            }
+                        </>
                     ) : (
                         <>
                             <EditorArticulo
@@ -121,6 +126,6 @@ function VentanaArticulo() {
         ) : (
             <p>Cargando...</p>
         )}
-    </>);
+    </div>);
 }
 export default VentanaArticulo;

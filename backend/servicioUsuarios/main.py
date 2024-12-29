@@ -123,3 +123,14 @@ async def getValoracionDeUsuario(usuario: str):
     media = suma / len(valoraciones)    
     return {"valor": media}
 
+@api.get(path + "/valoraciontotal/{usuario}")
+async def getValoracionTotalDeUsuario(usuario: str):
+    """Devuelve la media de las valoraciones de un usuario, o 0 si no tiene"""
+    valoraciones = list(valoracionBD.find({"a_usuario": usuario}))
+    if len(valoraciones) == 0:
+        return {"valor": 0}
+    suma = 0
+    for valoracion in valoraciones:
+        suma += valoracion["valor"]  
+    return {"valor": suma}
+

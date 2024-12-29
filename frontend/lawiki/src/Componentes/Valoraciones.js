@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useSesion } from "../Login/authContext";
 import { tienePermiso } from "../Login/auth";
 
-function Valoraciones({ usuario }) {
+function Valoraciones({ usuario, wikiPuntos }) {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
 
     const { nombreUsuario, rolUsuario } = useSesion();
@@ -29,7 +29,7 @@ function Valoraciones({ usuario }) {
     }, [usuario, nuevaValoracion]);
 
     const handleAbrirValorar = () => {
-        setMostrarValorar(true);
+        setMostrarValorar((anterior) => !anterior);
     };
 
     const handleCerrarValorar = () => {
@@ -78,10 +78,10 @@ function Valoraciones({ usuario }) {
 
     return (
         <div className="valoraciones">
-            <h2>Valoraciones</h2>
+            <h3>wikiPuntos de {usuario}: {wikiPuntos && <>{wikiPuntos.valor}</>}</h3>
+            <p>Los wikiPuntos se calculan a partir de la suma total de valoraciones recibidas.</p>
             {valoraciones ? (
-                <div className="estrellasValoracion">
-                    <p>{valoraciones.valor} estrellas</p>
+                <div title="Reputación" className="estrellasValoracion">
                     {Array.from({ length: valoraciones.valor }).map((_, index) => (
                         <img
                             key={index}
@@ -103,28 +103,29 @@ function Valoraciones({ usuario }) {
             )}
             {tienePermiso(rolUsuario, "crearValoracion") &&
                 <>
-                    <button onClick={handleAbrirValorar}>Valorar a {usuario}</button>
+                    <button className="botonValorar" onClick={handleAbrirValorar}>Valorar a {usuario}</button>
                     {mostrarValorar && 
                         <div className="valorar">
                             <h3>Hola {nombreUsuario}! Puntúa a {usuario}</h3>
-                            {Array.from({ length: 5 }).map((_, index) => (
-                                <button
-                                    key={index + 1}
-                                    onClick={() => handlePuntuar(index + 1)}
-                                >
-                                    {index >= puntuacion ? (
-                                        <img src="/Iconos/Estrella3.png" alt="Estrella vacia" />
-                                        ) : (
-                                        <img src="/Iconos/Estrella1.png" alt="Estrella" />
-                                    )}
-                                </button>
-                            ))}
-                            <textarea className="reseña"
-                                type="text"
-                                placeholder="Comparte tu crítica constructiva del usuario"
-                            />
-                            <button onClick={handleConfirmarPuntuacion}>Confirmar</button>
-                            <button onClick={handleCerrarValorar}>Cancelar</button>
+                            <div className="estrellasValorar">
+                                {Array.from({ length: 5 }).map((_, index) => (
+                                    <button
+                                        className="botonDarEstrella"
+                                        key={index + 1}
+                                        onClick={() => handlePuntuar(index + 1)}
+                                    >
+                                        {index >= puntuacion ? (
+                                            <img src="/Iconos/Estrella3.png" alt="Estrella vacia" />
+                                            ) : (
+                                            <img src="/Iconos/Estrella1.png" alt="Estrella" />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="contenedorBotones">
+                                <button className="botonConfirmarValorar" onClick={handleConfirmarPuntuacion}>Confirmar</button>
+                                <button className="botonCancelarValorar" onClick={handleCerrarValorar}>Cancelar</button>
+                            </div>
                         </div>
                     }
                 </>

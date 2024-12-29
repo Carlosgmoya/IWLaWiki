@@ -22,15 +22,15 @@ function PantallaInicio() {
   };
 
   return (
-    <>
+    <div className="pantallaInicio">
       {!mostrarCrearWiki ? (
         <>
         <ListaWiki/ >
             
             {tienePermiso(rolUsuario, "crearWiki") &&
-            <form>
+            <div className="contenedorBotonCrear">
               <button className="botonIrACrearWiki" onClick={handleAbrirEditor}>Crear Wiki</button>
-            </form>
+            </div>
             }
         </>
       ) : (
@@ -38,7 +38,7 @@ function PantallaInicio() {
         onCancelar={handleCerrarEditor}
         onWikiUpdated={null}/>
       )}
-    </>
+    </div>
   );
 }
 

@@ -6,12 +6,14 @@ import '../Estilos/Cabecera.css';
 function Cabecera() {
     const { usuario, nombreUsuario, iniciarSesion } = useSesion();
 
+    const iconoPerfilPredeterminado = "Iconos/IconoEditarPerfil.svg";
+
     return <header className="contenedorCabecera">
         <h1><Link className="lawiki" to='/'>laWiki</Link></h1>
         {usuario ? (
             <div>
                 <Link title="Ir a mi perfil" to={`/usuario/${nombreUsuario}`}>
-                    <img className="iconoPerfil" src={usuario.photoURL} alt={usuario.display_name} />
+                    <img className="iconoPerfil" src={usuario.photoURL || iconoPerfilPredeterminado} alt={usuario.display_name} />
                 </Link>
             </div>
         ) : (

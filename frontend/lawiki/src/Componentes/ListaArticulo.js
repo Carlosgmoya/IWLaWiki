@@ -13,6 +13,7 @@ function ListaArticulo({ nombreWiki }) {
     const [minFecha, setMinFecha] = useState(null);
     const [maxFecha, setMaxFecha] = useState(null);
     const [filtros, setFiltros] = useState(null);
+    const [verIdiomas, setVerIdiomas] = useState(false);
 
     useEffect(() => {
         fetchArticulos();
@@ -87,6 +88,16 @@ function ListaArticulo({ nombreWiki }) {
         setMaxFecha(null);
     };
 
+    const handleVerIdiomas = () => {
+        setVerIdiomas((anterior) => !anterior);
+    };
+
+    function formatearFecha(fecha) {
+        console.log(fecha);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' }; // Example format: March 11, 2024
+        return new Date(fecha).toLocaleDateString('es-ES', options); // You can change the locale if necessary
+    }
+
     return (
         <div>
 
@@ -112,14 +123,34 @@ function ListaArticulo({ nombreWiki }) {
             <div className="contenedorArticulos">
                 {terminoDeBusqueda === "" ? (
                     <>
-                        <h2>Lista Articulos</h2>
+                        <div className="cabeceraLista">
+                            <h2>Lista Articulos</h2>
+                            <div className="listaIdiomas">
+                                <button onClick={handleVerIdiomas}>
+                                    <img src="/Iconos/IconoIdioma.svg" alt="Cambiar idioma" />
+                                    <p>Cambiar idioma</p>
+                                    <img src="/Iconos/IconoDropdown.svg" alt="Desplegar lista de idiomas" />
+                                </button>
+                                {verIdiomas && (
+                                    <ul>
+                                        <li>Option 1</li>
+                                        <li>Option 2</li>
+                                        <li>Option 3</li>
+                                    </ul>
+                                )}
+                            </div>
+                        </div>
                         {listaArticulos.length > 0 ? (
                             <ul className="ulArticulos">
                                 {listaArticulos.map((articulo, index) => (
                                     //<li key={index}>{listaArticulos.titulo}</li> // Asumiendo que cada wiki tiene un campo `nombre`
                                     <Link title={"Ir a " + articulo.titulo} to={`/wikis/${nombreWiki || 'defaultNombre'}/${articulo.titulo || 'defaultArticulo'}`}>
                                         <li key={index}>
-                                            <p>{articulo.titulo || "Artículo sin título"}</p>
+                                            <h4>{articulo.titulo || "Artículo sin título"}</h4>
+                                            <div className="datosArticulo">
+                                                <p>creador</p>
+                                                <p className="fecha">{formatearFecha(articulo.fecha.$date)}</p>
+                                            </div>
                                         </li>
                                     </Link>
                                 ))}

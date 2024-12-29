@@ -1,3 +1,10 @@
+.contenedorLogout {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
 .logout {
     background-color: #f44336; /* Red background color for logout */
     color: white; /* White text color */
@@ -17,4 +24,102 @@
 .logout:focus {
     outline: none; /* Removes default outline */
     box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.6); /* Adds a glowing border effect when focused */
+}
+
+h2 {
+    margin: 30px 10px;
+}
+
+.valoraciones {
+    border: 1px solid gray;
+    border-radius: 10px;
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.valoraciones h3 {
+    color: rgb(95, 95, 84);
+}
+
+.valoraciones p {
+    font-size: 0.8rem;
+    color: rgb(141, 141, 141);
+    margin-left: 2%;
+    margin-right: 2%
+}
+
+.estrellasValoracion img {
+    width: 70px;
+    height: 70px;
+}
+
+.botonValorar {
+    background-color: gold;
+    border-color: gray;
+    border-radius: 3px;
+    margin-bottom: 12px;
+    margin-top: 2px;
+}
+
+.botonValorar:hover {
+    background-color: rgb(209, 177, 0);
+    cursor: pointer;
+}
+
+.valorar {
+    background-color: rgb(232, 210, 210);
+    width: 80%;
+    margin: 0 auto;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    padding-top: 5px;
+}
+
+.botonDarEstrella {
+    background: none;
+    border: none;
+    border-radius: 5px;
+}
+
+.botonDarEstrella:hover {
+    cursor: pointer;
+    background-color: rgb(191, 169, 169);
+}
+
+.estrellasValorar img {
+    background-color: none;
+    width: 70px;
+    height: 70px;
+}
+
+.botonConfirmarValorar {
+    background-color: lightgreen;
+    margin-right: 20px;
+    border-radius: 20px;
+    width: 100px;
+    height: 26px;
+}
+
+.botonCancelarValorar {
+    background-color: rgb(225, 100, 100);
+    margin-right: 20px;
+    border-radius: 20px;
+    width: 100px;
+    height: 26px;
+}
+
+.botonConfirmarValorar:hover {
+    cursor: pointer;
+    background-color: rgb(123, 201, 123);
+}
+
+.botonCancelarValorar:hover {
+    cursor: pointer;
+    background-color: rgb(206, 90, 90);
+}
+
+.valoraciones .contenedorBotones {
+    padding-bottom: 15px;
+    padding-top: 3px;
 }

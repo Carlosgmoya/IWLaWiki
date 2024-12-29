@@ -17,6 +17,7 @@
     border-radius: 20%;
     border-width: 2px;
     background: none;
+    cursor: pointer;
 }
 
 .botonEditar:hover {
@@ -46,6 +47,30 @@
     text-decoration: none;
 }
 
+.ulArticulos a li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid gray;
+    border-radius: 2px;
+    margin: 0px 25px;
+}
+
 .ulArticulos a li p {
-    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    margin-right: 15px;
+    color: gray;
+    font-size: 13px;
+}
+
+.ulArticulos a li .fecha {
+    margin-right: 15px;
+    color: gray;
+    font-size: 10px;
+}
+
+.ulArticulos a li h4 {
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;       
+    padding: 12px 15px;  
+    margin: 10px 0px;
+    color: rgb(57, 57, 57);
 }
