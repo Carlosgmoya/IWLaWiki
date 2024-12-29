@@ -13,10 +13,12 @@ function ListaArticulo({ nombreWiki }) {
     const [minFecha, setMinFecha] = useState(null);
     const [maxFecha, setMaxFecha] = useState(null);
     const [filtros, setFiltros] = useState(null);
+    const [usuario, setUsuario] = useState("");   
 
     useEffect(() => {
+        console.log(typeof setUsuario);
         fetchArticulos();
-    }, [minFecha, maxFecha]);
+    }, [minFecha, maxFecha, usuario]);
 
     useEffect(() => {
         // Configura un debounce: espera 300ms antes de actualizar el término de búsqueda.
@@ -35,7 +37,7 @@ function ListaArticulo({ nombreWiki }) {
         } else {
             setListaArticulosBusqueda([]); // Limpia los resultados si no hay término de búsqueda.
         }
-    }, [retrasoBusqueda, minFecha, maxFecha]);
+    }, [retrasoBusqueda, minFecha, maxFecha, usuario]);
 
     const fetchArticulos = async () => {
         try {
@@ -45,6 +47,7 @@ function ListaArticulo({ nombreWiki }) {
 
             if (minFecha) params.append("minFecha", minFecha);
             if (maxFecha) params.append("maxFecha", maxFecha);
+            if (usuario != "") params.append("usuario", usuario);
 
             if (params.toString()) url += `?${params.toString()}`;
 
@@ -67,6 +70,7 @@ function ListaArticulo({ nombreWiki }) {
 
             if (minFecha) url += `&minFecha=${minFecha}`;
             if (maxFecha) url += `&maxFecha=${maxFecha}`;
+            if (usuario != "") url += `&usuario=${usuario}`
 
             const response = await fetch(url);
             const data = await response.json();
@@ -85,6 +89,7 @@ function ListaArticulo({ nombreWiki }) {
         setFiltros(!filtros);        
         setMinFecha(null);
         setMaxFecha(null);
+        setUsuario("");
     };
 
     return (
@@ -106,6 +111,9 @@ function ListaArticulo({ nombreWiki }) {
                 maxFecha={maxFecha}
                 setMinFecha={(fecha) => setMinFecha(fecha)}
                 setMaxFecha={(fecha) => setMaxFecha(fecha)}
+                usuario={usuario}
+                setUsuario={setUsuario}
+                nombre={true}
             />
             )}
 
@@ -134,7 +142,7 @@ function ListaArticulo({ nombreWiki }) {
                         {listaArticulosBusqueda.length > 0 ? (
                             <ul className="ulArticulos">
                                 {listaArticulosBusqueda.map((articulo, index) => (
-                                    <Link title={"Ir a " + articulo.titulo}  to={`/wikis/${nombreWiki}/articulos/${articulo.titulo || 'defaultArticulo'}`}>
+                                    <Link title={"Ir a " + articulo.titulo}  to={`/wikis/${nombreWiki}/${articulo.titulo || 'defaultArticulo'}`}>
                                         <li key={index}>
                                             <p>{articulo.titulo}</p>
                                             <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + articulo.titulo}></img>

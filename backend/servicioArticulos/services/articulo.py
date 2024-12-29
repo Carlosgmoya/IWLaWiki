@@ -83,10 +83,13 @@ async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, max
 
     if creador is not None:
         usuario = usuarioBD.find_one({"nombre": creador})
-        usuarioJson = json.loads(json_util.dumps(usuario))
-        usuarioId = ObjectId(usuarioJson["_id"]["$oid"])
-
-        filtro["$and"].append({"creador": usuarioId})
+    
+        if usuario: 
+            usuarioJson = json.loads(json_util.dumps(usuario))
+            usuarioId = ObjectId(usuarioJson["_id"]["$oid"])
+            filtro["$and"].append({"creador": usuarioId})
+        else:
+            print(f"Usuario con nombre '{creador}' no encontrado.")
     
     if idioma is not None:
         filtro["$and"].append({"idioma": idioma})
