@@ -97,10 +97,15 @@ async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, max
 
     return articulosJSON
 
-async def getArticulosPorIdioma(wikiObjID, idioma):
+async def getArticulosPorIdioma(wikiObjID: ObjectId, idioma:  str):
     articulo_doc = articuloBD.find({"wiki" : wikiObjID, "idioma" : idioma})
     articulo_json = json.loads(json_util.dumps(articulo_doc))
     return articulo_json
+
+async def getIdiomas(wikiObjID):
+    idiomas = articuloBD.distinct("idioma", {"wiki": wikiObjID})  # Método síncrono
+    idiomasJSON = json.dumps({"idiomas": idiomas})
+    return idiomasJSON
 
 
 async def buscarVersionPorFecha(titulo: str, fecha: datetime):

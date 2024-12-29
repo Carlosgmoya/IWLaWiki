@@ -222,6 +222,26 @@ async def getArticulos(
     
     return respuesta.json()
 
+#GET IDIOMAS DE UNA WIKI
+@app.get("/wikis/{nombre}/idiomas")
+async def getIdiomas(nombre : str):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getID(wikiJSON)
+    
+    try:
+        query_params = {}
+        query_params["wiki"] = wikiID
+
+        respuesta = await clienteArticulo.get(f"/wikis/{nombre}/idiomas", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+# GET ARTICULOS DE UN IDIOMA
 @app.get("/wikis/{nombre}/articulos/idioma")
 async def getArticuloIdioma(nombre : str, idioma : str = Query(...)):
     wikiJSON = await getWiki(nombre)

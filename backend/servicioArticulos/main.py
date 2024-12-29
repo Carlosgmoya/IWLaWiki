@@ -55,8 +55,19 @@ async def getArticulos(
 
     return listaArticulos
 
+@api.get(path + "/wikis/{nombre}/idiomas")
+async def idiomasWiki(wiki: str = Query(...)):
+    if wiki is not None:
+        wikiObjID = getObjID(wiki)
+    else:
+        wikiObjID = None
+    idiomas = await articuloAPI.getIdiomas(wikiObjID)
+
+    return idiomas
+
+
 @api.get(path + "/wikis/{nombre}/articulos/idioma")
-async def idiomasWiki(wiki: str = Query(None, min_length=1), idioma : str = Query(None, min_length=1)):
+async def idiomasArticulo(wiki: str = Query(None, min_length=1), idioma : str = Query(None, min_length=1)):
     if wiki is not None:
         wikiObjID = getObjID(wiki)
     else:
