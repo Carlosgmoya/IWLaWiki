@@ -61,6 +61,13 @@ function VentanaArticulo() {
                         !mostrarEditor &&
                         (
                             <div>
+                                {tienePermiso(rolUsuario, "editarArticuloMio") &&
+                                <button title="Versiones anteriores del artículo" className="botonHistorial">
+                                    <Link to={`/wikis/${nombre}/${titulo}/historial`}>
+                                        <img src="/Iconos/IconoPerfil.svg" alt="Versiones anteriores del artículo" />
+                                    </Link>
+                                </button>
+                                }
                                 <button title="Creador del artículo" className="botonCreador">
                                     <Link to={`/usuario/${creador.nombre || 'defaultCreador'}`}>
                                         <img src="/Iconos/IconoPerfil.svg" alt="Creador del artículo" />

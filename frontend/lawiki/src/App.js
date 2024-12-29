@@ -9,6 +9,7 @@ import PantallaInicio from './Ventanas/PantallaInicio';
 import VentanaWiki from './Ventanas/VentanaWiki';
 import VentanaArticulo from './Ventanas/VentanaArticulo';
 import VentanaUsuario from './Ventanas/VentanaUsuario';
+import VentanaHistorial from './Ventanas/VentanaHistorial';
 
 function App() {
   return (
@@ -34,6 +35,11 @@ function App() {
             <Route
               path="/wikis/:nombre/:titulo"
               element={<VentanaArticulo />}
+            />
+
+            <Route
+              path="/wikis/:nombre/:titulo/historial"
+              element={<VentanaHistorial />}
             />
 
             <Route

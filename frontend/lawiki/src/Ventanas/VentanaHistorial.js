@@ -15,6 +15,8 @@ function VentanaHistorial() {
     const { titulo } = useParams();
     const [listaArticulos, setListaArticulos] = useState(null);
     const [listaEditores, setListaEditores] = useState(null);
+    const [mensaje, setMensaje] = useState("");
+    const [mostrarHistorial, setMostrarHistorial] = useState(true);
 
     const options = {
         year: "numeric",
@@ -22,18 +24,53 @@ function VentanaHistorial() {
         day: "numeric"
     };
 
+    const fechaLocale = function(timestamp) {
+        return new Date(timestamp).toLocaleDateString("es-ES", options) + ", " + new Date(timestamp).toLocaleTimeString("es-ES")
+    }
+
+    const byteSize = function(string) {
+        return new Blob([string]).size;
+    }
+
+    const mensajeCambio = function(numero) {
+        if (numero > 0) return "Añadidos " + numero + " bytes";
+        else if (numero < 0) return "Eliminados " + Math.abs(numero) + " bytes";
+        else return "Tamaño no modificado";
+    }
+
+    const revertirVersion = async(nuevaVersionId) => {
+        const respuesta = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/cambiarVersion?idVersion=${nuevaVersionId}`, {
+            method: "PUT"
+        });
+        setMostrarHistorial(false);
+        if (respuesta.ok) {
+            setMensaje("El artículo ha sido revertido a la versión especificada.")
+        } else {
+            setMensaje("No se ha podido revertir el artículo a la versión especificada.")
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async() => {
             try {
                 const respuesta1 = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}`);
                 const articuloJson = await respuesta1.json();
 
-                const respuesta2 = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/versiones`);
-                const listaJson = await respuesta2.json();
-                let listaArticulos = listaJson.sort((a, b) => b.fecha.$date - a.fecha.$date);
-                listaArticulos.unshift(articuloJson);
-                console.log(listaArticulos);
+                const respuesta2 = await fetch(`${backendURL}/wikis/${nombre}/articulos/${titulo}/versiones?idioma=${articuloJson.idioma}`);
+                let listaArticulos = [];
+                if (respuesta2.status !== 404) {
+                    const listaJson = await respuesta2.json();
+                    listaArticulos = listaJson.sort((a, b) => new Date(b.fecha.$date) - new Date(a.fecha.$date));
+                }
                 setListaArticulos(listaArticulos);
+
+                let listaEditores = []
+                for (const articulo of listaArticulos) {
+                    const usuario = await fetch(`${backendURL}/usuarios/id/${articulo.creador.$oid}`);
+                    const usuarioJson = await usuario.json();
+                    listaEditores.push(usuarioJson.nombre);
+                }
+                setListaEditores(listaEditores);
             } catch (error) {
                 console.error("Error al obtener datos:", error);
             }
@@ -46,24 +83,46 @@ function VentanaHistorial() {
             <h1 className="nombreWiki"><Link to={`/wikis/${nombre || 'defaultNombre'}`}>{nombre}</Link></h1>
         </div>
 
+        {tienePermiso(rolUsuario, "editarArticuloMio") &&
+        <>
+        {mostrarHistorial &&
         <div className="historial">
             <div className="cabeceraHistorial">
-                <h1 className="tituloHistorial">Historial de {titulo}</h1>
+                <h1 className="tituloHistorial">Versiones anteriores de {titulo}</h1>
             </div>
             <div className="cuerpoHistorial">
             {listaArticulos === null || listaEditores === null ? (
                 <p>Cargando...</p>
             ) : (
+                <>
+                {listaArticulos.length === 0 ? (
+                    <p>No hay versiones anteriores del artículo</p>
+                ) : (
                 <ul>
-                  {listaArticulos.map((articulo, index) => (
-                    <li key={index}>
-                      <h4>{new Date(articulo["fecha"]["$date"]).toLocaleDateString("es-ES", options)}, {new Date(articulo["fecha"]["$date"]).toLocaleTimeString("es-ES")}</h4>
-                    </li>
-                  ))}
+                {listaArticulos.map((articulo, index) => (
+                  <li key={index}>
+                    <h3>{fechaLocale(articulo["fecha"]["$date"])} por <Link to={`/usuario/${listaEditores[index]}`}>{listaEditores[index]}</Link></h3>
+                  {articulo.fecha.$date === articulo.fechaCreacion.$date ? (
+                    <p>Artículo creado ({byteSize(articulo.contenido)} bytes)</p>
+                  ) : (
+                    <>
+                    <p>{mensajeCambio(byteSize(articulo.contenido) - byteSize(listaArticulos[index + 1].contenido))} ({byteSize(articulo.contenido)} bytes)</p>
+                    </>
+                  )}
+                    <button onClick={() => revertirVersion(articulo._id.$oid)}>Revertir</button>
+                  </li>
+                ))}
                 </ul>
+                )}
+                </>
             )}
             </div>
         </div>
+        }
+        <p>{mensaje}</p>
+        <button><Link to={`/wikis/${nombre}/${titulo}`}>Volver al artículo</Link></button>
+        </>
+        }
     </>)
 }
 
