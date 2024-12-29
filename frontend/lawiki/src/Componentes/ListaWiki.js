@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Filtros from "./Filtros";
 
 function ListaWiki() {
 
@@ -9,10 +10,14 @@ function ListaWiki() {
     const [listaWikisBusqueda, setListaWikisBusqueda] = useState([]);
     const [terminoDeBusqueda, setTerminoDeBusqueda] = useState("");
     const [retrasoBusqueda, setRetrasoBusqueda] = useState(""); // Término con debounce.
+    const [minFecha, setMinFecha] = useState(null);
+    const [maxFecha, setMaxFecha] = useState(null);
+    const [filtros, setFiltros] = useState(null);
 
     useEffect(() => {
         fetchWikisDestacadas();
-    }, []);
+    }, [minFecha, maxFecha
+    ]);
 
     useEffect(() => {
         // Configura un debounce: espera 300ms antes de actualizar el término de búsqueda.
@@ -35,21 +40,35 @@ function ListaWiki() {
 
     const fetchWikisDestacadas = async () => {
         try {
-          const response = await fetch(`${backendURL}/wikis`);  //Ahora mismo devuelve todas las wikis
-          const data = await response.json();
-          if (Array.isArray(data)) {
-            setListaWikis(data); // Carga las wikis destacadas.
-          } else {
-            console.error("Error: La respuesta no es una lista.");
-          }
+            let url = `${backendURL}/wikis`;
+
+            const params = new URLSearchParams();
+
+            if (minFecha) params.append("minFecha", minFecha);
+            if (maxFecha) params.append("maxFecha", maxFecha);
+
+            if (params.toString()) url += `?${params.toString()}`;
+
+            const response = await fetch(url);  //Ahora mismo devuelve todas las wikis
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                setListaWikis(data); // Carga las wikis destacadas.
+            } else {
+                console.error("Error: La respuesta no es una lista.");
+            }
         } catch (error) {
-          console.error("Error al obtener las wikis destacadas:", error);
+            console.error("Error al obtener las wikis destacadas:", error);
         }
     };
 
     const fetchBusqueda = async (term) => {
         try {
-            const response = await fetch(`${backendURL}/wikis?term=${term}`);
+            let url = `${backendURL}/wikis?term=${term}`;
+
+            if (minFecha) url += `&minFecha=${minFecha}`;
+            if (maxFecha) url += `&maxFecha=${maxFecha}`;
+
+            const response = await fetch(url);
             const data = await response.json();
             if (Array.isArray(data)) {
                 setListaWikisBusqueda(data); // Actualiza los resultados de búsqueda.
@@ -59,6 +78,13 @@ function ListaWiki() {
         } catch (error) {
             console.error("Error al buscar wikis:", error);
         }
+    };
+
+    const handleAbrirOCerrarFiltros = () => {
+        // Restablece el formulario
+        setFiltros(!filtros);        
+        setMinFecha(null);
+        setMaxFecha(null);
     };
 
 
@@ -71,8 +97,18 @@ function ListaWiki() {
                     onChange={(e) => setTerminoDeBusqueda(e.target.value)}
                     placeholder=" Buscar wikis..."
                 />
+                <button onClick={handleAbrirOCerrarFiltros}>Filtros</button>
+
             </div>
 
+            {filtros && (
+                <Filtros
+                minFecha={minFecha}
+                maxFecha={maxFecha}
+                setMinFecha={(fecha) => setMinFecha(fecha)}
+                setMaxFecha={(fecha) => setMaxFecha(fecha)}
+            />
+            )}
 
             <div className="listaArticulos">
                 <h2>Artículos Recientes</h2>
@@ -87,7 +123,7 @@ function ListaWiki() {
                             <ul className="ulWikis">
                                 {listaWikis.map((wiki, index) => (
                                     <Link title={"Ir a " + wiki.nombre} to={`/wikis/${wiki.nombre || 'defaultWiki'}`}>
-                                        <li key={index} style={{backgroundImage: `url(${wiki.portada})`,}}>
+                                        <li key={index} style={{ backgroundImage: `url(${wiki.portada})`, }}>
                                             <p>{wiki.nombre}</p>
                                             <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + wiki.nombre}></img>
                                         </li>

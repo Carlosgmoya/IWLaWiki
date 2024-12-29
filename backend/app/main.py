@@ -69,18 +69,26 @@ def getObjID(id: str):
 
 # PAGINA PRINCIPAL: DEVUELVE TODAS LAS WIKIS O DEVUELVE LAS WIKIS QUE CUMPLEN UNOS CRITERIOS
 @app.get("/wikis")
-async def getWikis(term: str = Query(None, min_length=1)):
+async def getWikis(
+    term: str = Query(None, min_length=1),
+    minFecha: str = Query(None),
+    maxFecha: str = Query(None)
+):
     try:
-        if term is None:
-            respuesta = await clienteWiki.get("/wikis")
-        else:
-            respuesta = await clienteWiki.get("/wikis", params={"term": term})
+        params = {}
+        if term:
+            params["term"] = term
+        if minFecha:
+            params["minFecha"] = minFecha
+        if maxFecha:
+            params["maxFecha"] = maxFecha
+
+        respuesta = await clienteWiki.get("/wikis", params=params)
         respuesta.raise_for_status()
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloWiki")
-
 
     return respuesta.json()
 
@@ -176,20 +184,37 @@ async def eliminarWiki(wikiID: str):
 
 # GET ARTICULOS DE UNA WIKI
 @app.get("/wikis/{nombre}/articulos")
-async def getArticulos(nombre: str, terminoDeBusqueda: str | None = None, usuario: str | None = None):
+async def getArticulos(
+    nombre: str,
+    terminoDeBusqueda: str | None = None,
+    usuario: str | None = None,
+    minFecha: str | None = None,
+    maxFecha: str | None = None,
+    idioma: str | None = None
+):
+    # Obtiene la información de la wiki para obtener el ID
     wikiJSON = await getWiki(nombre)
     wikiID = getID(wikiJSON)
 
     try:
-        query_params = {}
-        query_params["wiki"] = wikiID
+        # Construcción de los parámetros de consulta
+        query_params = {"wiki": wikiID}
+
         if terminoDeBusqueda:
             query_params["terminoDeBusqueda"] = terminoDeBusqueda
-        elif usuario:
+        if usuario:
             query_params["usuario"] = usuario
+        if minFecha:
+            query_params["minFecha"] = minFecha
+        if maxFecha:
+            query_params["maxFecha"] = maxFecha
+        if idioma:
+            query_params["idioma"] = idioma
 
+        # Solicitud al microservicio
         respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos", params=query_params)
         respuesta.raise_for_status()
+
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:

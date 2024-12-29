@@ -64,15 +64,16 @@ async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, max
 
     if minFecha is not None or maxFecha is not None:
         try:
-            minDatetime = datetime.min if minFecha is None else datetime.strptime(minFecha, "%Y-%m-%dT%H:%M:%S.%fZ")
+            # Intentar analizar como formato simple '%Y-%m-%d'
+            minDatetime = datetime.min if minFecha is None else datetime.strptime(minFecha, "%Y-%m-%d")
         except ValueError:
+            # Intentar analizar como ISO formato '%Y-%m-%dT%H:%M:%SZ'
             minDatetime = datetime.min if minFecha is None else datetime.strptime(minFecha, "%Y-%m-%dT%H:%M:%SZ")
 
         try:
-            maxDatetime = datetime.max if maxFecha is None else datetime.strptime(maxFecha, "%Y-%m-%dT%H:%M:%S.%fZ")
+            maxDatetime = datetime.max if maxFecha is None else datetime.strptime(maxFecha, "%Y-%m-%d")
         except ValueError:
             maxDatetime = datetime.max if maxFecha is None else datetime.strptime(maxFecha, "%Y-%m-%dT%H:%M:%SZ")
-        
         filtro["$and"].append({
             "fecha": {
                 "$gte": minDatetime,

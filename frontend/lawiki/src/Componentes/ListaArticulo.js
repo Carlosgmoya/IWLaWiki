@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Filtros from "./Filtros";
 
 function ListaArticulo({ nombreWiki }) {
 
@@ -9,10 +10,13 @@ function ListaArticulo({ nombreWiki }) {
     const [listaArticulosBusqueda, setListaArticulosBusqueda] = useState([]);
     const [terminoDeBusqueda, setTerminoDeBusqueda] = useState("");
     const [retrasoBusqueda, setRetrasoBusqueda] = useState(""); // Término con debounce.
+    const [minFecha, setMinFecha] = useState(null);
+    const [maxFecha, setMaxFecha] = useState(null);
+    const [filtros, setFiltros] = useState(null);
 
     useEffect(() => {
         fetchArticulos();
-    }, []);
+    }, [minFecha, maxFecha]);
 
     useEffect(() => {
         // Configura un debounce: espera 300ms antes de actualizar el término de búsqueda.
@@ -35,8 +39,18 @@ function ListaArticulo({ nombreWiki }) {
 
     const fetchArticulos = async () => {
         try {
-            const response = await fetch(`${backendURL}/wikis/${nombreWiki}/articulos`);
+            let url = `${backendURL}/wikis/${nombreWiki}/articulos`;
+
+            const params = new URLSearchParams();
+
+            if (minFecha) params.append("minFecha", minFecha);
+            if (maxFecha) params.append("maxFecha", maxFecha);
+
+            if (params.toString()) url += `?${params.toString()}`;
+
+            const response = await fetch(url);  //Ahora mismo devuelve todas las wikis
             const data = await response.json();
+
             if (Array.isArray(data)) {
                 setListaArticulos(data);
             } else {
@@ -49,7 +63,12 @@ function ListaArticulo({ nombreWiki }) {
 
     const fetchBusqueda = async (term) => {
         try {
-            const response = await fetch(`${backendURL}/wikis/${nombreWiki}/articulos?term=${terminoDeBusqueda}`);
+            let url = `${backendURL}/wikis/${nombreWiki}/articulos?term=${terminoDeBusqueda}`;
+
+            if (minFecha) url += `&minFecha=${minFecha}`;
+            if (maxFecha) url += `&maxFecha=${maxFecha}`;
+
+            const response = await fetch(url);
             const data = await response.json();
             if (Array.isArray(data)) {
                 setListaArticulosBusqueda(data); // Actualiza los resultados de búsqueda.
@@ -59,6 +78,13 @@ function ListaArticulo({ nombreWiki }) {
         } catch (error) {
             console.error("Error al buscar articulos:", error);
         }
+    };
+
+    const handleAbrirOCerrarFiltros = () => {
+        // Restablece el formulario
+        setFiltros(!filtros);        
+        setMinFecha(null);
+        setMaxFecha(null);
     };
 
     return (
@@ -71,7 +97,17 @@ function ListaArticulo({ nombreWiki }) {
                     onChange={(e) => setTerminoDeBusqueda(e.target.value)}
                     placeholder="Buscar Artículos..."
                 />
+                <button onClick={handleAbrirOCerrarFiltros}>Filtros</button>
             </div>
+
+            {filtros && (
+                <Filtros
+                minFecha={minFecha}
+                maxFecha={maxFecha}
+                setMinFecha={(fecha) => setMinFecha(fecha)}
+                setMaxFecha={(fecha) => setMaxFecha(fecha)}
+            />
+            )}
 
             <div className="contenedorArticulos">
                 {terminoDeBusqueda === "" ? (
