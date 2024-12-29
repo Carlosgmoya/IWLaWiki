@@ -49,7 +49,14 @@ async def getArticulos(
         wikiObjID = None
 
     if hayFiltros:
-        listaArticulos = await articuloAPI.getArticulosPorFiltros(wikiObjID, term, minFecha, maxFecha, usuario, idioma)
+         listaArticulos = await articuloAPI.getArticulosPorFiltros(
+            wikiID=wikiObjID,
+            term=term,
+            minFecha=minFecha,
+            maxFecha=maxFecha,
+            creador=usuario,
+            idioma=idioma
+        )
     else:
         listaArticulos = await articuloAPI.getTodosArticulos()
 

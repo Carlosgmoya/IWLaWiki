@@ -36,7 +36,7 @@ function ListaWiki() {
         } else {
             setListaWikisBusqueda([]); // Limpia los resultados si no hay término de búsqueda.
         }
-    }, [retrasoBusqueda]);
+    }, [retrasoBusqueda, minFecha, maxFecha]);
 
     const fetchWikisDestacadas = async () => {
         try {

@@ -201,7 +201,7 @@ async def getArticulos(
         query_params = {"wiki": wikiID}
 
         if terminoDeBusqueda:
-            query_params["terminoDeBusqueda"] = terminoDeBusqueda
+            query_params["term"] = terminoDeBusqueda
         if usuario:
             query_params["usuario"] = usuario
         if minFecha:

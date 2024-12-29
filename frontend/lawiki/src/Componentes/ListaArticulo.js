@@ -35,7 +35,7 @@ function ListaArticulo({ nombreWiki }) {
         } else {
             setListaArticulosBusqueda([]); // Limpia los resultados si no hay término de búsqueda.
         }
-    }, [retrasoBusqueda]);
+    }, [retrasoBusqueda, minFecha, maxFecha]);
 
     const fetchArticulos = async () => {
         try {
@@ -63,7 +63,7 @@ function ListaArticulo({ nombreWiki }) {
 
     const fetchBusqueda = async (term) => {
         try {
-            let url = `${backendURL}/wikis/${nombreWiki}/articulos?term=${terminoDeBusqueda}`;
+            let url = `${backendURL}/wikis/${nombreWiki}/articulos?terminoDeBusqueda=${term}`;
 
             if (minFecha) url += `&minFecha=${minFecha}`;
             if (maxFecha) url += `&maxFecha=${maxFecha}`;
