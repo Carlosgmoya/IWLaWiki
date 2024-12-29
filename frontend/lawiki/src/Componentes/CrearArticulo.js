@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSesion } from "../Login/authContext";
+
+import '../Estilos/VentanaArticulo.css';
 
 const CrearArticulo = ({ nombreWiki, onCancelar }) => {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
@@ -14,6 +16,7 @@ const CrearArticulo = ({ nombreWiki, onCancelar }) => {
 
     const [listaIdiomas, setListaIdiomas] = useState({});
     const [idioma, setIdioma] = useState("");
+    const referenciaTextArea = useRef(null);
 
     const { nombreUsuario } = useSesion();
 
@@ -112,6 +115,65 @@ const CrearArticulo = ({ nombreWiki, onCancelar }) => {
         window.location.reload();
     };
 
+    const handleTitulo = async () => {
+        insertarTexto("# Inserta aquí tu título");
+      };
+    
+      const handleSubtitulo = async () => {
+        insertarTexto("## Inserta aquí tu Subtítulo");
+      };
+    
+      const handleCursiva = async () => {
+        insertarTexto("*cursiva*");
+      };
+    
+      const handleNegrita = async () => {
+        insertarTexto("**negrita**");
+      };
+    
+      const handleCursivayNegrita = async () => {
+        insertarTexto("***cursiva y negrita***");
+      };
+    
+      const handleEnlaceOtraPagina = async () => {
+        insertarTexto("[Enlace a otra página](https://otra-pagina.com)");
+      };
+    
+      const handleEnlaceImagen = async () => {
+        insertarTexto("![Descripción de la imagen](url de la imagen)");
+      };
+    
+      const handleLista = async () => {
+        insertarTexto("- elemento de la lista");
+      };
+    
+    
+    
+      const insertarTexto = (textoAInsertar) => {
+        const textArea = referenciaTextArea.current;
+    
+        if (textArea) {
+          const inicio = textArea.selectionStart;
+          const final = textArea.selectionEnd;
+    
+          // Inserto el texto donde estaba el cursos
+          const nuevoContenido =
+            contenido.slice(0, inicio) +
+            textoAInsertar +
+            contenido.slice(final);
+    
+          setContenido(nuevoContenido);
+    
+          // Actualizo la posicion del cursor
+          setTimeout(() => {
+            textArea.setSelectionRange(
+              inicio + textoAInsertar.length,
+              inicio + textoAInsertar.length
+            );
+          }, 0);
+        }
+      };
+
     return (
         <>
             {mostrarFormulario ? (
@@ -119,19 +181,39 @@ const CrearArticulo = ({ nombreWiki, onCancelar }) => {
                     <h2>Crear Artículo</h2>
                     <form onSubmit={handleSubmit}>
                         <h2>Inserta el titulo</h2>
-                        <input type="text"
-                            value={titulo}
-                            onChange={(e) => setTitulo(e.target.value)} />
+                        <div className="contenedorInsertarTitulo">
+                            <input type="text"
+                                placeholder="Inserta el titulo permanente del artículo"
+                                value={titulo}
+                                onChange={(e) => setTitulo(e.target.value)} 
+                            />
+                        </div>
                         <h2>Inserta el contenido</h2>
 
-                        <textarea
-                            value={contenido}
-                            onChange={(e) => setContenido(e.target.value)}
-                            rows="10"
-                            cols="50"
-                        />
-                        <button type="submit">Guardar</button>
-                        <button onClick={onCancelar} >Cancelar</button>
+                        <div className="botonesEditor">
+                            <button onClick={handleTitulo}>Insertar Titulo</button>
+                            <button onClick={handleSubtitulo}>Insertar Subtitulo</button>
+                            <button onClick={handleCursiva}>Insertar Cursiva</button>
+                            <button onClick={handleNegrita}>Insertar Negrita</button>
+                            <button onClick={handleCursivayNegrita}>Insertar cursiva y negrita</button>
+                            <button onClick={handleEnlaceOtraPagina}>Insertar Enlace</button>
+                            <button onClick={handleEnlaceImagen}>Insertar Enlace Imagen</button>
+                            <button onClick={handleLista}>Insertar Lista</button>
+                        </div>
+                        <div className="contenedorEditarArticulo">
+                            <textarea
+                                className="editarArticulo"
+                                value={contenido}
+                                ref={referenciaTextArea}
+                                onChange={(e) => setContenido(e.target.value)}
+                                rows="20"
+                                cols="200"
+                            />
+                        </div>
+                        <div className="contenedorBotonesGuardar">
+                            <button className="botonGuardar" type="submit">Guardar</button>
+                            <button className="botonCancelar" onClick={onCancelar} >Cancelar</button>
+                        </div>
                     </form>
                 </div>
             ) : (

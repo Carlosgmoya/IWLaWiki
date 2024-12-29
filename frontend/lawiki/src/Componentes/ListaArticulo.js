@@ -128,7 +128,9 @@ function ListaArticulo({ nombreWiki }) {
                     onChange={(e) => setTerminoDeBusqueda(e.target.value)}
                     placeholder="Buscar Artículos..."
                 />
-                <button onClick={handleAbrirOCerrarFiltros}>Filtros</button>
+                <button onClick={handleAbrirOCerrarFiltros}>
+                    <img src="/Iconos/IconoFiltrar.svg" />
+                </button>
             </div>
 
             {filtros && (
@@ -157,11 +159,13 @@ function ListaArticulo({ nombreWiki }) {
                                     <img src="/Iconos/IconoDropdown.svg" alt="Desplegar lista de idiomas" />
                                 </button>
                                 {verIdiomas && (
-                                     <ul>
+                                     <ul className="ulIdiomas">
                                      {listaIdiomas.map((idiomaItem) => (
-                                       <li key={idiomaItem.code} onClick={() => handleCambiarIdioma(idiomaItem.code)}>
-                                         {idiomaItem.name}
-                                       </li>
+                                        <button onClick={() => handleCambiarIdioma(idiomaItem.code)}>
+                                            <li key={idiomaItem.code} >
+                                                {idiomaItem.name}
+                                            </li>
+                                        </button>
                                      ))}
                                    </ul>
                                 )}

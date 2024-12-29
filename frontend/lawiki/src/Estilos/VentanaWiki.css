@@ -114,3 +114,13 @@
     width: 150px;
     border: 2px solid gray;
 }
+
+.ulIdiomas button{
+    width: 100%;
+}
+
+.filtros {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

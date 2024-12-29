@@ -13,7 +13,7 @@ import "../Estilos/VentanaArticulo.css";
 function VentanaArticulo() {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
 
-    const { rolUsuario } = useSesion();
+    const { nombreUsuario, rolUsuario } = useSesion();
 
     const { nombre } = useParams();
     const { titulo } = useParams();
@@ -21,6 +21,7 @@ function VentanaArticulo() {
     const [creador, setCreador] = useState(null);     //JSON: nombre, email
     const [mostrarComentarios, setMostrarComentarios] = useState(false);
     const [mostrarEditor, setMostrarEditor] = useState(false);
+    const [articuloMio, setArticuloMio] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -32,6 +33,12 @@ function VentanaArticulo() {
                 const respuesta2 = await fetch(`${backendURL}/usuarios/id/${datosArticulo.creador.$oid}`);
                 const datosCreador = await respuesta2.json();
                 setCreador(datosCreador);
+
+                if (nombreUsuario === datosCreador.nombre) {
+                    setArticuloMio(true);
+                } else {
+                    setArticuloMio(false);
+                }
             } catch (error) {
                 console.error("Error al obtener datos:", error);
             }
@@ -63,9 +70,10 @@ function VentanaArticulo() {
                         (
                             <div>
                                 {tienePermiso(rolUsuario, "editarArticuloMio") &&
+                                articuloMio &&
                                 <button title="Versiones anteriores del artículo" className="botonHistorial">
                                     <Link to={`/wikis/${nombre}/${titulo}/historial`}>
-                                        <img src="/Iconos/IconoPerfil.svg" alt="Versiones anteriores del artículo" />
+                                        <img src="/Iconos/IconoHistorial.svg" alt="Versiones anteriores del artículo" />
                                     </Link>
                                 </button>
                                 }

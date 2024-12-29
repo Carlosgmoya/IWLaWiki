@@ -218,4 +218,9 @@
     cursor: pointer;
 }
 
+.contenedorInsertarTitulo {
+    display: flex;
+    justify-content: center;
+}
+
 

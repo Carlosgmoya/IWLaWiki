@@ -96,12 +96,16 @@ function Comentarios({ emailCreador }) {
       creador: emailCreador,
     };
 
-    /*emailjs.send(
-      serviceID,
-      templateID,
-      datosEmail,
-      userID,
-    );*/
+    try {
+      emailjs.send(
+        serviceID,
+        templateID,
+        datosEmail,
+        userID,
+      );
+    } catch (error) {
+      console.log("Error enviando email con emailJS:", error);
+    }
   };
 
   return (

@@ -7,6 +7,7 @@ function Filtros({ minFecha, maxFecha, setMinFecha, setMaxFecha, usuario, setUsu
     return (
 
         <div className="filtros">
+            <div className="filtro">
             <label htmlFor="fechaMin">Selecciona una fecha mínima:</label>
             <input
                 type="date"
@@ -14,7 +15,9 @@ function Filtros({ minFecha, maxFecha, setMinFecha, setMaxFecha, usuario, setUsu
                 value={minFecha || ""}
                 onChange={(e) => setMinFecha(e.target.value)}
             />
+            </div>
 
+            <div className="filtro">
             <label htmlFor="fechaMax">Selecciona una fecha máxima:</label>
             <input
                 type="date"
@@ -22,8 +25,10 @@ function Filtros({ minFecha, maxFecha, setMinFecha, setMaxFecha, usuario, setUsu
                 value={maxFecha || ""}
                 onChange={(e) => setMaxFecha(e.target.value)}
             />
+            </div>
+            
             {nombre && (
-                <>
+                <div className="filtro">
                     <label htmlFor="fechaMax">Inserta un usuario:</label>
                     <input
                         type="text"
@@ -31,7 +36,7 @@ function Filtros({ minFecha, maxFecha, setMinFecha, setMaxFecha, usuario, setUsu
                         value={usuario || ""}
                         onChange={(e) => setUsuario(e.target.value)}
                     />
-                </>
+                </div>
             )}
 
 
