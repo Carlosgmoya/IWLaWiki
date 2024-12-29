@@ -83,10 +83,13 @@ async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, max
 
     if creador is not None:
         usuario = usuarioBD.find_one({"nombre": creador})
-        usuarioJson = json.loads(json_util.dumps(usuario))
-        usuarioId = ObjectId(usuarioJson["_id"]["$oid"])
-
-        filtro["$and"].append({"creador": usuarioId})
+    
+        if usuario: 
+            usuarioJson = json.loads(json_util.dumps(usuario))
+            usuarioId = ObjectId(usuarioJson["_id"]["$oid"])
+            filtro["$and"].append({"creador": usuarioId})
+        else:
+            print(f"Usuario con nombre '{creador}' no encontrado.")
     
     if idioma is not None:
         filtro["$and"].append({"idioma": idioma})
@@ -96,6 +99,16 @@ async def getArticulosPorFiltros(wikiID: ObjectId, term: str, minFecha: str, max
     articulosJSON = [json.loads(json_util.dumps(doc)) for doc in articulosDoc]
 
     return articulosJSON
+
+async def getArticulosPorIdioma(wikiObjID: ObjectId, idioma:  str):
+    articulo_doc = articuloBD.find({"wiki" : wikiObjID, "idioma" : idioma})
+    articulo_json = json.loads(json_util.dumps(articulo_doc))
+    return articulo_json
+
+async def getIdiomas(wikiObjID):
+    idiomas = articuloBD.distinct("idioma", {"wiki": wikiObjID})  # Método síncrono
+    idiomasJSON = json.dumps({"idiomas": idiomas})
+    return idiomasJSON
 
 
 async def buscarVersionPorFecha(titulo: str, fecha: datetime):
@@ -164,8 +177,8 @@ async def eliminarTodasVersionesArticulo(titulo: str):
     result = articuloBD.delete_many({"titulo": titulo})
     return result
 
-async def versionesAnteriores(titulo : str):
-    articulosDoc = articuloBD.find({"titulo": titulo,"ultimoModificado": False})
+async def versionesAnteriores(titulo : str, idioma : str):
+    articulosDoc = articuloBD.find({"titulo": titulo,"ultimoModificado": False, "idioma": idioma})
     articulosJSON = json.loads(json_util.dumps(articulosDoc))
 
     return articulosJSON

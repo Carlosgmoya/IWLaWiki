@@ -64,6 +64,16 @@
     margin: 5%;
 }
 
+.botonHistorial {
+    border-radius: 20%;
+    border-width: 2px;
+    background: none;
+}
+
+.botonHistorial:hover {
+    background-color: darkgray;
+}
+
 .botonCreador {
     border-radius: 20%;
     border-width: 2px;

@@ -117,6 +117,8 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
   return (
     <>
       {mostrarFormulario ? (
+        
+        <>
         <form onSubmit={handleSubmit}>
           <h2>Título</h2>
           <input className="editorTituloWiki"
@@ -164,10 +166,7 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
                 <button className="botonCrear" type="submit">Actualizar</button>
                 <button className="botonCancelar" onClick={onCancelar} >Cancelar</button>
               </div>
-              <div>
-                <h1>Subir Imagen</h1>
-                <SubirImagen />
-              </div>
+              
             </>
           ) : (
             <>
@@ -196,6 +195,12 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
             </>
           )}
         </form>
+        {wiki && (
+          <>
+            <SubirImagen/>
+          </>
+        )}
+        </>
       ) : (
         <div>
           <p>{mensaje}</p>

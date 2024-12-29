@@ -59,22 +59,29 @@ function VentanaArticulo() {
                     <div className="cabeceraArticulo">
                         <h1 className="tituloArticulo">{articulo.titulo}</h1>
                         {
-                            !mostrarEditor &&
-                            (
-                                <div>
-                                    <button title="Creador del artículo" className="botonCreador">
-                                        <Link to={`/usuario/${creador.nombre || 'defaultCreador'}`}>
-                                            <img src="/Iconos/IconoPerfil.svg" alt="Creador del artículo" />
-                                        </Link>
-                                    </button>
-
-                                    {tienePermiso(rolUsuario, "editarArticulo") &&
-                                        <button title="Editar artículo" className="botonEditar" onClick={handleAbrirEditor}>
-                                            <img src="/Iconos/IconoEditar.svg" alt="Editar articulo" />
-                                        </button>
-                                    }
-                                </div>
-                            )
+                        !mostrarEditor &&
+                        (
+                            <div>
+                                {tienePermiso(rolUsuario, "editarArticuloMio") &&
+                                <button title="Versiones anteriores del artículo" className="botonHistorial">
+                                    <Link to={`/wikis/${nombre}/${titulo}/historial`}>
+                                        <img src="/Iconos/IconoPerfil.svg" alt="Versiones anteriores del artículo" />
+                                    </Link>
+                                </button>
+                                }
+                                <button title="Creador del artículo" className="botonCreador">
+                                    <Link to={`/usuario/${creador.nombre || 'defaultCreador'}`}>
+                                        <img src="/Iconos/IconoPerfil.svg" alt="Creador del artículo" />
+                                    </Link>
+                                </button>
+                                
+                                {tienePermiso(rolUsuario, "editarArticulo") &&
+                                <button title="Editar artículo" className="botonEditar" onClick={handleAbrirEditor}>
+                                    <img src="/Iconos/IconoEditar.svg" alt="Editar articulo" />
+                                </button>
+                                }
+                            </div>
+                        )
                         }
 
                     </div>

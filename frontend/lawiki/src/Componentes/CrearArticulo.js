@@ -1,22 +1,30 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSesion } from "../Login/authContext";
 
 const CrearArticulo = ({ nombreWiki, onCancelar }) => {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
+
     const [contenido, setContenido] = useState("");
     const [mensaje, setMensaje] = useState("");
     const [titulo, setTitulo] = useState("");
     const [mostrarFormulario, setMostrarFormulario] = useState(true); // Estado para alternar formulario/mensaje
     const navigate = useNavigate();
 
-    // Cambia esto por el ID real del creador que corresponda a tu contexto.
-    const creadorId = "671fcdfdf45c1f9bfed57032";
+    const { nombreUsuario } = useSesion();
+
+    const getCreadorId = async() => {
+        const creador = await fetch(`${backendURL}/usuarios/nombre/${nombreUsuario}`);
+        const creadorJson = await creador.json();
+        return creadorJson._id;
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const datos = {
             titulo,
             contenido,
-            creador: { $oid: creadorId }, // Incluye el ID del creador en el formato requerido
+            creador: await getCreadorId(),
         };
 
         try {

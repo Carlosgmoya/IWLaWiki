@@ -16,7 +16,7 @@ function ListaWiki() {
 
     useEffect(() => {
         fetchWikisDestacadas();
-    }, [minFecha, maxFecha
+    }, [minFecha, maxFecha,
     ]);
 
     useEffect(() => {
@@ -36,7 +36,7 @@ function ListaWiki() {
         } else {
             setListaWikisBusqueda([]); // Limpia los resultados si no hay término de búsqueda.
         }
-    }, [retrasoBusqueda]);
+    }, [retrasoBusqueda, minFecha, maxFecha]);
 
     const fetchWikisDestacadas = async () => {
         try {
@@ -102,12 +102,13 @@ function ListaWiki() {
             </div>
 
             {filtros && (
-                <Filtros
-                minFecha={minFecha}
-                maxFecha={maxFecha}
-                setMinFecha={(fecha) => setMinFecha(fecha)}
-                setMaxFecha={(fecha) => setMaxFecha(fecha)}
-            />
+               <Filtros
+               minFecha={minFecha}
+               maxFecha={maxFecha}
+               setMinFecha={(fecha) => setMinFecha(fecha)}
+               setMaxFecha={(fecha) => setMaxFecha(fecha)}
+               nombre = {false}
+           />
             )}
 
             <div className="listaArticulos">

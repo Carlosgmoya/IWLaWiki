@@ -201,7 +201,7 @@ async def getArticulos(
         query_params = {"wiki": wikiID}
 
         if terminoDeBusqueda:
-            query_params["terminoDeBusqueda"] = terminoDeBusqueda
+            query_params["term"] = terminoDeBusqueda
         if usuario:
             query_params["usuario"] = usuario
         if minFecha:
@@ -215,6 +215,45 @@ async def getArticulos(
         respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos", params=query_params)
         respuesta.raise_for_status()
 
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+#GET IDIOMAS DE UNA WIKI
+@app.get("/wikis/{nombre}/idiomas")
+async def getIdiomas(nombre : str):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getID(wikiJSON)
+    
+    try:
+        query_params = {}
+        query_params["wiki"] = wikiID
+
+        respuesta = await clienteArticulo.get(f"/wikis/{nombre}/idiomas", params=query_params)
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloArticulo")
+    
+    return respuesta.json()
+
+# GET ARTICULOS DE UN IDIOMA
+@app.get("/wikis/{nombre}/articulos/idioma")
+async def getArticuloIdioma(nombre : str, idioma : str = Query(...)):
+    wikiJSON = await getWiki(nombre)
+    wikiID = getID(wikiJSON)
+    
+    try:
+        query_params = {}
+        query_params["wiki"] = wikiID
+        query_params["idioma"] = idioma
+
+        respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos/idioma", params=query_params)
+        respuesta.raise_for_status()
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
@@ -320,13 +359,11 @@ async def subirImagen(archivo : UploadFile = File(...)):
     return respuesta.text
 
 @app.get("/wikis/{nombre}/articulos/{titulo}/versiones")
-async def todasVersiones(nombre : str, titulo : str):
-    articuloJSON = await getArticulo(nombre, titulo)
-    articuloID = getID(articuloJSON)
+async def todasVersiones(nombre : str, titulo : str, idioma: str = Query(...)):
     
     try:
         query_params = {}
-        query_params["titulo"] = articuloID
+        query_params["idioma"] = idioma
 
         respuesta = await clienteArticulo.get(f"/wikis/{nombre}/articulos/{titulo}/versiones", params=query_params)
         respuesta.raise_for_status()
@@ -579,6 +616,19 @@ async def getUsuariosPorId(usuarioID: str):
 async def getUsuariosPorId(usuarioEmail: str):
     try:
         respuesta = await clienteUsuario.get(f"/usuarios/email/{usuarioEmail}")
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
+
+    return respuesta.json()
+
+# GET USUARIO POR NOMBRE
+@app.get("/usuarios/nombre/{usuarioNombre}")
+async def getUsuariosPorNombre(usuarioNombre: str):
+    try:
+        respuesta = await clienteUsuario.get(f"/usuarios/nombre/{usuarioNombre}")
         respuesta.raise_for_status()
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))

@@ -1,0 +1,35 @@
+.cabeceraWiki h1 a {
+    text-decoration: none;
+    color: rgb(95, 95, 95);
+}
+
+.cabeceraWiki h1 a:hover {
+    background-color: gray;
+    border-radius: 5px;
+}
+
+.historial {
+    border: 2px solid darkgray;
+}
+
+.tituloHistorial {
+    padding-left: 7px;
+}
+
+.cabeceraHistorial {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid darkgray;
+    margin-top: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 10px;
+}
+
+.cuerpoHistorial {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}

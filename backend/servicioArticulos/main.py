@@ -49,9 +49,37 @@ async def getArticulos(
         wikiObjID = None
 
     if hayFiltros:
-        listaArticulos = await articuloAPI.getArticulosPorFiltros(wikiObjID, term, minFecha, maxFecha, usuario, idioma)
+         listaArticulos = await articuloAPI.getArticulosPorFiltros(
+            wikiID=wikiObjID,
+            term=term,
+            minFecha=minFecha,
+            maxFecha=maxFecha,
+            creador=usuario,
+            idioma=idioma
+        )
     else:
         listaArticulos = await articuloAPI.getTodosArticulos()
+
+    return listaArticulos
+
+@api.get(path + "/wikis/{nombre}/idiomas")
+async def idiomasWiki(wiki: str = Query(...)):
+    if wiki is not None:
+        wikiObjID = getObjID(wiki)
+    else:
+        wikiObjID = None
+    idiomas = await articuloAPI.getIdiomas(wikiObjID)
+
+    return idiomas
+
+
+@api.get(path + "/wikis/{nombre}/articulos/idioma")
+async def idiomasArticulo(wiki: str = Query(None, min_length=1), idioma : str = Query(None, min_length=1)):
+    if wiki is not None:
+        wikiObjID = getObjID(wiki)
+    else:
+        wikiObjID = None
+    listaArticulos = await articuloAPI.getArticulosPorIdioma(wikiObjID, idioma)
 
     return listaArticulos
 
@@ -146,8 +174,8 @@ async def eliminarArticulo(titulo: str, id: str = Query(None, min_length=1)):
     return "Artículo eliminado con éxito"
 
 @api.get(path + "/wikis/{nombre}/articulos/{titulo}/versiones")
-async def todasVersiones(titulo : str):
-    articulo_json = await articuloAPI.versionesAnteriores(titulo)
+async def todasVersiones(titulo : str, idioma : str = Query(...)):
+    articulo_json = await articuloAPI.versionesAnteriores(titulo, idioma)
 
     if articulo_json is None:
         raise HTTPException(status_code=404, detail="El artículo no tiene más versiones")
