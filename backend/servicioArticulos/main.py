@@ -280,7 +280,7 @@ async def eliminarMapa(id: str = Query(None, min_length=1)):
 @api.put(path + "/wikis/{nombre}/articulos/{titulo}/traducir")
 async def traducirArticulo(nombre: str, titulo: str, idioma: str = Query(...)):
     wikiObjID = getObjID(nombre)
-    articulo = articuloAPI.getArticulo(wikiObjID, titulo)
+    articulo = await articuloAPI.getArticulo(wikiObjID, titulo)
     
     wiki = wikiObjID
     contenido = articulo.get("contenido")

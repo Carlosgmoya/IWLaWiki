@@ -406,7 +406,7 @@ async def traducirArticulo(request: Request, nombre: str, titulo: str, idioma : 
         query_params["wiki"] = wikiID
         query_params["idioma"] = idioma
 
-        respuesta = await clienteArticulo.put(f"/wikis/{nombre}/articulos/{titulo}/traducir", params=query_params)
+        respuesta = await clienteArticulo.put(f"/wikis/{wikiID}/articulos/{titulo}/traducir", params=query_params)
         respuesta.raise_for_status()
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
