@@ -97,7 +97,9 @@ function ListaWiki() {
                     onChange={(e) => setTerminoDeBusqueda(e.target.value)}
                     placeholder=" Buscar wikis..."
                 />
-                <button onClick={handleAbrirOCerrarFiltros}>Filtros</button>
+                <button onClick={handleAbrirOCerrarFiltros}>
+                    <img src="/Iconos/IconoFiltrar.svg" />
+                </button>
 
             </div>
 
@@ -149,9 +151,14 @@ function ListaWiki() {
                             <ul className="ulWikis">
                                 {listaWikisBusqueda.map((wiki, index) => (
                                     <Link title={"Ir a " + wiki.nombre} to={`/wikis/${wiki.nombre || 'defaultWiki'}`}>
-                                        <li key={index}>
+                                        <li key={index} 
+                                            style={{ 
+                                            backgroundImage: `url(${wiki.portada})`,
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                            backgroundRepeat: 'no-repeat'
+                                        }}>
                                             <p>{wiki.nombre}</p>
-                                            <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + wiki.nombre}></img>
                                         </li>
                                     </Link>
                                 ))}

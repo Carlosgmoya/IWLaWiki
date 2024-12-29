@@ -179,7 +179,7 @@ function ListaArticulo({ nombreWiki }) {
                                         <li key={index}>
                                             <h4>{articulo.titulo || "Artículo sin título"}</h4>
                                             <div className="datosArticulo">
-                                                <p>creador</p>
+                                                <p>lang: {articulo.idioma}</p>
                                                 <p className="fecha">{formatearFecha(articulo.fecha.$date)}</p>
                                             </div>
                                         </li>
@@ -198,8 +198,11 @@ function ListaArticulo({ nombreWiki }) {
                                 {listaArticulosBusqueda.map((articulo, index) => (
                                     <Link title={"Ir a " + articulo.titulo}  to={`/wikis/${nombreWiki}/${articulo.titulo || 'defaultArticulo'}`}>
                                         <li key={index}>
-                                            <p>{articulo.titulo}</p>
-                                            <img src="/Iconos/IconoFlecha.svg" alt={"Ir a " + articulo.titulo}></img>
+                                        <h4>{articulo.titulo || "Artículo sin título"}</h4>
+                                            <div className="datosArticulo">
+                                                <p>lang: {articulo.idioma}</p>
+                                                <p className="fecha">{formatearFecha(articulo.fecha.$date)}</p>
+                                            </div>
                                         </li>
                                     </Link>
                                 ))}
