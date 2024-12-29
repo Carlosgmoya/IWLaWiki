@@ -1,11 +1,19 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet"; // Leaflet is required for some additional functionality
 
 function VerMapa({ nombreWiki, tituloArticulo }) {
     const backendURL = process.env.REACT_APP_BACKEND_URL;
 
     const [coordenadas, setCoordenadas] = useState(null);
     const [nombreUbicacion, setNombreUbicacion] = useState("");
+
+    const marker = L.icon({
+        iconUrl: "/Iconos/Marker.svg",
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+    });
 
     const fetchMapa = useCallback(async () => {
         try {
@@ -46,7 +54,7 @@ function VerMapa({ nombreWiki, tituloArticulo }) {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             {/* Add a Marker to show the location */}
-            <Marker position={[lat, lon]}>
+            <Marker position={[lat, lon]} icon={marker}>
               <Popup>
                 <span>{locationName}</span>
               </Popup>

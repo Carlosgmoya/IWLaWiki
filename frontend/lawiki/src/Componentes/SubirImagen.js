@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 
+import '../Estilos/SubirImagen.css';
+
 const SubirImagen = () => {
+    const backendURL = process.env.REACT_APP_BACKEND_URL;
+
     const [message, setMessage] = useState('');
     const [file, setFile] = useState(null);
 
@@ -18,7 +22,7 @@ const SubirImagen = () => {
         formData.append("archivo", file); // El nombre "archivo" es el nombre del campo que usaremos en el backend
         try {
             const response = await fetch(
-                `http://localhost:8000/subirImagen`,
+                `${backendURL}/subirImagen`,
                 {
                     method: "POST",
                     body: formData,
@@ -39,16 +43,17 @@ const SubirImagen = () => {
     };
 
     return (
-        <div>
-            <form onSubmit={handleSubirImagen}>
+        <div className="contenedorSubirImagen">
+            <form className="formSubirImagen" onSubmit={handleSubirImagen}>
                 <label>
-                    Selecciona una imagen:
                     <input
+                        placeholder="Seleccion una imagen"
+                        className="seleccionarImagen"
                         type="file"
                         onChange={handleFileChange}
                     />
                 </label>
-                <button type="submit">Subir Imagen</button>
+                <button className="botonSubir" type="submit">Subir Imagen</button>
             </form>
             {message && <p>{message}</p>} {/* Muestra el mensaje de respuesta */}
         </div>

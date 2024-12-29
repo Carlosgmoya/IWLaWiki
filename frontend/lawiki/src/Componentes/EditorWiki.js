@@ -138,36 +138,40 @@ function EditorWiki({ onCancelar, wiki, onWikiActualizado }) {
           />
 
           {wiki ? (
-            <>
+            <div className="contenedorEditar">
               <h2>Imagen Portada</h2>
-              <img src={wiki.portada} alt="Imagen Portada" />
+              <div className="contenedorImagenPortada">
+              <img className="imagenPortada" src={wiki.portada} alt="No hay imagen" />
               <label>
-                En caso de querer cambiar la imagen inserte la nueva url aquí:
                 <input
                   className="inputPortada"
                   type="text"
                   value={portada}
+                  placeholder="Inserte la URL de la nueva portada"
                   onChange={(e) => setPortada(e.target.value)}
 
                 />
               </label>
+              </div>
+              
               <h2>Imagen Cabecera</h2>
-              <img src={wiki.cabecera} alt="Imagen Cabecera" />
-              <label>
-                En caso de querer cambiar la imagen inserte la nueva url aquí:
-                <input
-                  className="inputCabecera"
-                  type="text"
-                  value={cabecera}
-                  onChange={(e) => setCabecera(e.target.value)}
-                />
-              </label>
-              <div>
+              <div className="contenedorImagenCabecera">
+              <img className="imagenCabecera" src={wiki.cabecera} alt="No hay imagen" />
+                <label>
+                  <input
+                    className="inputCabecera"
+                    type="text"
+                    value={cabecera}
+                    placeholder="Inserte la URL de la nueva cabecera"
+                    onChange={(e) => setCabecera(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div className="contenedorBotonesActualizar">
                 <button className="botonCrear" type="submit">Actualizar</button>
                 <button className="botonCancelar" onClick={onCancelar} >Cancelar</button>
               </div>
-              
-            </>
+            </div>
           ) : (
             <>
               <h2>Imagen Portada</h2>

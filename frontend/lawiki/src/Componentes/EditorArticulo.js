@@ -163,7 +163,7 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, emailCre
       {mostrarFormulario ? (
         <div style={{ padding: "20px" }}>
           <h2>Editar Artículo</h2>
-          <div className="BotonesEditor">
+          <div className="botonesEditor">
             <button onClick={handleTitulo}>Insertar Titulo</button>
             <button onClick={handleSubtitulo}>Insertar Subtitulo</button>
             <button onClick={handleCursiva}>Insertar Cursiva</button>
@@ -174,25 +174,27 @@ const EditorArticulo = ({ nombreWiki, tituloArticulo, contenidoInicial, emailCre
             <button onClick={handleLista}>Insertar Lista</button>
           </div>
 
-
-          <textarea
-            ref={referenciaTextArea} // Asocia la referencia al textarea
-            value={contenido}
-            onChange={handleChange}
-            rows="10"
-            cols="50"
-          />
-          <button onClick={handleGuardar}>Guardar</button>
-
-          <div>
-            <h1>Subir Imagen</h1>
-            <SubirImagen />
-          </div>
-          <div>
-            <SubirMapa
-              nombreWiki={nombreWiki}
-              tituloArticulo={tituloArticulo}
+          <div className="contenedorEditarArticulo">
+            <textarea
+              className="editarArticulo"
+              ref={referenciaTextArea} // Asocia la referencia al textarea
+              value={contenido}
+              onChange={handleChange}
+              rows="20"
+              cols="200"
             />
+          </div>
+          
+          <SubirImagen />
+          
+          <SubirMapa
+            nombreWiki={nombreWiki}
+            tituloArticulo={tituloArticulo}
+          />
+
+          <div className="contenedorBotonesGuardar">
+            <button className="botonGuardar" onClick={handleGuardar}>Guardar</button>
+            <button className="botonCancelar" onClick={onCancelar}>Cancelar</button>
           </div>
         </div>
       ) : (

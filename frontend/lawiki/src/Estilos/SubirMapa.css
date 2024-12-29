@@ -1,0 +1,82 @@
+.contenedorIrASubirMapa {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.irASubirMapa {
+    background: none;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.irASubirMapa:hover {
+    cursor: pointer;
+    background: rgb(168, 168, 168);
+    transform: translateY(-2px);
+}
+
+.irASubirMapa img {
+    width: 70px;
+    padding: 7px;
+}
+
+.contenedorBuscarMapa {
+    border: 2px solid rgba(0, 129, 21, 0.3);
+    margin-bottom: 20px;
+    padding: 20px 10px;
+}
+
+.buscadorUbicacion {
+    display: flex;
+    justify-content: center;
+}
+
+.buscadorUbicacion input {
+    padding-left: 5px;
+}
+
+.buscadorUbicacion button {
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.listaUbicaciones {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    list-style-type: none;
+}
+
+.listaUbicaciones li button:hover {
+    cursor: pointer;
+}
+
+.contenedorMapaBuscado {
+    display: flex;
+    justify-content: center;
+    border: 2px solid black;
+}
+
+.contenedorBotonConfirmarUbicacion {
+    display: flex;
+    justify-content: center;
+}
+
+.botonConfirmarUbicacion {
+    margin-top: 10px;
+    width: 90px;
+    border-radius: 10px;
+    background: none;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.botonConfirmarUbicacion:hover {
+    cursor: pointer;
+    background-color: rgb(146, 146, 146);
+    transform: translateY(-2px);
+}
+
+.botonConfirmarUbicacion img {
+    width: 50px;
+    height: auto;
+}
