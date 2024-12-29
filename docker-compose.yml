@@ -1,8 +1,6 @@
-
-
 services:
   servicioWikis:
-    image: fu17alex/modulowiki:v2.0  # Replace with the actual image name for app1
+    image: fu17alex/modulowiki:v3.0  # Replace with the actual image name for app1
     container_name: lawiki-modulo-wiki
     networks:
       - lawiki-network
@@ -10,7 +8,7 @@ services:
       - "8001:8001"  # Exposing port 8000 in the container to 8001 on the host
 
   servicioArticulos:
-    image: fu17alex/moduloarticulo:v2.0
+    image: fu17alex/moduloarticulo:v3.0
     container_name: lawiki-modulo-articulo
     networks:
       - lawiki-network
@@ -18,7 +16,7 @@ services:
       - "8002:8002"
 
   servicioComentarios:
-    image: fu17alex/modulocomentario:v1.0
+    image: fu17alex/modulocomentario:v2.0
     container_name: lawiki-modulo-comentario
     networks:
       - lawiki-network
@@ -26,7 +24,7 @@ services:
       - "8003:8003"
 
   servicioUsuarios:
-    image: fu17alex/modulousuario:v1.0
+    image: fu17alex/modulousuario:v2.0
     container_name: lawiki-modulo-usuario
     networks:
       - lawiki-network
@@ -34,7 +32,7 @@ services:
       - "8004:8004"
 
   app:
-    image: fu17alex/gatewaylawiki:v1.0
+    image: fu17alex/gatewaylawiki:v2.0
     container_name: lawiki-gateway
     networks:
       - lawiki-network
@@ -43,7 +41,7 @@ services:
       
 
   react-app:
-    image: fu17alex/frontendlawiki:v1.0
+    image: fu17alex/frontendlawiki:v2.0
     ports:
       - "3000:80"  # React app will run on port 3000
     depends_on:
