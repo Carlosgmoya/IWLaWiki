@@ -14,12 +14,20 @@ function ListaArticulo({ nombreWiki }) {
     const [maxFecha, setMaxFecha] = useState(null);
     const [filtros, setFiltros] = useState(null);
     const [usuario, setUsuario] = useState("");   
+    const [idioma, setIdioma] = useState("es");
     const [verIdiomas, setVerIdiomas] = useState(false);
+
+    const listaIdiomas = [
+        { code: "es", name: "Español" },
+        { code: "en", name: "Inglés" },
+        { code: "fr", name: "Francés" },
+        { code: "de", name: "Alemán" }
+      ];
 
     useEffect(() => {
         console.log(typeof setUsuario);
         fetchArticulos();
-    }, [minFecha, maxFecha, usuario]);
+    }, [minFecha, maxFecha, usuario, idioma]);
 
     useEffect(() => {
         // Configura un debounce: espera 300ms antes de actualizar el término de búsqueda.
@@ -38,7 +46,7 @@ function ListaArticulo({ nombreWiki }) {
         } else {
             setListaArticulosBusqueda([]); // Limpia los resultados si no hay término de búsqueda.
         }
-    }, [retrasoBusqueda, minFecha, maxFecha, usuario]);
+    }, [retrasoBusqueda, minFecha, maxFecha, usuario, idioma]);
 
     const fetchArticulos = async () => {
         try {
@@ -49,6 +57,7 @@ function ListaArticulo({ nombreWiki }) {
             if (minFecha) params.append("minFecha", minFecha);
             if (maxFecha) params.append("maxFecha", maxFecha);
             if (usuario != "") params.append("usuario", usuario);
+            if (idioma != "") params.append("idioma", idioma);
 
             if (params.toString()) url += `?${params.toString()}`;
 
@@ -72,6 +81,7 @@ function ListaArticulo({ nombreWiki }) {
             if (minFecha) url += `&minFecha=${minFecha}`;
             if (maxFecha) url += `&maxFecha=${maxFecha}`;
             if (usuario != "") url += `&usuario=${usuario}`
+            if (idioma != "") url += `&idioma=${idioma}`
 
             const response = await fetch(url);
             const data = await response.json();
@@ -95,6 +105,11 @@ function ListaArticulo({ nombreWiki }) {
 
     const handleVerIdiomas = () => {
         setVerIdiomas((anterior) => !anterior);
+    };
+
+    const handleCambiarIdioma = (code) => {
+        setIdioma(code); // Cambiar el idioma
+        setVerIdiomas(false); // Cerrar la lista al seleccionar un idioma
     };
 
     function formatearFecha(fecha) {
@@ -125,6 +140,8 @@ function ListaArticulo({ nombreWiki }) {
                 usuario={usuario}
                 setUsuario={setUsuario}
                 nombre={true}
+                idioma={idioma}
+                setIdioma={setIdioma}
             />
             )}
 
@@ -140,11 +157,13 @@ function ListaArticulo({ nombreWiki }) {
                                     <img src="/Iconos/IconoDropdown.svg" alt="Desplegar lista de idiomas" />
                                 </button>
                                 {verIdiomas && (
-                                    <ul>
-                                        <li>Option 1</li>
-                                        <li>Option 2</li>
-                                        <li>Option 3</li>
-                                    </ul>
+                                     <ul>
+                                     {listaIdiomas.map((idiomaItem) => (
+                                       <li key={idiomaItem.code} onClick={() => handleCambiarIdioma(idiomaItem.code)}>
+                                         {idiomaItem.name}
+                                       </li>
+                                     ))}
+                                   </ul>
                                 )}
                             </div>
                         </div>
