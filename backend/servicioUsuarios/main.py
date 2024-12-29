@@ -44,6 +44,14 @@ async def getUsuariosPorEmail(usuarioEmail: str):
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return Usuario(**usuario)
 
+@api.get(path + "/usuarios/nombre/{usuarioNombre}", response_model=Usuario)
+async def getUsuariosPorNombre(usuarioNombre: str):
+    """Busca un usuario por su email"""
+    usuario = usuarioBD.find_one({"nombre": usuarioNombre})
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return Usuario(**usuario)
+
 @api.post(path + "/usuarios", response_model=Usuario)
 async def crearUsuario(usuario: Usuario):
     """Crea un nuevo usuario"""

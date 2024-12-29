@@ -624,6 +624,19 @@ async def getUsuariosPorId(usuarioEmail: str):
 
     return respuesta.json()
 
+# GET USUARIO POR NOMBRE
+@app.get("/usuarios/nombre/{usuarioNombre}")
+async def getUsuariosPorNombre(usuarioNombre: str):
+    try:
+        respuesta = await clienteUsuario.get(f"/usuarios/nombre/{usuarioNombre}")
+        respuesta.raise_for_status()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="No se ha conseguido establecer conexión con moduloUsuario")
+
+    return respuesta.json()
+
 # CREAR NUEVO USUARIO
 @app.post("/usuarios/")
 async def crearUsuario(request: Request):
