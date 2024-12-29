@@ -114,19 +114,14 @@ function VentanaArticulo() {
                             }
                         </>
                     ) : (
-                        <>
-                            <EditorArticulo
-                                nombreWiki={nombre}
-                                tituloArticulo={titulo}
-                                contenidoInicial={articulo.contenido}
-                                emailCreador={creador.email}
-                                creadorId={creador._id}
-                                onCancelar={handleCerrarEditor}
-                            />
-                            <div>
-                                <button onClick={handleCerrarEditor}>Cancelar</button>
-                            </div>
-                        </>
+                        <EditorArticulo
+                            nombreWiki={nombre}
+                            tituloArticulo={titulo}
+                            contenidoInicial={articulo.contenido}
+                            emailCreador={creador.email}
+                            creadorId={creador._id}
+                            onCancelar={handleCerrarEditor}
+                        />
                     )}
                 </div>
             </>

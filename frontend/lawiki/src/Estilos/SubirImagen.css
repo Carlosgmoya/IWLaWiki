@@ -1,0 +1,72 @@
+.contenedorSubirImagen {
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.contenedorSubirImagen p {
+    text-align: center;
+}
+
+.formSubirImagen {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the form fields */
+    gap: 15px; /* Space between fields */
+    width: 100%; /* Allow the form to take full width */
+}
+
+.formSubirImagen input {
+    background-color: rgb(220, 220, 220);
+    align-content: center;
+}
+
+.seleccionarImagen {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #fff;
+    width: 100%; /* Make the input take full width */
+    max-width: 400px; /* Limit its size */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+    transition: border-color 0.2s ease-in-out;
+}
+
+.seleccionarImagen:hover {
+    border-color: #007bff; /* Change border color on hover */
+}
+
+/* Submit button styling */
+.botonSubir {
+    padding: 10px 20px;
+    background-color: #007bff; /* Blue button */
+    color: #fff; /* White text */
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.botonSubir:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px); /* Lift effect */
+}
+
+.botonSubir:active {
+    background-color: #003f8c; /* Even darker blue when pressed */
+    transform: translateY(0); /* Return to original position */
+}
+
+/* Message styling */
+.responseMessage {
+    font-size: 16px;
+    color: #333; /* Neutral text color */
+    background-color: #e8f5e9; /* Light green background */
+    border-left: 5px solid #4caf50; /* Green left border */
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}

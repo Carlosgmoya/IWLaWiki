@@ -74,3 +74,43 @@
     margin: 10px 0px;
     color: rgb(57, 57, 57);
 }
+
+ 
+/* Editor wiki */
+
+.contenedorBotonesActualizar {
+    margin: 30px 0px;
+}
+
+.contenedorImagenPortada {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 20px;
+}
+
+.inputPortada {
+    width: 700px;
+}
+
+.contenedorImagenCabecera {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 20px;
+}
+
+.inputCabecera {
+    width: 700px;
+}
+
+
+.imagenPortada {
+    width: 150px;
+    border: 2px solid gray;
+}
+
+.imagenCabecera {
+    width: 150px;
+    border: 2px solid gray;
+}
