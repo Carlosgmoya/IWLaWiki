@@ -41,7 +41,7 @@ services:
       
 
   react-app:
-    image: fu17alex/frontendlawiki:v2.0
+    image: ryutakeshikaiuma/frontendlawiki:v2.0
     ports:
       - "3000:80"  # React app will run on port 3000
     depends_on:
