@@ -1,12 +1,25 @@
-# IWLaWiki
+# 📘 IWLaWiki
 
-Integrantes del proyecto:
-Daniel de Lizaur García
-Alex Fu Sun
-Carlos García Moya
-Angel Joaquín Rodríguez Rodríguez
-Pedro Rueda Cabrera
+## 👥 Integrantes del Proyecto
 
-Python Entorno Virtual. Descargar nuevas dependencias de requirements.txt:
-    1. .venv\Scripts\activate
-    2. pip install -r src\requirements.txt
+- **Daniel de Lizaur García**  
+- **Alex Fu Sun**  
+- **Carlos García Moya**  
+- **Ángel Joaquín Rodríguez Rodríguez**  
+- **Pedro Rueda Cabrera**
+
+---
+
+## 🐍 Configuración del Entorno Virtual (Python)
+
+Para instalar las dependencias necesarias desde `requirements.txt`, sigue estos pasos:
+
+1. Activa el entorno virtual:  
+   ```bash
+   .venv\Scripts\activate
+   ```
+
+2. Instala las dependencias:  
+   ```bash
+   pip install -r src\requirements.txt
+   ```
